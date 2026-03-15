@@ -1,5 +1,8 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import "./App.css";
 import Navbar from "./components/Navbar";
 import Landing from "./components/Landing";
 import AboutUs from "./components/About";
@@ -13,18 +16,16 @@ import SoftwareEngineering from "./components/SoftwareEngineering";
 import Contact from "./components/Contact";
 import PaymentTest from "./components/PaymentTest";
 import ScrollToTop from "./components/ScrollToTop";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import ConsultingServices from "./components/ConsultingServices";
 import OurTeam from "./components/OurTeam";
 
 function App() {
   useEffect(() => {
     AOS.init({
-      duration: 1200,
-      easing: "ease-in-out",
+      duration: 900,
+      easing: "ease-out-cubic",
       once: true,
-      offset: 100,
+      offset: 60,
     });
   }, []);
 
@@ -37,30 +38,32 @@ function App() {
         <Route
           path="/"
           element={
-            <>
-              <div id="landing" className="bg-gradient-to-b from-blue-900 to-blue-500">
+            <main className="relative overflow-hidden bg-[linear-gradient(180deg,#eef6ff_0%,#f8fbff_28%,#ffffff_100%)]">
+              <div id="landing">
                 <Landing />
               </div>
 
-              <div id="about" className="py-16 bg-gray-100">
+              <div id="about">
                 <AboutUs />
-                <div id="partners">
-                  <Partners />
+              </div>
+
+              <Partners />
+              <MissionVision />
+              <Services />
+              <ConsultingServices />
+              <Contact />
+
+              <footer className="border-t border-slate-200 bg-white px-4 py-8 text-slate-600 sm:px-6 lg:px-8">
+                <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm">
+                    Alsanaya Alarabia builds enterprise technology systems across infrastructure, software, security, and support.
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    Sanaya Techs
+                  </p>
                 </div>
-                <MissionVision />
-              </div>
-
-              <div id="services" className="bg-gray-100">
-                <Services />
-              </div>
-              <div id="ConsultingServices" className="bg-gray-100">
-                <ConsultingServices />
-              </div>
-
-              <div id="contact" className="bg-gray-100 py-16">
-                <Contact />
-              </div>
-            </>
+              </footer>
+            </main>
           }
         />
         <Route path="/services/:serviceId" element={<ServiceDetail />} />
@@ -69,20 +72,19 @@ function App() {
         <Route path="/services/software-engineering" element={<SoftwareEngineering />} />
         <Route path="/our-team" element={<OurTeam />} />
         <Route path="/test-payment" element={<PaymentTest />} />
-        </Routes>
+      </Routes>
 
-      {/* 🌐 Global WhatsApp Button */}
       <a
         href="https://wa.me/9647777995015"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition-transform transform hover:scale-105"
+        className="fixed bottom-6 right-6 z-50 rounded-full bg-emerald-500 p-4 text-white shadow-[0_20px_35px_rgba(34,197,94,0.35)] transition duration-300 hover:scale-105 hover:bg-emerald-600"
         aria-label="Chat on WhatsApp"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="40"
-          height="40"
+          width="34"
+          height="34"
           fill="currentColor"
           viewBox="0 0 24 24"
         >

@@ -1,99 +1,112 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { FaArrowRight, FaDatabase, FaFireFlameCurved, FaLock, FaMicrochip, FaRocket } from "react-icons/fa6";
 
 const professionalServices = [
   {
-    title: "Odoo ERP System",
+    title: "Odoo ERP Systems",
     description:
-      "Through our in-house Odoo expertise, we offer a comprehensive suite of solutions designed to transform your business operations. By delivering turnkey Odoo implementations, we seamlessly integrate multiple modules into a scalable, secure, and high-performance ERP platform—empowering your organization to streamline workflows, boost productivity, and drive innovation.",
+      "We implement tailored Odoo environments that unify finance, HR, operations, sales, and service workflows into one scalable business platform.",
     image: "odoooo.jpeg",
     link: "/services/odoo-erp-system",
+    accent: "from-[#0f172a] to-[#1d4ed8]",
+    icon: FaRocket,
   },
   {
     title: "Data Centers",
     description:
-      "Sanaya's data centers deliver high-performance computing with cutting-edge infrastructure, ensuring maximum uptime, scalability, and security for businesses of all sizes. Designed for efficiency, they feature advanced cooling, energy optimization, and robust networking to handle high workloads with minimal latency. With top-tier security, redundancy, and seamless cloud integration, Sanaya’s data centers provide a reliable foundation for mission-critical applications.",
-
+      "Sanaya designs and deploys resilient data center environments with power continuity, advanced cooling, physical security, and performance-first architecture.",
     image: "datacenter.webp",
     link: "/services/data-centers",
+    accent: "from-[#0f172a] to-[#0f766e]",
+    icon: FaDatabase,
   },
   {
     title: "Fire Alarm Systems",
-    description: "Sanaya provides reliable fire alarm solutions powered by Teknim and Bosch, offering a comprehensive range of systems including addressable, conventional, wireless, and integrated monitoring software. Engineered for precision and rapid response, these systems ensure early detection and effective alerts in diverse environments, from residential buildings to large-scale commercial facilities. With user-friendly interfaces, advanced diagnostics, and seamless integration with building management systems, Sanaya’s fire alarm solutions prioritize safety, compliance, and operational efficiency for businesses and institutions of all sizes.",
+    description:
+      "Addressable, wireless, and integrated monitoring systems engineered for fast response, compliance, and dependable protection across facilities.",
     image: "fire-alarm.jpg",
-    link: "/services/fire-alarm-systems"
+    link: "/services/fire-alarm-systems",
+    accent: "from-[#7c2d12] to-[#0f766e]",
+    icon: FaFireFlameCurved,
   },
   {
     title: "Software Engineering",
     description:
-      "Our software engineering division builds scalable web and mobile applications tailored to your business needs. From frontend design to robust backend systems, we leverage modern technologies and agile practices to ensure reliability, performance, and user-centric design.",
-    image: "deployment.jpg", // Make sure this image exists in your public/assets/images folder
+      "We build web and mobile products, internal platforms, and operational tools that bring reliability, speed, and clarity to business workflows.",
+    image: "deployment.jpg",
     link: "/services/software-engineering",
+    accent: "from-[#111827] to-[#2563eb]",
+    icon: FaMicrochip,
   },
   {
-    title: "Networking & Security Solutions",
+    title: "Networking & Security",
     description:
-      "Through our Networking and security vendors, we provide a wide range of products and services by delivering turnkey solutions, allowing the combination of many platforms' connectivity.",
+      "From switching and wireless to perimeter defense and endpoint policy, we build secure connectivity for distributed organizations and critical sites.",
     image: "Network-Security.jpg",
     link: "/services/networking-security-solutions",
+    accent: "from-[#0f172a] to-[#0891b2]",
+    icon: FaLock,
   },
-
-  // Add more services similarly...
 ];
 
 const Services = () => {
-  const renderServiceCards = (services) => {
-    return services.map((service, index) => (
-      <div
-        key={index}
-        className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
-        data-aos="fade-up"
-        data-aos-delay={`${index * 100}`}>
-        <img
-          src={service.image}
-          alt={service.title}
-          className="w-full h-48 object-cover"
-        />
-        <div className="p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-3">
-            {service.title}
-          </h3>
-          <p className="text-gray-600 mb-4">{service.description}</p>
-          <Link
-            to={service.link}
-            className="inline-block bg-blue-500 text-white rounded-full py-2 px-6 font-semibold shadow hover:bg-blue-600 transition-colors duration-300">
-            Read More
-            <svg
-              className="ml-2 w-5 h-5 inline"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M14 5l7 7m0 0l-7 7m7-7H3"
-              />
-            </svg>
-          </Link>
-        </div>
-      </div>
-    ));
-  };
-
   return (
-    <section className="bg-gray-100 py-16 px-6 lg:px-24" id="services">
-      <div className="container mx-auto">
-        <div className="mb-16">
-          <h2
-            className="text-4xl font-bold text-gray-800 mb-6"
-            data-aos="fade-up">
-            Solutions
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {renderServiceCards(professionalServices)}
+    <section className="px-4 py-24 sm:px-6 lg:px-8" id="services">
+      <div className="mx-auto w-full max-w-7xl">
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
+            <p className="section-kicker">Core Solutions</p>
+            <h2 className="section-heading mt-4">
+              Technology capabilities designed like a modern solutions company, not a reseller catalog.
+            </h2>
           </div>
+          <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+            We focus on high-impact systems that shape uptime, security, workflow efficiency, and digital growth. Each solution line is delivered with consulting, implementation, and long-term support.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-6 lg:grid-cols-2">
+          {professionalServices.map(({ icon: Icon, title, description, image, link, accent }, index) => (
+            <div
+              key={title}
+              className="group overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.08)]"
+              data-aos="fade-up"
+              data-aos-delay={index * 100}
+            >
+              <div className="grid h-full md:grid-cols-[0.92fr_1.08fr]">
+                <div className="relative min-h-[280px] overflow-hidden">
+                  <img
+                    src={image}
+                    alt={title}
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-tr ${accent} opacity-70`} />
+                  <div className="absolute left-5 top-5 inline-flex rounded-2xl border border-white/20 bg-white/10 p-3 text-white backdrop-blur-md">
+                    <Icon />
+                  </div>
+                </div>
+
+                <div className="flex flex-col justify-between p-7">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500">
+                      Solution {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <h3 className="mt-4 text-2xl font-semibold text-slate-950">{title}</h3>
+                    <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">{description}</p>
+                  </div>
+
+                  <Link
+                    to={link}
+                    className="mt-8 inline-flex items-center gap-3 self-start rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-900 transition duration-300 hover:border-teal-400 hover:text-teal-700"
+                  >
+                    See solution details
+                    <FaArrowRight />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

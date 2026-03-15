@@ -1,6 +1,27 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { FaEnvelope, FaPhone, FaMapMarkerAlt } from "react-icons/fa";
+import { FaEnvelope, FaLocationDot, FaPhone, FaWhatsapp } from "react-icons/fa6";
+
+const contactItems = [
+  {
+    icon: FaEnvelope,
+    label: "Email",
+    value: "info@sanayatechs.iq",
+    href: "mailto:info@sanayatechs.iq",
+  },
+  {
+    icon: FaPhone,
+    label: "Phone",
+    value: "+964 777 799 5015",
+    href: "tel:+9647777995015",
+  },
+  {
+    icon: FaWhatsapp,
+    label: "WhatsApp",
+    value: "Chat with our team",
+    href: "https://wa.me/9647777995015",
+  },
+];
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -8,15 +29,17 @@ const Contact = () => {
     email: "",
     message: "",
   });
-
   const [status, setStatus] = useState({ type: "", message: "" });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (event) => {
+    setFormData((current) => ({
+      ...current,
+      [event.target.name]: event.target.value,
+    }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
     if (!formData.name || !formData.email || !formData.message) {
       setStatus({ type: "error", message: "All fields are required." });
@@ -31,7 +54,7 @@ const Contact = () => {
       });
 
       setStatus({ type: "success", message: response.data.message });
-      setFormData({ name: "", email: "", message: "" }); // Reset form
+      setFormData({ name: "", email: "", message: "" });
     } catch (error) {
       setStatus({
         type: "error",
@@ -43,121 +66,144 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-16 px-6 lg:px-24 bg-gray-50">
-      <div className="container mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-800" data-aos="fade-up">
-            Get in Touch
-          </h2>
-          <p
-            className="text-lg text-gray-600 mt-3"
-            data-aos="fade-up"
-            data-aos-delay="200">
-            We'd love to hear from you! Contact us for any inquiries.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <div
-            className="bg-white p-8 rounded-lg shadow-lg"
-            data-aos="fade-right">
-            <h3 className="text-2xl font-semibold text-gray-700 mb-6">
-              Send us a Message
-            </h3>
-            {status.message && (
-              <p
-                className={`mb-4 text-center ${
-                  status.type === "success" ? "text-green-500" : "text-red-500"
-                }`}>
-                {status.message}
+    <section id="contact" className="px-4 py-24 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl overflow-hidden rounded-[2.5rem] bg-slate-950 text-white shadow-[0_30px_90px_rgba(2,6,23,0.28)]">
+        <div className="grid lg:grid-cols-[0.82fr_1.18fr]">
+          <div className="relative border-b border-white/10 p-8 sm:p-10 lg:border-b-0 lg:border-r">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(20,184,166,0.22),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(37,99,235,0.24),transparent_28%)]" />
+            <div className="relative">
+              <p className="section-kicker !text-teal-300">Contact</p>
+              <h2 className="mt-4 font-display text-4xl font-semibold leading-tight sm:text-5xl">
+                Let’s build the next phase of your technology stack.
+              </h2>
+              <p className="mt-5 max-w-md text-sm leading-7 text-slate-300 sm:text-base">
+                Reach out for infrastructure projects, software builds, digital transformation, or long-term support. We’ll help map the right next move.
               </p>
-            )}
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-gray-600 font-medium">
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="Enter your name"
-                  required
-                />
+
+              <div className="mt-8 space-y-4">
+                {contactItems.map(({ icon: Icon, label, value, href }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target={href.startsWith("https") ? "_blank" : undefined}
+                    rel={href.startsWith("https") ? "noopener noreferrer" : undefined}
+                    className="flex items-center gap-4 rounded-[1.5rem] border border-white/10 bg-white/5 px-5 py-4 transition duration-300 hover:bg-white/10"
+                  >
+                    <span className="inline-flex rounded-2xl bg-white/10 p-3 text-teal-300">
+                      <Icon />
+                    </span>
+                    <span>
+                      <span className="block text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
+                        {label}
+                      </span>
+                      <span className="mt-1 block text-sm font-medium text-white sm:text-base">
+                        {value}
+                      </span>
+                    </span>
+                  </a>
+                ))}
               </div>
 
-              <div>
-                <label className="block text-gray-600 font-medium">
-                  Your Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                  placeholder="Enter your email"
-                  required
-                />
+              <div className="mt-8 rounded-[1.6rem] border border-white/10 bg-white/5 p-5">
+                <div className="flex items-start gap-4">
+                  <span className="inline-flex rounded-2xl bg-white/10 p-3 text-teal-300">
+                    <FaLocationDot />
+                  </span>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">Office</p>
+                    <p className="mt-2 text-sm leading-7 text-slate-300">
+                      6th Floor, Al-Masar Building, Sinaa'a Street, Baghdad, Iraq
+                    </p>
+                  </div>
+                </div>
               </div>
-
-              <div>
-                <label className="block text-gray-600 font-medium">
-                  Your Message
-                </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="mt-1 w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none h-32"
-                  placeholder="Enter your message"
-                  required></textarea>
-              </div>
-
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md transition-all duration-300 hover:bg-blue-700 hover:scale-105">
-                Send Message
-              </button>
-            </form>
+            </div>
           </div>
 
-          <div className="space-y-8" data-aos="fade-left">
-            <div className="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4">
-              <FaEnvelope className="text-blue-500 text-3xl" />
-              <div>
-                <h4 className="text-xl font-semibold text-gray-800">Email</h4>
-                <p className="text-gray-600">info@sanayatechs.iq</p>
-              </div>
-            </div>
+          <div className="bg-white p-8 text-slate-950 sm:p-10">
+            <div className="mx-auto max-w-2xl">
+              <h3 className="text-3xl font-semibold">Start the conversation</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600 sm:text-base">
+                Tell us what you’re building, upgrading, or fixing. We’ll respond with the right team and the right next step.
+              </p>
 
-            <div className="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4">
-              <FaPhone className="text-blue-500 text-3xl" />
-              <div>
-                <h4 className="text-xl font-semibold text-gray-800">Phone</h4>
-                <p className="text-gray-600">+964 777 799 5015</p>
-              </div>
-            </div>
+              {status.message && (
+                <div
+                  className={`mt-6 rounded-2xl px-4 py-3 text-sm font-medium ${
+                    status.type === "success"
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-rose-50 text-rose-700"
+                  }`}
+                >
+                  {status.message}
+                </div>
+              )}
 
-            <div className="bg-white p-6 rounded-lg shadow-lg flex items-center space-x-4">
-              <FaMapMarkerAlt className="text-blue-500 text-3xl" />
-              <div>
-                <h4 className="text-xl font-semibold text-gray-800">Address</h4>
-                <p className="text-gray-600">
-                  6th Floor, Al-Masar Building, Sinaa'a Street, Baghdad, Iraq
-                </p>
-              </div>
-            </div>
+              <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+                <div>
+                  <label htmlFor="name" className="text-sm font-semibold text-slate-700">
+                    Your name
+                  </label>
+                  <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition duration-300 focus:border-teal-400 focus:bg-white"
+                    placeholder="How should we address you?"
+                    required
+                  />
+                </div>
 
-            <div className="w-full h-64 rounded-lg shadow-lg overflow-hidden">
-              <iframe
-                title="Location Map"
-                className="w-full h-full"
-                src="https://maps.google.com/maps?q=33.30806621622016,44.44865317989087&z=15&output=embed"
-                allowFullScreen
-                loading="lazy"></iframe>
+                <div>
+                  <label htmlFor="email" className="text-sm font-semibold text-slate-700">
+                    Work email
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition duration-300 focus:border-teal-400 focus:bg-white"
+                    placeholder="name@company.com"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="text-sm font-semibold text-slate-700">
+                    Project brief
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    className="mt-2 h-40 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-slate-900 outline-none transition duration-300 focus:border-teal-400 focus:bg-white"
+                    placeholder="Tell us about the challenge, timeline, or system you want to improve."
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-6 py-4 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(14,165,233,0.24)] transition duration-300 hover:scale-[1.01]"
+                >
+                  Send message
+                </button>
+              </form>
+
+              <div className="mt-8 overflow-hidden rounded-[1.8rem] border border-slate-200">
+                <iframe
+                  title="Location Map"
+                  className="h-64 w-full"
+                  src="https://maps.google.com/maps?q=33.30806621622016,44.44865317989087&z=15&output=embed"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              </div>
             </div>
           </div>
         </div>

@@ -1,93 +1,68 @@
 import React from "react";
+import { FaBinoculars, FaBullseye, FaShield, FaUsersGear } from "react-icons/fa6";
+
+const principles = [
+  {
+    icon: FaShield,
+    title: "Reliability first",
+    text: "We prioritize uptime, resilience, and operational confidence in every system we deliver.",
+  },
+  {
+    icon: FaUsersGear,
+    title: "Customer partnership",
+    text: "Our goal is to be the team clients trust when the work is complex and the stakes are high.",
+  },
+];
 
 const MissionVision = () => {
   return (
-    <section className="relative py-20 px-6 lg:px-24 bg-gradient-to-r from-gray-50 to-gray-100 du">
-      <div className="container mx-auto flex flex-col lg:flex-row items-start lg:items-center space-y-16 lg:space-y-0 lg:space-x-16">
-        {/* Left Section - Our Vision */}
+    <section className="px-4 pb-24 sm:px-6 lg:px-8">
+      <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-2">
         <div
-          className="w-full lg:w-1/2 bg-gradient-to-br from-blue-50 to-blue- p-8 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl  border-t-4 border-blue-500"
+          className="rounded-[2.2rem] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-8 text-white shadow-[0_28px_80px_rgba(15,23,42,0.24)] sm:p-10"
           data-aos="fade-right"
-          data-aos-delay="200">
-          <div className="flex items-center mb-4">
-            {/* Eye icon to represent Vision */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-8 h-8 text-blue-500 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-              />
-            </svg>
-            <h2 className="text-4xl font-bold text-blue-800">Our Vision</h2>
+        >
+          <div className="inline-flex rounded-2xl bg-white/10 p-3 text-teal-300">
+            <FaBinoculars />
           </div>
-          <p className="mt-4 text-lg text-gray-700 leading-relaxed">
-            <strong className="text-gray-900">Point of View (Locally):</strong>{" "}
-            We are looking forward to doing the best in our country and
-            providing the best technology to our clients. All types of
-            solutions, environmental innovations, and everyday improvements are
-            at the heart of our vision.
-          </p>
-          <p className="mt-6 text-lg text-gray-700 leading-relaxed">
-            <strong className="text-gray-900">
-              Point of View (Worldwide):
-            </strong>{" "}
-            Our vision is to stay ahead of emerging technologies and support
-            solutions that help society thrive—with tailor-made innovations for
-            every need.
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-teal-300">Vision</p>
+          <h3 className="mt-3 text-3xl font-semibold">Raise the standard for technology delivery in Iraq and beyond.</h3>
+          <p className="mt-5 text-sm leading-7 text-slate-300 sm:text-base">
+            We aim to be the company organizations choose when they need modern infrastructure, dependable systems, and practical innovation that improves real operations.
           </p>
         </div>
 
-        {/* Right Section - Our Mission */}
         <div
-          className="w-full lg:w-1/2 bg-gradient-to-br from-blue-50 to-blue- p-8 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl border-t-4 border-blue-500"
+          className="rounded-[2.2rem] border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-10"
           data-aos="fade-left"
-          data-aos-delay="400">
-          <div className="flex items-center mb-4">
-            {/* Briefcase icon to represent Mission */}
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-8 h-8 text-blue-500 mr-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 12v6m-6-6h12M4 7h16M4 7v13h16V7M4 7l8-4 8 4"
-              />
-            </svg>
-            <h2 className="text-4xl font-bold text-blue-800">Our Mission</h2>
+        >
+          <div className="inline-flex rounded-2xl bg-slate-950 p-3 text-teal-300">
+            <FaBullseye />
           </div>
-          <p className="text-lg text-gray-700 leading-relaxed mb-4">
-            Our mission is to empower our clients with cutting-edge
-            technologies, expert services, and in-depth consultancy. We guide
-            them through IT standards and deliver optimal solutions with a team
-            that is both certified and specialized.
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">Mission</p>
+          <h3 className="mt-3 text-3xl font-semibold text-slate-950">
+            Equip clients with expert guidance, modern systems, and accountable execution.
+          </h3>
+          <p className="mt-5 text-sm leading-7 text-slate-600 sm:text-base">
+            Our mission is to deliver the right combination of consultancy, engineering, products, and support so customers can make confident technology decisions and see them implemented well.
           </p>
-          <p className="mt-4 text-lg text-gray-700 leading-relaxed">
-            <strong>Mission Statement:</strong> To be a global company,
-            respected and valued for:
-          </p>
-          <ul className="mt-4 pl-5 list-disc text-lg text-gray-700">
-            <li>Being known as the partner of choice for our customers.</li>
-            <li>Exceeding customer expectations.</li>
-            <li>Delivering high-quality products and services.</li>
-            <li>Empowering a highly motivated and skilled workforce.</li>
-          </ul>
         </div>
+      </div>
+
+      <div className="mx-auto mt-6 grid w-full max-w-7xl gap-6 md:grid-cols-2">
+        {principles.map(({ icon: Icon, title, text }) => (
+          <div
+            key={title}
+            className="rounded-[2rem] border border-slate-200 bg-slate-50 p-7"
+            data-aos="fade-up"
+          >
+            <div className="inline-flex rounded-2xl bg-white p-3 text-blue-700 shadow-sm">
+              <Icon />
+            </div>
+            <h4 className="mt-4 text-xl font-semibold text-slate-950">{title}</h4>
+            <p className="mt-2 text-sm leading-7 text-slate-600">{text}</p>
+          </div>
+        ))}
       </div>
     </section>
   );

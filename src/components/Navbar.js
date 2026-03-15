@@ -1,58 +1,52 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { FaArrowUpRightFromSquare, FaBars, FaFileArrowDown, FaXmark } from "react-icons/fa6";
+
+const menuItems = [
+  { label: "About", id: "about" },
+  { label: "Partners", id: "partners" },
+  { label: "Solutions", id: "services" },
+  { label: "Services", id: "ConsultingServices" },
+  { label: "Team", path: "/our-team" },
+  { label: "Contact", id: "contact" },
+];
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
-  const isHomePage = location.pathname === "/";
-  const useLightNavbar = isHomePage && !scrolled && !isOpen;
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 30);
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const scrollToSection = (id) => {
-    setIsOpen(false);
-    if (location.pathname !== "/") {
-      navigate("/", { replace: true });
-      setTimeout(() => scrollToElement(id), 300);
-    } else {
-      scrollToElement(id);
-    }
-  };
-
   const scrollToElement = (id) => {
     const section = document.getElementById(id);
-    if (section) {
-      const offset = 50;
-      const sectionPosition =
-        section.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top: sectionPosition, behavior: "smooth" });
-    }
-  };
-
-  const menuItems = [
-    { label: "About Us", id: "about" },
-    { label: "Partners", id: "partners" },
-    { label: "Solutions", id: "services" },
-    { label: "Services", id: "ConsultingServices" },
-    { label: "Products", url: "https://sanayatechs.odoo.com/shop" },
-    { label: "Our Team", path: "/our-team" },
-    { label: "Contact Us", id: "contact" },
-  ];
-
-  const handleNavItemClick = (item) => {
-    if (item.url) {
-      setIsOpen(false);
-      window.open(item.url, "_blank", "noopener,noreferrer");
+    if (!section) {
       return;
     }
 
+    const offset = 96;
+    const top = section.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: "smooth" });
+  };
+
+  const scrollToSection = (id) => {
+    setIsOpen(false);
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => scrollToElement(id), 200);
+      return;
+    }
+
+    scrollToElement(id);
+  };
+
+  const handleNavItemClick = (item) => {
     if (item.path) {
       setIsOpen(false);
       navigate(item.path);
@@ -62,73 +56,128 @@ const Navbar = () => {
     scrollToSection(item.id);
   };
 
-  return (
-    <nav
-      className={`fixed top-0 w-full z-50 transition-colors duration-75 ${
-        useLightNavbar ? "bg-transparent text-white" : "bg-white text-gray-900 shadow-md"
-      }`}
-    >
-      <div className="container mx-auto flex justify-between items-center px-4 md:px-6 lg:px-8 py-3">
-        <img
-          src={useLightNavbar ? "/logo1.png" : "/logo2.png"}
-          alt="Logo"
-          className="h-12 sm:h-14 lg:h-16 cursor-pointer"
-          onClick={() => scrollToSection("landing")}
-        />
+  const shellClasses = scrolled || isOpen || location.pathname !== "/"
+    ? "border-slate-200/70 bg-white/88 shadow-[0_16px_48px_rgba(15,23,42,0.12)] backdrop-blur-xl"
+    : "border-white/15 bg-slate-950/18 shadow-none backdrop-blur-md";
 
-        <ul className="hidden lg:flex space-x-10 text-base font-medium">
+  const textClasses = scrolled || isOpen || location.pathname !== "/"
+    ? "text-slate-900"
+    : "text-white";
+
+  return (
+    <nav className="fixed inset-x-0 top-0 z-50 px-4 py-4 md:px-6 lg:px-8">
+      <div
+        className={`mx-auto flex w-full max-w-7xl items-center justify-between rounded-full border px-4 py-3 transition-all duration-300 md:px-6 ${shellClasses}`}
+      >
+        <button
+          type="button"
+          onClick={() => scrollToSection("landing")}
+          className="flex items-center gap-3"
+          aria-label="Go to homepage"
+        >
+          <img
+            src={scrolled || isOpen || location.pathname !== "/" ? "/logo2.png" : "/logo1.png"}
+            alt="Sanaya logo"
+            className="h-10 w-auto md:h-11"
+          />
+          <div className={`hidden text-left md:block ${textClasses}`}>
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-teal-400">
+              Tech Company
+            </p>
+            <p className="text-sm font-semibold">Alsanaya Alarabia</p>
+          </div>
+        </button>
+
+        <ul className={`hidden items-center gap-7 lg:flex ${textClasses}`}>
           {menuItems.map((item) => (
-            <li
-              key={item.path || item.id}
-              className="cursor-pointer hover:text-blue-500"
-              onClick={() => handleNavItemClick(item)}
-            >
-              {item.label}
+            <li key={item.path || item.id}>
+              <button
+                type="button"
+                onClick={() => handleNavItemClick(item)}
+                className="text-sm font-medium transition duration-300 hover:text-teal-400"
+              >
+                {item.label}
+              </button>
             </li>
           ))}
-
+          <li>
+            <a
+              href="https://sanayatechs.odoo.com/shop"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-sm font-medium transition duration-300 hover:text-teal-400"
+            >
+              Products
+              <FaArrowUpRightFromSquare className="text-xs" />
+            </a>
+          </li>
         </ul>
 
-        <div className="hidden lg:flex items-center space-x-3">
+        <div className="hidden items-center gap-3 lg:flex">
           <a
             href="/Sanaya%20Company%20Profile.pdf"
             download
-            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition duration-300 hover:border-teal-400 hover:text-teal-700"
           >
-            Download Profile
+            <FaFileArrowDown />
+            Profile
           </a>
+          <button
+            type="button"
+            onClick={() => scrollToSection("contact")}
+            className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_14px_35px_rgba(14,165,233,0.28)] transition duration-300 hover:scale-[1.02]"
+          >
+            Start a Project
+          </button>
         </div>
 
-
-        <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+        <button
+          type="button"
+          onClick={() => setIsOpen((value) => !value)}
+          className={`inline-flex h-11 w-11 items-center justify-center rounded-full border lg:hidden ${
+            scrolled || isOpen || location.pathname !== "/"
+              ? "border-slate-200 bg-white text-slate-900"
+              : "border-white/20 bg-white/10 text-white"
+          }`}
+          aria-label="Toggle menu"
+        >
+          {isOpen ? <FaXmark size={18} /> : <FaBars size={18} />}
         </button>
       </div>
 
       {isOpen && (
-        <div className="lg:hidden bg-white text-gray-900 shadow-md p-4">
-          <ul className="flex flex-col space-y-4 text-lg font-medium text-center">
+        <div className="mx-auto mt-3 w-full max-w-7xl overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.16)] lg:hidden">
+          <div className="flex flex-col gap-3">
             {menuItems.map((item) => (
-              <li
+              <button
                 key={item.path || item.id}
-                className="cursor-pointer hover:text-blue-500"
+                type="button"
                 onClick={() => handleNavItemClick(item)}
+                className="rounded-2xl border border-slate-200 px-4 py-3 text-left text-base font-medium text-slate-900 transition duration-300 hover:border-teal-400 hover:bg-slate-50"
               >
                 {item.label}
-              </li>
+              </button>
             ))}
-            <li className="mt-2">
-              <a
-                href="/Sanaya%20Company%20Profile.pdf"
-                download
-                className="block w-full text-center px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
-                Download Profile
-              </a>
-            </li>
-
-          </ul>
+            <a
+              href="https://sanayatechs.odoo.com/shop"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-900"
+              onClick={() => setIsOpen(false)}
+            >
+              Products
+              <FaArrowUpRightFromSquare className="text-sm" />
+            </a>
+            <a
+              href="/Sanaya%20Company%20Profile.pdf"
+              download
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 py-3 text-base font-semibold text-white"
+              onClick={() => setIsOpen(false)}
+            >
+              <FaFileArrowDown />
+              Download Profile
+            </a>
+          </div>
         </div>
       )}
     </nav>
