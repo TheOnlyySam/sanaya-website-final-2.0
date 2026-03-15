@@ -2,44 +2,44 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import {
+  FaArrowRight,
+  FaBell,
+  FaCloudArrowDown,
+  FaDownload,
+  FaFireFlameCurved,
+  FaMobileScreenButton,
+  FaShieldHalved,
+  FaWifi,
+  FaXmark,
+} from "react-icons/fa6";
 
-// PDF Modal component to display docs inline
 const PDFModal = ({ url, title, onClose }) => (
   <div
-    className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4 backdrop-blur-sm"
     onClick={onClose}
   >
     <div
-      className="bg-white rounded-2xl overflow-hidden shadow-xl w-11/12 h-5/6 lg:w-3/4 lg:h-4/5"
-      onClick={(e) => e.stopPropagation()}
+      className="h-[88vh] w-full max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-white shadow-[0_30px_90px_rgba(2,6,23,0.45)]"
+      onClick={(event) => event.stopPropagation()}
     >
-      <header className="flex justify-between items-center bg-gray-200 p-4">
-        <h2 className="text-lg font-semibold">{title}</h2>
+      <header className="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <h2 className="text-lg font-semibold text-slate-950">{title}</h2>
         <button
-          className="text-gray-600 hover:text-gray-900"
+          type="button"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700"
           onClick={onClose}
           aria-label="Close PDF"
         >
-          ✕
+          <FaXmark />
         </button>
       </header>
-      <div className="w-full h-full">
-        <object
-          data={url}
-          type="application/pdf"
-          width="100%"
-          height="100%"
-          className="border-t border-gray-200"
-        >
-          <p className="p-4">
-            It appears your browser doesn't support PDFs.{" "}
-            <a
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline"
-            >
-              Click here to view the document.
+      <div className="h-[calc(88vh-74px)] w-full">
+        <object data={url} type="application/pdf" width="100%" height="100%" className="border-0">
+          <p className="p-4 text-slate-700">
+            Your browser does not support inline PDFs.
+            <a href={url} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-600 underline">
+              Open the document
             </a>
           </p>
         </object>
@@ -48,250 +48,271 @@ const PDFModal = ({ url, title, onClose }) => (
   </div>
 );
 
+const features = [
+  {
+    title: "Intelligent Addressable Systems",
+    desc: "FLASHLINK-powered panels with precise device-level monitoring, network scalability, and centralized control.",
+    url: "/docs/Catalogue_Addressable_Fire_Alarm.pdf",
+    img: "/assets/11.png",
+    icon: FaBell,
+  },
+  {
+    title: "Conventional Fire Alarm Systems",
+    desc: "Cost-effective, dependable fire detection for smaller facilities and straightforward site layouts.",
+    url: "/docs/Catalogue_Conventional_Fire_Alarm.pdf",
+    img: "/assets/conve.png",
+    icon: FaFireFlameCurved,
+  },
+  {
+    title: "Wireless and Hybrid Deployments",
+    desc: "Mesh-based wireless detection for difficult-to-cable spaces, extensions, and retrofit-heavy environments.",
+    url: "/docs/Catalogue_Wireless_Fire_Alarm_System.pdf",
+    img: "/assets/fire-alarm.jpg",
+    icon: FaWifi,
+  },
+  {
+    title: "Monitoring and Response Software",
+    desc: "Centralized dashboards, map-based visibility, remote commands, and real-time operational awareness.",
+    url: "/docs/Monitoring_Software.pdf",
+    img: "/assets/mosaic.jpg",
+    icon: FaMobileScreenButton,
+  },
+];
+
+const operationalBenefits = [
+  {
+    title: "Faster incident response",
+    text: "Device-level visibility and centralized alerts help teams act with less confusion during critical events.",
+    icon: FaShieldHalved,
+  },
+  {
+    title: "Flexible deployment strategy",
+    text: "Wired, wireless, and hybrid layouts adapt to real building conditions and phased rollout constraints.",
+    icon: FaWifi,
+  },
+  {
+    title: "Operational continuity",
+    text: "Monitoring, command software, and dependable system architecture support compliance and reduce downtime risk.",
+    icon: FaCloudArrowDown,
+  },
+];
+
+const faqs = [
+  {
+    q: "How do I choose between addressable and conventional systems?",
+    a: "Addressable systems are ideal for larger or more complex sites because events are traced to specific devices. Conventional systems are often better for smaller spaces where speed, budget, and simplicity matter most.",
+  },
+  {
+    q: "Can wired and wireless devices be combined?",
+    a: "Yes. Hybrid layouts let us use wireless components in hard-to-reach areas while keeping wired loops where they are practical and cost-effective.",
+  },
+  {
+    q: "Do you support remote monitoring?",
+    a: "Yes. Monitoring software and connected workflows can surface alarms, device states, and response actions from centralized interfaces.",
+  },
+  {
+    q: "What kind of facilities are these systems suited for?",
+    a: "Commercial buildings, hospitality sites, industrial spaces, campuses, and complex multi-zone environments can all be covered with the right system design.",
+  },
+];
+
 const FireAlarmService = () => {
   const navigate = useNavigate();
   const [modalUrl, setModalUrl] = useState("");
   const [modalTitle, setModalTitle] = useState("");
 
   useEffect(() => {
-    AOS.init({
-      duration: 1200,
-      easing: "ease-out-cubic",
-      once: true,
-    });
+    AOS.init({ duration: 900, easing: "ease-out-cubic", once: true });
   }, []);
 
-  const features = [
-    {
-      icon: "📟",
-      title: "Intelligent Addressable Fire Alarm System",
-      desc:
-        "Leverage FLASHLINK™ protocol for uninterrupted, peer-to-peer communication across loops—supports up to 508 devices per panel, full network scalability, and real-time mobile/cloud monitoring.",
-      url: "/docs/Catalogue_Addressable_Fire_Alarm.pdf",
-      img: "/assets/11.png",
-    },
-    {
-      icon: "🚨",
-      title: "Conventional Fire Alarm System",
-      desc:
-        "4- or 8-zone capacity, separate fire & fault indicators, built-in Intelligent walk‑through test mode, and smart battery management for extended uptime.",
-      url: "/docs/Catalogue_Conventional_Fire_Alarm.pdf",
-      img: "/assets/conve.png",
-    },
-    {
-      icon: "📡",
-      title: "Wireless Fire Alarm Systems",
-      desc:
-        "Deploy fully wireless or hybrid systems using IEEE 802.15.4 low‑power mesh—up to 31 devices per coordinator, layered ACK for guaranteed delivery, and up to 2.5km range outdoors.",
-      url: "/docs/Catalogue_Wireless_Fire_Alarm_System.pdf",
-      img: "/assets/fire-alarm.jpg",
-    },
-    {
-      icon: "💻",
-      title: "Mosaic-2000 Teknim Addressable Fire Alarm Monitoring Software",
-      desc:
-        "Centralized web dashboard: multi-floor/map views, instant pop-up alarms, remote reset/silence/evacuate commands, PDF export, and third‑party API integration.",
-      url: "/docs/Monitoring_Software.pdf",
-      img: "/assets/mosaic.jpg",
-    },
-  ];
-
-  const faqs = [
-    {
-      q: "How do I choose between addressable and conventional systems?",
-      a: "Addressable panels offer individual device monitoring and faster pinpointing of events—ideal for large or complex facilities. Conventional panels are cost‑effective for smaller sites with simpler layouts.",
-    },
-    {
-      q: "Can I mix wired and wireless devices?",
-      a: "Yes, Teknim supports hybrid architectures—use wireless for hard‑to‑wire areas and wired loops elsewhere, all managed from the same control panel and monitoring software.",
-    },
-    {
-      q: "What certifications do these systems hold?",
-      a: "All Teknim products are EN54‑2, EN54‑4 certified (panels) and EN54‑7, EN54‑17, EN54‑25 certified (detectors & wireless), ensuring compliance with European safety standards.",
-    },
-    {
-      q: "Is remote mobile access available?",
-      a: "Yes, our cloud‑based mobile app lets you receive alerts and send panel commands from any internet‑connected smartphone—no extra hardware needed.",
-    },
-  ];
-
-  const testimonials = [
-    {
-      name: "Ahmed Al‑Hussein",
-      role: "Facility Manager, Al‑Rasheed Hotel",
-      quote:
-        "Teknim’s addressable system and Mosaic software cut our alarm response time by 70%. The real‑time map view is a game changer during drills.",
-    },
-    {
-      name: "Leila Karim",
-      role: "Maintenance Supervisor, Central Mall",
-      quote:
-        "Implementing hybrid wireless detectors saved us 60% in cabling costs for the new wing. Installation was seamless.",
-    },
-  ];
+  const handleContact = () => {
+    navigate("/");
+    setTimeout(() => {
+      const contactSection = document.getElementById("contact");
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 450);
+  };
 
   return (
-    <div className="bg-gradient-to-b from-gray-50 to-white text-gray-800">
-      {/* Hero Banner */}
-      <section className="relative h-96 overflow-hidden" id="hero">
-        <img
-          src="/assets/teknim_banner.png"
-          alt="Fire Alarm Banner"
-          className="absolute inset-0 w-full h-full object-cover transform scale-105"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center px-4">
-          <h1 className="text-white text-5xl md:text-6xl font-extrabold mb-4" data-aos="fade-down">
-            Comprehensive Fire Alarm Systems
-          </h1>
-          <p className="text-gray-200 max-w-2xl text-center text-lg md:text-xl" data-aos="fade-up" data-aos-delay="200">
-            Under the trusted Teknim brand: addressable, conventional, wireless, and fully integrated monitoring software for any facility size.
-          </p>
-        </div>
-      </section>
-
-      {/* Solutions Grid */}
-      <section className="container mx-auto py-24 px-6 lg:px-32" id="solutions">
-        <h2 className="text-4xl font-bold text-center mb-16" data-aos="fade-up">
-          Our Key Solutions
-        </h2>
-        <div className="grid gap-12 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((f, i) => (
-            <div
-              key={i}
-              className="group bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300"
-              data-aos="fade-up"
-              data-aos-delay={i * 150}
-            >
-              <div className="text-6xl mb-4 text-blue-600 group-hover:text-teal-500">{f.icon}</div>
-              <h3 className="text-2xl font-semibold mb-3 group-hover:text-teal-600">{f.title}</h3>
-              <p className="text-gray-600 leading-relaxed mb-4">{f.desc}</p>
-              <div className="flex justify-center gap-3 mt-4">
-                <button
-                  onClick={() => {
-                    setModalUrl(f.url);
-                    setModalTitle(f.title);
-                  }}
-                  className="bg-blue-600 text-white py-1.5 px-4 rounded-full text-sm hover:bg-teal-500"
-                >
-                  View Catalog
-                </button>
-                <a
-                  href={f.url}
-                  download
-                  className="bg-gray-200 text-gray-800 py-1.5 px-4 rounded-full text-sm hover:bg-gray-300"
-                >
-                  Download
-                </a>
+    <main className="min-h-screen overflow-hidden bg-[linear-gradient(180deg,#fffaf6_0%,#ffffff_100%)] pt-28 text-slate-950">
+      <section className="px-4 pb-14 sm:px-6 lg:px-8">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="relative overflow-hidden rounded-[2.8rem] bg-slate-950 p-8 text-white shadow-[0_30px_100px_rgba(2,6,23,0.35)] sm:p-10">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.22),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.18),transparent_34%)]" />
+            <div className="relative">
+              <p className="section-kicker !text-amber-300">Fire Alarm Systems</p>
+              <h1 className="mt-4 font-display text-5xl font-semibold leading-[0.92] sm:text-6xl">
+                Fire safety systems designed like operational infrastructure, not just hardware packages.
+              </h1>
+              <p className="mt-6 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                Under the Teknim brand, Sanaya delivers addressable, conventional, wireless, and monitoring-ready fire alarm solutions built for reliable detection, fast response, and long-term manageability.
+              </p>
+              <div className="mt-8 inline-flex rounded-full border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
+                Design, supply, deployment, and monitoring support
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Detailed Sections */}
-      <section className="bg-white py-24 px-6 lg:px-32" id="details">
-        {features.map((f, idx) => (
-          <div
-            key={idx}
-            className={`flex flex-col lg:flex-row items-center mb-24 ${idx % 2 === 1 ? "lg:flex-row-reverse" : ""}`}
-          >
-            <div className="lg:w-1/2 p-6" data-aos="fade-right">
-              <h3 className="text-3xl font-bold mb-4">{f.title}</h3>
-              <p className="text-gray-700 mb-6 leading-relaxed">{f.desc}</p>
-              <div className="flex gap-4">
-                <button
-                  className="bg-blue-600 text-white py-2 px-6 rounded-full hover:bg-teal-500 transition-colors duration-300"
-                  onClick={() => {
-                    setModalUrl(f.url);
-                    setModalTitle(f.title);
-                  }}
-                >
-                  View Catalog
-                </button>
-                <a
-                  href={f.url}
-                  download
-                  className="bg-gray-200 text-gray-800 py-2 px-6 rounded-full hover:bg-gray-300 transition-colors duration-300"
-                >
-                  Download
-                </a>
-              </div>
-            </div>
-            <div className="lg:w-1/2 p-6" data-aos="fade-left">
-              <img
-                src={f.img || `/assets/${f.title.toLowerCase().replace(/\s+/g, "-")}.jpg`}
-                alt={f.title}
-                className="rounded-2xl shadow-lg w-full h-auto object-cover"
-              />
             </div>
           </div>
-        ))}
-      </section>
 
-      {/* FAQ Section */}
-      <section className="container mx-auto py-24 px-6 lg:px-32" id="faq">
-        <h2 className="text-4xl font-bold text-center mb-12" data-aos="fade-up">
-          Frequently Asked Questions
-        </h2>
-        <div className="space-y-8">
-          {faqs.map((item, i) => (
-            <div
-              key={i}
-              className="bg-gray-100 p-6 rounded-xl shadow-inner"
-              data-aos="fade-up"
-              data-aos-delay={i * 100}
-            >
-              <h4 className="text-xl font-semibold mb-2">{item.q}</h4>
-              <p className="text-gray-700 leading-relaxed">{item.a}</p>
-            </div>
-          ))}
+          <div className="overflow-hidden rounded-[2.6rem] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
+            <img
+              src="/assets/teknim_banner.png"
+              alt="Fire alarm systems"
+              className="h-[320px] w-full object-cover sm:h-[360px] lg:h-[460px]"
+            />
+          </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="bg-gradient-to-r from-teal-50 to-white py-24 px-6 lg:px-32" id="testimonials">
-        <h2 className="text-4xl font-bold text-center mb-16" data-aos="fade-up">
-          What Our Clients Say
-        </h2>
-        <div className="grid gap-12 grid-cols-1 md:grid-cols-2">
-          {testimonials.map((t, idx) => (
-            <div
-              key={idx}
-              className="bg-white p-8 rounded-2xl shadow-md"
-              data-aos="fade-up"
-              data-aos-delay={idx * 150}
-            >
-              <p className="italic text-gray-600 mb-4">“{t.quote}”</p>
-              <div className="font-semibold text-gray-800">{t.name}</div>
-              <div className="text-sm text-gray-500">{t.role}</div>
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl rounded-[2.6rem] border border-slate-200 bg-white p-6 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8 lg:p-10">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="section-kicker">System Value</p>
+              <h2 className="section-heading mt-4">
+                Safety systems need to be dependable in the moment that matters most.
+              </h2>
             </div>
-          ))}
+            <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+              The real value is not just detection. It is clarity, response speed, compliance readiness, and easier long-term operation.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {operationalBenefits.map(({ icon: Icon, title, text }, index) => (
+              <div
+                key={title}
+                className="rounded-[2rem] bg-slate-50 p-6"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
+              >
+                <div className="inline-flex rounded-2xl bg-white p-3 text-amber-600 shadow-sm">
+                  <Icon />
+                </div>
+                <h3 className="mt-5 text-2xl font-semibold text-slate-950">{title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Call to Action Footer */}
-      <footer className="bg-blue-600 py-16 text-center text-white" id="footer">
-        <h3 className="text-3xl font-bold mb-4" data-aos="zoom-in">
-          Secure Your Facility Today
-        </h3>
-        <p className="mb-6" data-aos="zoom-in" data-aos-delay="150">
-          Ready to discuss custom fire alarm solutions? Reach out now and let’s start planning.
-        </p>
-        <button
-          onClick={() => navigate("/", { state: { scrollTo: "hero" } })}
-          className="bg-white text-blue-600 font-semibold py-3 px-10 rounded-full shadow-lg transition-all duration-300 hover:bg-gray-200"
-          data-aos="zoom-in"
-          data-aos-delay="300"
-        >
-          Contact Us
-        </button>
-      </footer>
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="section-kicker">Solution Lines</p>
+              <h2 className="section-heading mt-4">
+                A complete portfolio from field devices to monitoring software.
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+              Each solution line includes technical documentation so your team can evaluate fit, deployment model, and system capability in more depth.
+            </p>
+          </div>
 
-      {/* Modal for PDFs */}
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {features.map(({ icon: Icon, title, desc, url, img }, index) => (
+              <div
+                key={title}
+                className="overflow-hidden rounded-[2.4rem] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)]"
+                data-aos="fade-up"
+                data-aos-delay={index * 100}
+              >
+                <img src={img} alt={title} className="h-60 w-full object-cover" />
+                <div className="p-7">
+                  <div className="inline-flex rounded-2xl bg-slate-950 p-3 text-amber-300">
+                    <Icon />
+                  </div>
+                  <h3 className="mt-5 text-2xl font-semibold text-slate-950">{title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{desc}</p>
+                  <div className="mt-7 flex flex-wrap gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setModalUrl(url);
+                        setModalTitle(title);
+                      }}
+                      className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white"
+                    >
+                      View catalog
+                      <FaArrowRight />
+                    </button>
+                    <a
+                      href={url}
+                      download
+                      className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-900 transition duration-300 hover:border-amber-400 hover:text-amber-700"
+                    >
+                      Download
+                      <FaDownload />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+          <div className="rounded-[2.4rem] bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950 p-8 text-white shadow-[0_30px_90px_rgba(2,6,23,0.3)] sm:p-10">
+            <p className="section-kicker !text-amber-300">Design Lens</p>
+            <h2 className="mt-4 text-4xl font-semibold leading-tight">
+              The right system starts with the site, not with the brochure.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-slate-300 sm:text-base">
+              Retrofit complexity, floor coverage, wiring constraints, evacuation requirements, and monitoring expectations all shape the final fire alarm design. Sanaya treats this as an engineered safety project, not a simple install.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            {faqs.map((item, index) => (
+              <div
+                key={item.q}
+                className="rounded-[1.9rem] border border-slate-200 bg-white p-6 shadow-sm"
+                data-aos="fade-up"
+                data-aos-delay={index * 90}
+              >
+                <h3 className="text-xl font-semibold text-slate-950">{item.q}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{item.a}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 rounded-[2.6rem] bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-10 text-white shadow-[0_20px_60px_rgba(249,115,22,0.28)] lg:flex-row lg:items-center">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-100">Safety Consultation</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold leading-tight">
+              Planning a new facility, extension, or compliance-focused system upgrade?
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={handleContact}
+            className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-semibold text-orange-600"
+          >
+            Contact Sanaya
+            <FaArrowRight />
+          </button>
+        </div>
+      </section>
+
       {modalUrl && (
-        <PDFModal url={modalUrl} title={modalTitle} onClose={() => setModalUrl("")} />
+        <PDFModal
+          url={modalUrl}
+          title={modalTitle}
+          onClose={() => {
+            setModalUrl("");
+            setModalTitle("");
+          }}
+        />
       )}
-    </div>
+    </main>
   );
 };
 

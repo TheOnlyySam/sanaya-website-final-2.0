@@ -1,333 +1,458 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import {
+  FaArrowRight,
+  FaBolt,
+  FaCloud,
+  FaDatabase,
+  FaMicrochip,
+  FaServer,
+  FaShieldHalved,
+  FaTemperatureHalf,
+  FaXmark,
+} from "react-icons/fa6";
 
 const dataCenterDetails = {
   title: "Data Centers",
   description:
-    "In today’s digital landscape, businesses require high-performance, scalable, and secure data centers to drive innovation, streamline operations, and ensure business continuity. Sanaya Techs delivers cutting-edge data center solutions, tailored to the evolving needs of enterprises, startups, and government institutions. Our solutions range from on-premises and cloud-based server deployments to hyper-converged infrastructures (HCI), virtual desktop environments (VDI), and high-speed networking technologies.",
+    "In today’s digital landscape, businesses require high-performance, scalable, and secure data centers to drive innovation, streamline operations, and ensure business continuity. Sanaya Techs delivers cutting-edge data center solutions, tailored to the evolving needs of enterprises, startups, and government institutions. Our solutions range from on-premises and cloud-based server deployments to hyper-converged infrastructures, virtual desktop environments, and high-speed networking technologies.",
   image: "/assets/data-center-banner.png",
   descriptionImages: ["/warner1.png", "/warner2.png", "/warner3.png"],
   features: [
     {
-      title: "FM200 Fire Suppression System 🔥",
-      description:
-        "A fast-acting fire suppression system that protects critical IT infrastructure without damaging sensitive equipment.",
-      icon: "🚨",
+      title: "FM200 Fire Suppression",
+      description: "Fast-acting suppression that protects critical equipment without damaging sensitive infrastructure.",
+      icon: "FM",
     },
     {
-      title: "Fire Alarm System 🚒",
-      description:
-        "An advanced fire detection and alarm system ensuring quick response to fire hazards, minimizing downtime and damage.",
-      icon: "🔔",
+      title: "Fire Alarm System",
+      description: "Advanced detection and alarm layers that reduce response time and help preserve uptime.",
+      icon: "FA",
     },
     {
-      title: "CCTV Surveillance System 📹",
-      description:
-        "24/7 high-resolution surveillance monitoring with real-time alerts for enhanced security and incident tracking.",
-      icon: "🎥",
+      title: "CCTV Surveillance",
+      description: "24/7 high-resolution monitoring with visibility across sensitive access points and rooms.",
+      icon: "CV",
     },
     {
-      title: "Intrusion Detection System 🔐",
-      description:
-        "An advanced security system that detects and prevents unauthorized access, ensuring maximum data center protection.",
-      icon: "🛡️",
+      title: "Intrusion Detection",
+      description: "Unauthorized access detection and perimeter awareness for higher physical security control.",
+      icon: "ID",
     },
     {
-      title: "Public Address & Voice Alarm (PAVA) System 📢",
-      description:
-        "A critical communication system for emergency announcements and evacuation procedures within the data center.",
-      icon: "📡",
+      title: "PAVA System",
+      description: "Emergency communication and evacuation support with clear facility-wide broadcast capability.",
+      icon: "PA",
     },
     {
-      title: "Automatic Transfer Switch (ATS) ⚡",
-      description:
-        "Ensures seamless power transition between primary and backup sources, preventing downtime during power failures.",
-      icon: "🔄",
+      title: "Automatic Transfer Switch",
+      description: "Seamless transition between primary and backup power sources during outages or instability.",
+      icon: "AT",
     },
     {
-      title: "Uninterruptible Power Supply (UPS) 🔋",
-      description:
-        "Provides continuous and stable power to critical infrastructure, protecting against outages and power fluctuations.",
-      icon: "🔌",
+      title: "UPS",
+      description: "Continuous power delivery for critical systems with protection against outages and fluctuations.",
+      icon: "UP",
     },
     {
-      title: "Precision Cooling System ❄️",
-      description:
-        "Maintains optimal temperature and humidity levels for servers, preventing overheating and maximizing performance.",
-      icon: "🌡️",
+      title: "Precision Cooling",
+      description: "Controlled thermal performance to prevent overheating and extend equipment reliability.",
+      icon: "PC",
     },
     {
-      title: "Environmental Monitoring System (EMS) 🌍",
-      description:
-        "Monitors temperature, humidity, and other environmental factors to ensure ideal data center conditions in real time.",
-      icon: "📊",
+      title: "Environmental Monitoring",
+      description: "Real-time tracking of temperature, humidity, and room conditions across the environment.",
+      icon: "EM",
     },
     {
-      title: "High-Speed Fiber Infrastructure 🔗",
-      description:
-        "Ensures ultra-fast and reliable data transmission with cutting-edge fiber optic networking solutions.",
-      icon: "🛜",
+      title: "High-Speed Fiber",
+      description: "Fast, resilient data movement through optimized optical connectivity infrastructure.",
+      icon: "HF",
     },
     {
-      title: "Structured Copper Cabling Infrastructure 🏗️",
-      description:
-        "Reliable copper networking infrastructure for high-performance data and voice communication within the data center.",
-      icon: "🔌",
+      title: "Structured Copper Cabling",
+      description: "Reliable copper infrastructure for internal network and voice transport requirements.",
+      icon: "SC",
     },
     {
-      title: "Data Center Racks & Accessories 🏢",
-      description:
-        "High-quality racks, cable management systems, and accessories to optimize space utilization and airflow.",
-      icon: "🗄️",
+      title: "Racks and Accessories",
+      description: "Optimized rack design, cable management, and hardware organization for serviceability.",
+      icon: "RA",
     },
   ],
   additionalInfo: [
     {
       title: "Fixed Data Centers",
       description:
-        "A fixed data center is a dedicated facility designed to house IT infrastructure and provide centralized data storage and management. Fixed data centers are typically used by businesses and organizations that require high levels of data security and reliability, such as financial institutions, government agencies, and healthcare providers. Fixed data centers are designed to provide a stable and secure environment for IT equipment, including servers, storage devices, networking equipment, and cooling and power systems. These facilities often have redundant systems to ensure that data and applications remain available in case of a power outage or equipment failure. Fixed data centers can be either owned and operated by the organization or leased from a third-party provider. Leasing a fixed data center can be a cost-effective solution for smaller businesses that do not have the resources to build and maintain their own facility. Fixed data centers provide several benefits, including improved security, reliability, and performance for critical IT infrastructure. They also offer centralized management and monitoring, making it easier for organizations to control and maintain their IT systems. Additionally, fixed data centers can help organizations meet regulatory requirements for data storage and management. Overall, fixed data centers are an essential component of modern IT infrastructure, providing organizations with the necessary tools and resources to manage and protect their valuable data.",
+        "Dedicated facilities built to centralize compute, storage, and networking resources in highly controlled environments. They are ideal for organizations that need strong governance, predictable uptime, and deeper infrastructure ownership.",
       images: ["/datacenter1.jpeg", "/datacenter2.jpeg", "/datacenter3.jpeg"],
     },
     {
       title: "Micro Data Centers",
       description:
-        "A micro data center is a compact, self-contained IT infrastructure designed to provide localized data processing and storage capabilities. Micro data centers are typically used by businesses and organizations that require high-performance computing and storage capabilities in remote or edge locations, such as manufacturing plants, retail stores, and remote offices. Unlike traditional data centers, which are often large, centralized facilities, micro data centers are designed to be small and modular, allowing for easy deployment and scalability. They typically consist of a compact enclosure or rack that houses servers, storage devices, networking equipment, and cooling and power systems. Micro data centers offer several benefits, including improved performance and reduced latency for critical applications, as well as improved data security and privacy. Because they are located close to the edge, micro data centers can process and store data locally, reducing the need for data to be transmitted to a centralized facility. Micro data centers can also help organizations reduce costs by reducing the need for expensive network infrastructure and reducing the amount of data that needs to be transmitted over long distances. Additionally, micro data centers can help organizations comply with data privacy regulations by ensuring that data is stored and processed locally. Overall, micro data centers are an essential component of modern IT infrastructure, providing organizations with the necessary tools and resources to manage and process data in remote and edge locations.",
+        "Compact self-contained environments that bring local processing and storage closer to the edge. They are especially useful for remote offices, industrial environments, and distributed operational sites.",
       images: ["/micro1.png", "/micro2.png", "/micro3.png"],
     },
     {
       title: "Modular Data Centers",
       description:
-        "A modular data center is a pre-engineered, self-contained IT infrastructure designed for rapid deployment, scalability, and high efficiency. These data centers consist of pre-fabricated modules that house essential components such as servers, networking equipment, power, cooling, and security systems. They are widely used by enterprises, cloud service providers, and organizations needing flexible and cost-effective data center solutions. Unlike traditional brick-and-mortar data centers, modular data centers are designed to be highly scalable and portable, allowing organizations to expand their IT capacity quickly and efficiently. Each module functions as an independent unit, meaning businesses can add or remove modules based on demand without disrupting existing operations. This modular approach significantly reduces deployment time, allowing businesses to set up a data center in weeks instead of months or years. Modular data centers offer several advantages, including faster deployment, lower energy consumption, and improved cooling efficiency due to their compact and optimized designs. They are also cost-effective, as organizations can invest in only the capacity they need, avoiding the high upfront costs of building traditional data centers. Additionally, modular data centers are designed with advanced security and redundancy features, ensuring high availability and disaster recovery capabilities. Another key benefit of modular data centers is their ability to be deployed in remote or harsh environments, making them ideal for industries such as military, mining, oil & gas, and telecommunications. Their self-contained nature also improves energy efficiency by utilizing advanced airflow management and liquid cooling technologies. Overall, modular data centers represent the future of IT infrastructure, offering organizations a scalable, efficient, and rapidly deployable solution to meet their growing computing and storage needs.",
+        "Pre-engineered units that accelerate deployment and let organizations expand capacity in phases. This model is suited to businesses that want flexible growth with controlled investment and faster implementation timelines.",
       images: ["/warner3.png", "/warner1.png", "/warner2.png"],
     },
     {
-      title: "Mobile Data Centers (Container)",
+      title: "Mobile Data Centers",
       description:
-        "A mobile data center, also known as a data center container, is a self-contained, portable IT infrastructure designed to provide computing and storage capabilities in remote or temporary locations. Mobile data centers are typically housed in shipping containers that can be easily transported by truck, train, or ship. Mobile data centers offer several benefits over traditional data centers, including easy deployment and scalability, as well as the ability to quickly respond to changing business needs. Because they are self-contained, mobile data centers can be easily transported to remote or temporary locations, providing computing and storage capabilities where they are needed most. Mobile data centers are also designed to be highly efficient, with optimized cooling and power systems that can operate in a wide range of temperatures and environmental conditions. They can also be configured with redundant systems to ensure high availability and reliability. Mobile data centers are used in a wide range of industries, including healthcare, finance, and government, as well as in disaster response and military applications. They can be customized to meet specific business needs and can be easily upgraded or expanded as business needs change. Overall, mobile data centers are an essential component of modern IT infrastructure, providing organizations with the necessary tools and resources to manage and process data in remote or temporary locations. They offer flexibility, scalability, and reliability, making them an ideal solution for organizations that need to operate in dynamic or challenging environments.",
+        "Portable containerized facilities for remote, temporary, or rapidly changing environments. They offer resilient infrastructure where permanent builds are impractical or timelines are compressed.",
       images: ["/datacenter13.gif", "/datacenter14.jpg", "/datacenter16.jpg"],
     },
   ],
 };
 
+const architectureLanes = [
+  {
+    icon: FaBolt,
+    title: "Power resilience",
+    text: "ATS, UPS, and continuity planning that keep workloads stable during disruption.",
+  },
+  {
+    icon: FaTemperatureHalf,
+    title: "Environmental control",
+    text: "Precision cooling and environmental monitoring tuned for equipment longevity.",
+  },
+  {
+    icon: FaShieldHalved,
+    title: "Physical security",
+    text: "Surveillance, access awareness, fire response, and emergency systems working together.",
+  },
+  {
+    icon: FaCloud,
+    title: "Growth model",
+    text: "Fixed, modular, micro, and mobile footprints that match operational realities.",
+  },
+];
+
+const performanceSignals = [
+  { label: "Built for", value: "Mission-critical uptime" },
+  { label: "Coverage", value: "Facility + edge environments" },
+  { label: "Scope", value: "Power, cooling, security, cabling" },
+];
+
 const DataCenter = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedImage, setSelectedImage] = useState(null); // State for image modal
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
-    AOS.init({ duration: 1000, easing: "ease-in-out" });
-
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
-        setSelectedImage(null);
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    AOS.init({ duration: 900, easing: "ease-out-cubic", once: true });
   }, []);
 
+  const goToContact = () => {
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        const contactSection = document.getElementById("contact");
+        if (contactSection) {
+          contactSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 450);
+      return;
+    }
+
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
-    <div className="bg-gray-100 min-h-screen">
-      {/* Hero Section */}
-      <div className="relative w-full h-80">
-        <img
-          src={dataCenterDetails.image}
-          alt={dataCenterDetails.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-5xl font-bold" data-aos="fade-down">
-            {dataCenterDetails.title}
-          </h1>
-        </div>
-      </div>
+    <main className="min-h-screen overflow-hidden bg-[linear-gradient(180deg,#eef7ff_0%,#f8fbff_35%,#ffffff_100%)] pt-28 text-slate-950">
+      <section className="px-4 pb-14 sm:px-6 lg:px-8">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.08fr_0.92fr]">
+          <div className="relative overflow-hidden rounded-[2.8rem] bg-slate-950 p-8 text-white shadow-[0_30px_100px_rgba(2,6,23,0.35)] sm:p-10">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.22),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(37,99,235,0.3),transparent_32%)]" />
+            <div className="relative">
+              <p className="section-kicker !text-teal-300">Data Centers</p>
+              <h1 className="mt-4 font-display text-5xl font-semibold leading-[0.92] sm:text-6xl">
+                Infrastructure architecture for organizations that cannot afford downtime.
+              </h1>
+              <p className="mt-6 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                {dataCenterDetails.description}
+              </p>
 
-      {/* Overview Section */}
-      <div className="container mx-auto py-16 px-6 lg:px-24 flex flex-col lg:flex-row items-center gap-8">
-        <div className="lg:w-1/2" data-aos="fade-up">
-          <p className="text-lg text-gray-700 leading-relaxed">
-            {dataCenterDetails.description}
-          </p>
-        </div>
+              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={goToContact}
+                  className="inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-6 py-4 text-sm font-semibold text-white"
+                >
+                  Discuss your infrastructure
+                  <FaArrowRight />
+                </button>
+                <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
+                  Enterprise, government, and distributed-site delivery
+                </div>
+              </div>
 
-        {/* Description Image Slider */}
-        <div className="lg:w-1/2 w-full" data-aos="fade-up">
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            navigation
-            pagination={{ clickable: true }}
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: false,
-            }}
-            loop={true}
-            speed={500} // Smooth transitions
-            grabCursor={true}
-            touchStartPreventDefault={false}
-            cssMode={false} // Improves animation smoothness
-            breakpoints={{
-              320: { slidesPerView: 1, spaceBetween: 5 },
-              640: { slidesPerView: 1, spaceBetween: 10 },
-              1024: { slidesPerView: 1, spaceBetween: 15 },
-            }}
-            className="w-full rounded-lg shadow-lg">
-            {dataCenterDetails.descriptionImages.map((image, index) => (
-              <SwiperSlide key={index} className="will-change-transform">
-                <img
-                  src={image}
-                  alt={`Data Center Infrastructure ${index + 1}`}
-                  className="w-full h-auto max-h-80 object-cover rounded-lg cursor-pointer"
-                  onClick={() => setSelectedImage(image)}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
-      </div>
-
-      {/* Features Section */}
-      <div className="bg-white py-16 px-6 lg:px-24">
-        <h2
-          className="text-3xl font-bold text-gray-800 mb-8 text-center"
-          data-aos="fade-up">
-          Key Features
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {dataCenterDetails.features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-blue-50 p-6 rounded-lg shadow-md flex flex-col items-center text-center"
-              data-aos="fade-up"
-              data-aos-delay={`${index * 100}`}>
-              <span className="text-4xl mb-4">{feature.icon}</span>
-              <h3 className="text-xl font-semibold text-blue-800">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 mt-2">{feature.description}</p>
+              <div className="mt-10 grid gap-4 sm:grid-cols-3">
+                {performanceSignals.map((item) => (
+                  <div key={item.label} className="rounded-[1.7rem] border border-white/10 bg-white/5 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{item.label}</p>
+                    <p className="mt-3 text-base font-semibold text-white">{item.value}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      {/* Image Modal (Lightbox) */}
+          <div className="grid gap-5">
+            <div className="overflow-hidden rounded-[2.6rem] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
+              <img
+                src={dataCenterDetails.image}
+                alt={dataCenterDetails.title}
+                className="h-[320px] w-full object-cover sm:h-[360px] lg:h-[420px]"
+              />
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-6">
+                <div className="inline-flex rounded-2xl bg-slate-950 p-3 text-teal-300">
+                  <FaServer />
+                </div>
+                <h2 className="mt-5 text-2xl font-semibold text-slate-950">Facility systems</h2>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  Critical infrastructure is delivered as a coordinated environment, not as disconnected products.
+                </p>
+              </div>
+              <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-6">
+                <div className="inline-flex rounded-2xl bg-white p-3 text-blue-700 shadow-sm">
+                  <FaDatabase />
+                </div>
+                <h2 className="mt-5 text-2xl font-semibold text-slate-950">Operational continuity</h2>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  We design around uptime, maintainability, and clean expansion paths as needs grow.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl rounded-[2.6rem] border border-slate-200 bg-white p-6 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8 lg:p-10">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="section-kicker">System Architecture</p>
+              <h2 className="section-heading mt-4">
+                The data center only works when every layer supports the others.
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+              Power, cooling, fire response, surveillance, cabling, and growth planning must be designed like one operating system for the building.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            {architectureLanes.map(({ icon: Icon, title, text }, index) => (
+              <div
+                key={title}
+                className="rounded-[2rem] bg-slate-50 p-6"
+                data-aos="fade-up"
+                data-aos-delay={index * 90}
+              >
+                <div className="inline-flex rounded-2xl bg-white p-3 text-blue-700 shadow-sm">
+                  <Icon />
+                </div>
+                <h3 className="mt-5 text-xl font-semibold text-slate-950">{title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="rounded-[2.4rem] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-8 text-white shadow-[0_30px_90px_rgba(2,6,23,0.28)] sm:p-10">
+            <p className="section-kicker !text-teal-300">Overview</p>
+            <h2 className="mt-4 text-4xl font-semibold leading-tight">
+              High-performance environments shaped for both reliability and practical expansion.
+            </h2>
+            <p className="mt-5 text-sm leading-7 text-slate-300 sm:text-base">
+              Sanaya supports on-premises builds, edge deployments, modular growth paths, and specialized environments that need fast implementation without sacrificing resilience or manageability.
+            </p>
+            <div className="mt-8 space-y-4">
+              <div className="rounded-[1.6rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
+                Compute, storage, and physical systems are planned together.
+              </div>
+              <div className="rounded-[1.6rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
+                Delivery models flex based on facility constraints and timeline.
+              </div>
+              <div className="rounded-[1.6rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
+                Long-term serviceability is treated as part of the initial design.
+              </div>
+            </div>
+          </div>
+
+          <div className="overflow-hidden rounded-[2.4rem] border border-slate-200 bg-white p-4 shadow-[0_22px_70px_rgba(15,23,42,0.08)]">
+            <Swiper
+              modules={[Navigation, Pagination, Autoplay]}
+              navigation
+              pagination={{ clickable: true }}
+              autoplay={{ delay: 3200, disableOnInteraction: false }}
+              loop
+              className="rounded-[2rem]"
+            >
+              {dataCenterDetails.descriptionImages.map((image, index) => (
+                <SwiperSlide key={image}>
+                  <img
+                    src={image}
+                    alt={`Data center infrastructure ${index + 1}`}
+                    className="h-[420px] w-full cursor-pointer object-cover"
+                    onClick={() => setSelectedImage(image)}
+                  />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="section-kicker">Core Systems</p>
+              <h2 className="section-heading mt-4">
+                Mission-critical components presented as a complete operating environment.
+              </h2>
+            </div>
+            <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+              These systems are what convert a room of equipment into a dependable production environment.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {dataCenterDetails.features.map((feature, index) => (
+              <div
+                key={feature.title}
+                className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_rgba(15,23,42,0.1)]"
+                data-aos="fade-up"
+                data-aos-delay={index * 50}
+              >
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-teal-500 text-sm font-semibold text-white">
+                  {feature.icon}
+                </div>
+                <h3 className="mt-5 text-xl font-semibold text-slate-950">{feature.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
+          <p className="section-kicker">Deployment Models</p>
+          <h2 className="section-heading mt-4 max-w-3xl">
+            Multiple ways to deploy modern capacity, depending on how your operation actually runs.
+          </h2>
+
+          <div className="mt-10 space-y-8">
+            {dataCenterDetails.additionalInfo.map((info, index) => (
+              <div
+                key={info.title}
+                className="grid gap-6 rounded-[2.4rem] border border-slate-200 bg-white p-6 shadow-[0_20px_70px_rgba(15,23,42,0.08)] lg:grid-cols-[1.08fr_0.92fr]"
+                data-aos="fade-up"
+              >
+                <div className={index % 2 === 1 ? "lg:order-2" : ""}>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    {info.images.map((image, imageIndex) => (
+                      <button
+                        key={`${info.title}-${imageIndex}`}
+                        type="button"
+                        onClick={() => setSelectedImage(image)}
+                        className={`overflow-hidden rounded-[1.6rem] border border-slate-200 bg-slate-50 ${
+                          imageIndex === 0 ? "sm:col-span-2 sm:row-span-2" : ""
+                        }`}
+                      >
+                        <img
+                          src={image}
+                          alt={`${info.title} ${imageIndex + 1}`}
+                          className={`w-full object-cover transition duration-300 hover:scale-[1.03] ${
+                            imageIndex === 0 ? "h-[320px] sm:h-full sm:min-h-[336px]" : "h-[156px]"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={`flex flex-col justify-between p-2 ${index % 2 === 1 ? "lg:order-1" : ""}`}>
+                  <div>
+                    <div className="inline-flex rounded-2xl bg-slate-50 p-3 text-blue-700">
+                      <FaMicrochip />
+                    </div>
+                    <h3 className="mt-5 text-3xl font-semibold text-slate-950">{info.title}</h3>
+                    <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">{info.description}</p>
+                  </div>
+                  <div className="mt-8 rounded-[1.6rem] bg-slate-50 px-5 py-4 text-sm font-medium text-slate-700">
+                    Best when the business needs a deployment model that matches real site, budget, and growth constraints.
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 rounded-[2.6rem] bg-gradient-to-r from-blue-600 to-teal-500 px-8 py-10 text-white shadow-[0_20px_60px_rgba(14,165,233,0.28)] lg:flex-row lg:items-center">
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-100">Infrastructure Strategy</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold leading-tight">
+              Planning a new facility, an edge site, or a phased capacity expansion?
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={goToContact}
+            className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-semibold text-blue-700 transition duration-300 hover:scale-[1.02]"
+          >
+            Talk to Sanaya
+            <FaDatabase />
+          </button>
+        </div>
+      </section>
+
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
-          onClick={() => setSelectedImage(null)}>
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/85 px-4 backdrop-blur-sm"
+          onClick={() => setSelectedImage(null)}
+        >
           <div className="relative">
             <button
-              className="absolute top-4 right-4 text-white text-3xl bg-gray-800 px-3 py-1 rounded-full"
-              onClick={() => setSelectedImage(null)}>
-              ✖
+              type="button"
+              className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-900"
+              onClick={() => setSelectedImage(null)}
+              aria-label="Close image"
+            >
+              <FaXmark />
             </button>
             <img
               src={selectedImage}
-              alt="Enlarged View"
-              className="max-w-full max-h-[90vh] object-contain"
+              alt="Expanded infrastructure view"
+              className="max-h-[88vh] max-w-full rounded-[1.8rem] object-contain"
             />
           </div>
         </div>
       )}
-      {/* Additional Info Section */}
-      {dataCenterDetails.additionalInfo &&
-        Array.isArray(dataCenterDetails.additionalInfo) && (
-          <div className="container mx-auto py-16 px-6 lg:px-24">
-            {dataCenterDetails.additionalInfo.map((info, index) => (
-              <div key={index} className="mb-12" data-aos="fade-up">
-                <h2 className="text-3xl font-bold text-gray-800 mb-4">
-                  {info.title}
-                </h2>
-                <p className="text-lg text-gray-700 leading-relaxed">
-                  {info.description}
-                </p>
-
-                {/* Image Carousel */}
-                {info.images && info.images.length > 0 && (
-                  <div className="mt-6">
-                    <Swiper
-                      modules={[Navigation, Pagination, Autoplay]}
-                      navigation
-                      pagination={{ clickable: true }}
-                      autoplay={{ delay: 4000, disableOnInteraction: false }}
-                      loop={true}
-                      speed={600}
-                      grabCursor={true}
-                      breakpoints={{
-                        320: { slidesPerView: 1, spaceBetween: 5 },
-                        640: { slidesPerView: 2, spaceBetween: 10 },
-                        1024: { slidesPerView: 3, spaceBetween: 15 },
-                      }}
-                      className="w-full rounded-lg ">
-                      {info.images.map((image, imgIndex) => (
-                        <SwiperSlide
-                          key={imgIndex}
-                          className="will-change-transform">
-                          <img
-                            src={image}
-                            alt={`${info.title} - Infrastructure ${
-                              imgIndex + 1
-                            }`}
-                            className="w-full h-auto max-h-80 object-cover rounded-lg cursor-pointer"
-                            onClick={() => setSelectedImage(image)}
-                          />
-                        </SwiperSlide>
-                      ))}
-                    </Swiper>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      {/* Call-to-Action Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-teal-500 py-16 text-center text-white">
-        <h2 className="text-3xl font-bold mb-4" data-aos="fade-up">
-          Secure & Scale Your Business with Our Data Centers
-        </h2>
-        <p className="text-lg mb-6" data-aos="fade-up" data-aos-delay="200">
-          Upgrade to a cutting-edge infrastructure today!
-        </p>
-        <button
-          onClick={() => {
-            if (location.pathname !== "/") {
-              navigate("/");
-              setTimeout(() => {
-                requestAnimationFrame(() => {
-                  const contactSection = document.getElementById("contact");
-                  if (contactSection) {
-                    contactSection.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  }
-                });
-              }, 500);
-            } else {
-              const contactSection = document.getElementById("contact");
-              if (contactSection) {
-                contactSection.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
-              }
-            }
-          }}
-          className="bg-white text-blue-600 font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300 hover:bg-gray-200 pointer-events-auto"
-          data-aos="zoom-in">
-          Contact Us
-        </button>
-      </div>
-    </div>
+    </main>
   );
 };
 

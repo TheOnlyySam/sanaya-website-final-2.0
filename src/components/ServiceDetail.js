@@ -1,8 +1,16 @@
 import React, { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import {
+  FaArrowRight,
+  FaBriefcase,
+  FaGear,
+  FaGlobe,
+  FaLayerGroup,
+  FaLightbulb,
+  FaBolt,
+} from "react-icons/fa6";
 
 const serviceDetails = {
   "deployment-services": {
@@ -11,78 +19,18 @@ const serviceDetails = {
     description:
       "All our deployment services are executed by a team of highly trained professionals with deep technical expertise, ensuring seamless implementation, integration, and optimization of cutting-edge solutions. Whether it’s IT infrastructure, cloud solutions, or security systems, our specialists follow best practices to guarantee efficient, secure, and scalable deployments tailored to your business needs.",
     features: [
-      {
-        title: "IT Infrastructure Deployment",
-        description:
-          "We deploy and configure IT infrastructure, including servers, storage, and networking solutions, ensuring high performance and scalability.",
-        icon: "🖥️",
-      },
-      {
-        title: "Cloud Deployment & Integration",
-        description:
-          "Our team specializes in deploying cloud-based environments, integrating hybrid cloud solutions, and ensuring seamless cloud adoption.",
-        icon: "☁️",
-      },
-      {
-        title: "Cybersecurity Solutions Deployment",
-        description:
-          "We implement advanced security measures, including firewalls, intrusion detection systems, and endpoint security to safeguard your digital assets.",
-        icon: "🔒",
-      },
-      {
-        title: "Data Center Deployment",
-        description:
-          "We design and deploy data centers with optimal power efficiency, security, and high availability to meet enterprise-level demands.",
-        icon: "🏢",
-      },
-      {
-        title: "CCTV & Surveillance System Deployment",
-        description:
-          "We install and configure surveillance systems, ensuring 24/7 monitoring, remote access, and high-definition security footage.",
-        icon: "📹",
-      },
-      {
-        title: "Software & Application Deployment",
-        description:
-          "We handle the deployment of software solutions, from enterprise applications to SaaS platforms, ensuring smooth integration with existing systems.",
-        icon: "💻",
-      },
-      {
-        title: "Internal Systems & ERP Deployment",
-        description:
-          "We deploy ERP, CRM, and HRMS solutions to enhance internal operations, improve workflow automation, and drive business efficiency.",
-        icon: "🏢",
-      },
-      {
-        title: "Network Deployment & Optimization",
-        description:
-          "Our team deploys robust network infrastructures, optimizing for speed, security, and reliability to support business operations.",
-        icon: "📶",
-      },
-      {
-        title: "IoT & Smart Systems Deployment",
-        description:
-          "We deploy IoT solutions for smart homes, industrial automation, and business environments, enabling seamless connectivity and automation.",
-        icon: "📡",
-      },
-      {
-        title: "AI & Machine Learning Deployment",
-        description:
-          "We implement AI models and machine learning solutions, integrating intelligent automation and data-driven insights into business processes.",
-        icon: "🤖",
-      },
-      {
-        title: "Business Process Automation Deployment",
-        description:
-          "We deploy automation tools to streamline repetitive tasks, enhance operational efficiency, and reduce manual workloads.",
-        icon: "⚙️",
-      },
-      {
-        title: "IT Support & Managed Services Deployment",
-        description:
-          "We set up IT support systems, ensuring proactive monitoring, troubleshooting, and maintenance for uninterrupted business continuity.",
-        icon: "🛠️",
-      },
+      { title: "IT Infrastructure Deployment", description: "We deploy and configure servers, storage, and networking solutions for performance and scale.", icon: "🖥️" },
+      { title: "Cloud Deployment & Integration", description: "Hybrid and cloud environments designed for smooth adoption and reliable integration.", icon: "☁️" },
+      { title: "Cybersecurity Solutions Deployment", description: "Security controls, firewalls, endpoint protection, and threat-aware implementation.", icon: "🔒" },
+      { title: "Data Center Deployment", description: "Enterprise-ready environments with power, cooling, and operational resilience in mind.", icon: "🏢" },
+      { title: "CCTV & Surveillance Deployment", description: "Monitoring systems with remote access, coverage planning, and operational setup.", icon: "📹" },
+      { title: "Software & Application Deployment", description: "Rollout and integration of applications with minimal operational disruption.", icon: "💻" },
+      { title: "Internal Systems & ERP Deployment", description: "Business system launches that improve workflow automation and visibility.", icon: "🏭" },
+      { title: "Network Deployment & Optimization", description: "Reliable network rollouts tuned for performance, resilience, and security.", icon: "📶" },
+      { title: "IoT & Smart Systems Deployment", description: "Connected systems for automation, sensing, and operational awareness.", icon: "📡" },
+      { title: "AI & Machine Learning Deployment", description: "Productionizing intelligent models and data workflows in business environments.", icon: "🤖" },
+      { title: "Business Process Automation", description: "Workflow automation that reduces repetitive work and improves operational consistency.", icon: "⚙️" },
+      { title: "Managed Services Setup", description: "Monitoring, support, and support-system foundations for ongoing operations.", icon: "🛠️" },
     ],
   },
   "consulting-services": {
@@ -91,84 +39,19 @@ const serviceDetails = {
     description:
       "All our consultation services are delivered by a team of highly trained professionals with extensive industry experience, ensuring expert guidance, innovative solutions, and tailored strategies that align with your business goals. Our specialists are equipped with the latest knowledge, certifications, and hands-on expertise to provide top-tier consulting, guaranteeing efficiency, security, and long-term success for your organization.",
     features: [
-      {
-        title: "IT Consultation",
-        description:
-          "We provide expert guidance on IT infrastructure, digital transformation, and technology implementation strategies to optimize business operations.",
-        icon: "🖥️",
-      },
-      {
-        title: "Cybersecurity Consultation",
-        description:
-          "Our team assesses your security posture and provides tailored solutions to protect your digital assets from cyber threats and data breaches.",
-        icon: "🔒",
-      },
-      {
-        title: "Cloud Solutions & Migration",
-        description:
-          "We assist in cloud adoption, migration, and optimization to ensure seamless integration with your business needs.",
-        icon: "☁️",
-      },
-      {
-        title: "Data Centers & Infrastructure",
-        description:
-          "We design, implement, and maintain data center solutions to support high-performance computing and secure data storage.",
-        icon: "🏢",
-      },
-      {
-        title: "CCTV & Surveillance Solutions",
-        description:
-          "Our experts help you choose, install, and manage surveillance systems to enhance security for businesses and residential areas.",
-        icon: "📹",
-      },
-      {
-        title: "Software Development Consultation",
-        description:
-          "From requirement analysis to deployment, we provide software solutions that meet your business needs, ensuring efficiency and scalability.",
-        icon: "💻",
-      },
-      {
-        title: "Internal Systems & ERP Consultation",
-        description:
-          "We help businesses implement internal systems such as ERP, CRM, and HRMS to streamline operations and enhance productivity.",
-        icon: "🏢",
-      },
-      {
-        title: "Network Design & Optimization",
-        description:
-          "Our team designs and optimizes network infrastructure to ensure high availability, scalability, and security.",
-        icon: "📶",
-      },
-      {
-        title: "Project Management Consultation",
-        description:
-          "We provide end-to-end project management services, from planning and execution to monitoring and delivery, ensuring project success.",
-        icon: "📊",
-      },
-      {
-        title: "IoT & Smart Solutions",
-        description:
-          "We offer IoT-based consultation to integrate smart technology into businesses, homes, and industrial environments.",
-        icon: "📡",
-      },
-      {
-        title: "Business Process Automation",
-        description:
-          "We help businesses automate repetitive tasks, optimize workflows, and improve overall efficiency using advanced automation technologies.",
-        icon: "⚙️",
-      },
-      {
-        title: "AI & Machine Learning Consultation",
-        description:
-          "We provide expert guidance on IT infrastructure, digital transformation, and technology implementation strategies to optimize business operations.",
-        icon: "🤖",
-      },
-      {
-        title: "IT Support & Managed Services",
-        description:
-          "We provide 24/7 IT support, maintenance, and troubleshooting services to ensure smooth business operations.",
-        icon: "🛠️",
-      },
+      { title: "IT Consultation", description: "Guidance on infrastructure, transformation, and technology roadmaps.", icon: "🖥️" },
+      { title: "Cybersecurity Consultation", description: "Risk-aware recommendations to strengthen protection across systems and users.", icon: "🔒" },
+      { title: "Cloud Solutions & Migration", description: "Adoption, migration, and optimization planning for cloud-ready organizations.", icon: "☁️" },
+      { title: "Data Centers & Infrastructure", description: "Architecture support for compute, storage, resilience, and facilities strategy.", icon: "🏢" },
+      { title: "CCTV & Surveillance Solutions", description: "Advisory support for physical security, monitoring, and system fit.", icon: "📹" },
+      { title: "Software Development Consultation", description: "Requirement shaping, architecture guidance, and software planning support.", icon: "💻" },
+      { title: "Internal Systems & ERP Consultation", description: "ERP, CRM, and operational systems planning to improve business workflows.", icon: "🏭" },
+      { title: "Network Design & Optimization", description: "Network planning for performance, reliability, and long-term maintainability.", icon: "📶" },
+      { title: "Project Management Consultation", description: "Execution guidance, coordination structures, and delivery visibility.", icon: "📊" },
+      { title: "IoT & Smart Solutions", description: "Advisory on automation, sensing, and connected operational environments.", icon: "📡" },
+      { title: "Business Process Automation", description: "Mapping and redesigning workflows to remove friction and manual overhead.", icon: "⚙️" },
+      { title: "AI & Machine Learning Consultation", description: "Practical guidance on introducing intelligence into business operations.", icon: "🤖" },
+      { title: "IT Support & Managed Services", description: "Support strategy and operating models for reliable post-launch operations.", icon: "🛠️" },
     ],
   },
   "support-services": {
@@ -177,24 +60,9 @@ const serviceDetails = {
     description:
       "Our Support Services ensure your business stays operational with round-the-clock assistance, rapid response times, and expert support on-demand. Whether you need immediate troubleshooting, scheduled maintenance, or urgent technical assistance, we are here to provide a seamless support experience tailored to your needs.",
     features: [
-      {
-        title: "24/7 Support",
-        description:
-          "We provide continuous support around the clock to address critical issues, minimize downtime, and ensure business continuity.",
-        icon: "🕒",
-      },
-      {
-        title: "On-Call Services",
-        description:
-          "Get access to dedicated experts whenever you need assistance, ensuring your systems remain secure and fully operational.",
-        icon: "📞",
-      },
-      {
-        title: "On-Demand Support Services",
-        description:
-          "Request specialized support as needed for troubleshooting, system updates, performance optimization, and issue resolution.",
-        icon: "🛠️",
-      },
+      { title: "24/7 Support", description: "Continuous assistance for critical issues, downtime minimization, and business continuity.", icon: "🕒" },
+      { title: "On-Call Services", description: "Dedicated experts available when systems need immediate attention or escalation.", icon: "📞" },
+      { title: "On-Demand Support", description: "Flexible troubleshooting, updates, optimization, and targeted intervention.", icon: "🛠️" },
     ],
   },
   "odoo-erp-system": {
@@ -203,262 +71,116 @@ const serviceDetails = {
     description:
       "Odoo ERP is an all-in-one business management software that streamlines operations, from accounting and inventory to CRM and project management, with a modular and customizable approach. Designed for businesses of all sizes, it enhances efficiency with automation, real-time data insights, and seamless integrations across departments. Its user-friendly interface and extensive app ecosystem make it a powerful solution for optimizing workflows and driving growth.",
     features: [
-      {
-        title: "Modular Structure",
-        description:
-          "Odoo offers a flexible system with various modules for CRM, Sales, Accounting, and more, allowing businesses to scale easily.",
-        icon: "📦",
-      },
-      {
-        title: "User-Friendly Interface",
-        description:
-          "A modern, intuitive UI with drag-and-drop features and customizable dashboards for seamless navigation.",
-        icon: "🎨",
-      },
-      {
-        title: "Integrated System",
-        description:
-          "All modules work together, reducing data silos and eliminating the need for third-party integrations.",
-        icon: "🔗",
-      },
-      {
-        title: "Scalability",
-        description:
-          "Suitable for startups to enterprises, with cloud and on-premises deployment options.",
-        icon: "📈",
-      },
-      {
-        title: "Customizability",
-        description:
-          "Open-source and highly customizable, allowing businesses to modify workflows and add new features.",
-        icon: "✏️",
-      },
-      {
-        title: "Automation & AI",
-        description:
-          "Automates tasks like invoicing, follow-ups, and inventory tracking while providing AI-driven insights.",
-        icon: "🤖",
-      },
-      {
-        title: "Cloud & On-Premises",
-        description:
-          "Available as a cloud-based SaaS or self-hosted on-premises solution for greater control.",
-        icon: "☁️🏢",
-      },
-      {
-        title: "Multi-Company & Multi-Currency",
-        description:
-          "Supports multiple businesses, currencies, and tax structures in a single database.",
-        icon: "💱🏢",
-      },
-      {
-        title: "Reporting & Analytics",
-        description:
-          "Real-time dashboards and reports for financial tracking, sales forecasting, and business insights.",
-        icon: "📊",
-      },
-      {
-        title: "E-commerce & Website Builder",
-        description:
-          "Create SEO-optimized websites and online stores with integrated inventory and payments.",
-        icon: "🌍🛍️",
-      },
-      {
-        title: "Accounting & Finance",
-        description:
-          "Automated invoicing, bank reconciliation, and tax compliance tools for financial management.",
-        icon: "💰📑",
-      },
-      {
-        title: "HR & Payroll Management",
-        description:
-          "Manage employees, track attendance, process payroll, and handle contracts effortlessly.",
-        icon: "👥💼",
-      },
-      {
-        title: "Inventory & Warehouse",
-        description:
-          "Real-time stock tracking, barcode scanning, and multi-warehouse management.",
-        icon: "📦🚚",
-      },
-      {
-        title: "CRM & Sales",
-        description:
-          "Track leads, manage customer relationships, automate follow-ups, and analyze sales performance.",
-        icon: "📧📞",
-      },
-      {
-        title: "Manufacturing & MRP",
-        description:
-          "Plan production, manage BOMs, ensure quality control, and streamline manufacturing processes.",
-        icon: "🏭🔧",
-      },
-      {
-        title: "Project & Task Management",
-        description:
-          "Plan, track, and collaborate on projects using Kanban boards and Gantt charts.",
-        icon: "📅✅",
-      },
+      { title: "Modular Structure", description: "Choose only the applications you need and expand over time.", icon: "📦" },
+      { title: "User-Friendly Interface", description: "Clean dashboards and intuitive workflows that reduce training friction.", icon: "🎨" },
+      { title: "Integrated System", description: "Connected modules that eliminate silos and improve process visibility.", icon: "🔗" },
+      { title: "Scalability", description: "A deployment model that grows from SME needs to enterprise complexity.", icon: "📈" },
+      { title: "Customizability", description: "Flexible configuration and extension options to fit your exact business model.", icon: "✏️" },
+      { title: "Automation & AI", description: "Workflow automation and smarter operational insight across departments.", icon: "🤖" },
+      { title: "Cloud & On-Premises", description: "Deploy in the model that best matches your governance and infrastructure needs.", icon: "☁️🏢" },
+      { title: "Multi-Company & Multi-Currency", description: "Support for regional and organizational complexity in one environment.", icon: "💱🏢" },
+      { title: "Reporting & Analytics", description: "Real-time dashboards that help management act on reliable data.", icon: "📊" },
+      { title: "E-commerce & Website Builder", description: "Integrated digital selling with connected inventory and transactions.", icon: "🌍🛍️" },
+      { title: "Accounting & Finance", description: "Controls for invoicing, reconciliation, and financial operations.", icon: "💰📑" },
+      { title: "HR & Payroll Management", description: "Employee, attendance, and payroll workflows in one connected system.", icon: "👥💼" },
+      { title: "Inventory & Warehouse", description: "Live stock tracking and operational control across warehouses.", icon: "📦🚚" },
+      { title: "CRM & Sales", description: "Lead management, pipeline visibility, and customer relationship workflows.", icon: "📧📞" },
+      { title: "Manufacturing & MRP", description: "Production planning and operational control for manufacturing businesses.", icon: "🏭🔧" },
+      { title: "Project & Task Management", description: "Collaborative project execution with clearer ownership and visibility.", icon: "📅✅" },
     ],
     additionalInfo: [
       {
-        title: "What makes Odoo’s modular structure so powerful? 📦",
+        title: "Modular by design",
         description:
-          "• Odoo’s modular system allows businesses to choose and integrate only the applications they need, reducing complexity and cost. Whether it’s CRM, Sales, Accounting, Inventory, HR, or Project Management, each module is designed to work independently while seamlessly integrating with others. This flexibility ensures that businesses of any size can scale their ERP system without unnecessary features, making Odoo a cost-effective and efficient solution. By adopting a modular approach, companies can avoid bloated software that slows down operations, ensuring they only use what’s necessary while maintaining the option to expand functionality as they grow. This modularity also improves software performance, as businesses aren’t burdened by unused features. Additionally, the integration between modules eliminates data redundancy and streamlines workflows, enhancing collaboration between departments and ensuring a unified data ecosystem across the organization.",
+          "Odoo’s modular structure helps businesses launch with the right footprint, avoid unnecessary software overhead, and extend capabilities only when operational needs justify it.",
       },
       {
-        title:
-          "How does Odoo’s user-friendly interface improve productivity? 🎨",
+        title: "Productivity through usability",
         description:
-          "• Odoo offers a modern, intuitive, and easy-to-use interface that simplifies navigation and enhances the user experience. With drag-and-drop functionality, minimal clicks, and customizable dashboards, employees can quickly adapt to the system without extensive training. Its responsive design also ensures that users can access their workspace from any device, whether on desktops, tablets, or mobile phones. By reducing the learning curve, businesses can onboard new employees faster and minimize downtime. The clean interface reduces cognitive overload, allowing employees to focus on tasks rather than figuring out complex menu structures. Customization options also empower users to create personalized dashboards with real-time reports, task overviews, and relevant KPIs, leading to improved efficiency and better decision-making. Furthermore, Odoo’s UI design aligns with modern web applications, making it familiar and intuitive for users transitioning from other software, reducing the need for extensive IT support.",
+          "A clear interface, configurable dashboards, and more intuitive workflows reduce the learning curve and help teams adopt the system faster.",
       },
       {
-        title: "Why is Odoo one of the most integrated ERP solutions? 🔗",
+        title: "Integrated operations",
         description:
-          "• Unlike traditional ERP systems that require third-party software for integration, Odoo provides a fully integrated suite where all business functions work together seamlessly. Sales teams can access customer invoices, warehouse managers can track inventory in real time, and HR departments can handle payroll—all within a single platform. This reduces data silos, minimizes manual input, and improves business efficiency. By centralizing data and operations, businesses can eliminate inconsistencies and duplication of records. The seamless integration between different modules ensures that information flows effortlessly across departments, enhancing visibility and decision-making. Additionally, the elimination of third-party dependencies reduces the risk of compatibility issues, security vulnerabilities, and extra licensing costs. With real-time data synchronization, businesses can react faster to market changes and customer demands, making Odoo a highly adaptive ERP solution suited for dynamic industries and growing enterprises.",
+          "Sales, finance, HR, inventory, and project data move through one environment, reducing duplicate work and improving decision quality.",
       },
       {
-        title: "Can Odoo grow with my business over time? 📈",
+        title: "Scalable and customizable",
         description:
-          "• Yes! Odoo is designed with scalability in mind. Whether you are a startup, SME, or large enterprise, you can begin with a few essential modules and expand as your business grows. Thanks to its cloud-based and on-premises deployment options, Odoo adapts to increasing demands without the need for major infrastructure changes. This scalability is essential for companies in fast-growing industries, allowing them to upgrade and add functionalities without experiencing system slowdowns. Odoo’s flexibility ensures that companies do not outgrow their ERP system but instead evolve with it. As operations expand, businesses can integrate additional modules such as manufacturing, advanced reporting, and AI-powered automation to enhance efficiency. Additionally, Odoo’s architecture supports high volumes of data and users, ensuring that performance remains stable even as the organization grows. With its adaptable licensing model, businesses can control costs by only paying for what they need, making Odoo a cost-effective ERP for long-term use.",
-      },
-      {
-        title: "How customizable is Odoo compared to other ERPs? ✏️",
-        description:
-          "• One of Odoo’s strongest advantages is its open-source framework, allowing businesses to fully customize the platform to fit their specific needs. From modifying workflows and adding custom fields to developing entirely new applications, Odoo’s modularity ensures that companies aren’t confined by rigid ERP structures. The Odoo Studio tool even allows non-developers to make modifications with a no-code/low-code approach. This flexibility ensures that businesses can tailor the system to align with their unique operational processes rather than adapting their workflows to fit predefined software limitations. Custom modules and integrations enable organizations to incorporate industry-specific features, ensuring that Odoo can serve highly specialized sectors effectively. Additionally, API support enables seamless connections with external tools and services, expanding Odoo’s capabilities beyond its native features. The ability to customize reports, dashboards, and automated workflows ensures that businesses extract maximum value from their ERP system, making Odoo a truly personalized solution.",
-      },
-      {
-        title: "Does Odoo support automation and AI-driven insights? 🤖",
-        description:
-          "• Odoo incorporates AI-powered automation to enhance business operations. Repetitive tasks such as invoice generation, email follow-ups, stock reordering, and lead scoring can be automated, reducing human errors and freeing up employees for more strategic work. AI-driven analytics also provide predictive insights into customer behavior, sales trends, and inventory demand, enabling businesses to make data-driven decisions efficiently. By automating routine processes, businesses can reduce operational costs while improving accuracy and consistency. AI-powered forecasting helps sales teams optimize their pipelines, supply chain managers anticipate demand fluctuations, and finance teams identify cash flow trends. Odoo’s intelligent automation extends to HR, where recruitment, payroll, and attendance tracking can be streamlined. The platform’s machine learning algorithms continuously refine predictions and recommendations, ensuring that businesses stay ahead of market trends and customer expectations. By integrating automation and AI, Odoo transforms business operations, making them more agile, proactive, and efficient.",
-      },
-      {
-        title: "Can I deploy Odoo on the cloud or on my own servers? ☁️🏢",
-        description:
-          "• Odoo offers both cloud-based (Odoo Online) and on-premises (Odoo Enterprise) deployment options, giving businesses the freedom to choose what suits them best. Cloud hosting provides hassle-free updates, automatic backups, and global accessibility, while on-premises installations give full control over data security, compliance, and system customization. Businesses with strict regulatory requirements or high customization needs often prefer on-premises deployments, ensuring that they maintain full ownership of their infrastructure. On the other hand, cloud deployment minimizes IT overhead, as maintenance and updates are managed by Odoo, allowing companies to focus on core operations. Odoo’s hybrid approach also allows businesses to transition between cloud and on-premises as needed, ensuring long-term adaptability. Multi-user access control and data encryption further enhance security, regardless of deployment choice. Whether businesses prioritize convenience or control, Odoo’s deployment flexibility ensures that they can choose a solution that aligns with their strategic goals and operational requirements.",
+          "The platform adapts to both growth and specialization, whether you need new modules, custom workflows, or deployment flexibility.",
       },
     ],
   },
-
   "networking-security-solutions": {
     title: "Networking Security Solutions",
     description:
-      "Sanaya Techs provides advanced network security solutions to protect businesses from cyber threats, unauthorized access, and data breaches. Our services include firewalls, intrusion prevention, endpoint protection, and real-time threat monitoring to ensure secure and seamless operations. With AI-driven automation, zero-trust security, and cloud integration, we deliver scalable, high-performance protection for enterprises, data centers, and remote work environments. Partner with Sanaya Techs to safeguard your network and maintain business continuity.",
+      "Sanaya Techs provides advanced network security solutions to protect businesses from cyber threats, unauthorized access, and data breaches. Our services include firewalls, intrusion prevention, endpoint protection, and real-time threat monitoring to ensure secure and seamless operations. With AI-driven automation, zero-trust security, and cloud integration, we deliver scalable, high-performance protection for enterprises, data centers, and remote work environments.",
     image: "/networking.jpg",
     features: [
-      {
-        title: "Software-Defined Networking (SDN)",
-        description:
-          "Centralizes network control, allowing for dynamic and flexible management to adapt quickly to changing business needs.",
-        icon: "🔧",
-      },
-      {
-        title: "Data Center Networking",
-        description:
-          "Provides high-speed, reliable connections between servers, storage devices, and networking equipment to ensure optimal performance and scalability.",
-        icon: "🏢",
-      },
-      {
-        title: "WAN and LAN Infrastructure",
-        description:
-          "Offers robust and secure wide and local area network solutions to connect multiple locations and devices efficiently.",
-        icon: "🌐",
-      },
-      {
-        title: "Wireless Solutions",
-        description:
-          "Enables seamless and secure wireless connectivity for mobile devices, enhancing flexibility and productivity.",
-        icon: "📶",
-      },
-      {
-        title: "Network Monitoring and Management",
-        description:
-          "Utilizes advanced tools to monitor network performance, detect issues, and manage configurations to maintain optimal operations.",
-        icon: "📈",
-      },
-      {
-        title: "Endpoint Protection and Teleworker Solutions",
-        description:
-          "Secures devices connected to the network, including those used by remote workers, to prevent unauthorized access and data breaches.",
-        icon: "🛡️",
-      },
-      {
-        title: "Security Fabric (Orchestration and Automation)",
-        description:
-          "Integrates and automates various security measures to provide a unified and proactive defense against cyber threats.",
-        icon: "🔒",
-      },
+      { title: "Software-Defined Networking", description: "Centralized control and policy management for more adaptive networks.", icon: "🔧" },
+      { title: "Data Center Networking", description: "High-speed server, storage, and application connectivity.", icon: "🏢" },
+      { title: "WAN and LAN Infrastructure", description: "Reliable inter-site and in-building connectivity foundations.", icon: "🌐" },
+      { title: "Wireless Solutions", description: "Secure, flexible wireless access for modern workplaces and distributed users.", icon: "📶" },
+      { title: "Network Monitoring and Management", description: "Visibility, configuration control, and proactive issue handling.", icon: "📈" },
+      { title: "Endpoint Protection", description: "Controls that protect devices and remote workers from security risks.", icon: "🛡️" },
+      { title: "Security Fabric", description: "Integrated security orchestration and response across multiple control layers.", icon: "🔒" },
     ],
     additionalInfo: [
       {
-        title: "What is Software-Defined Networking (SDN)?",
+        title: "Visibility and control",
         description:
-          "SDN centralizes network control, enabling dynamic and flexible management to swiftly adapt to evolving business requirements. It enhances efficiency by allowing administrators to configure network policies centrally, improving scalability and reducing operational complexity.",
+          "Modern network security depends on centralized visibility, policy consistency, and the ability to detect anomalies before they become operational incidents.",
       },
       {
-        title: "How does Data Center Networking enhance performance?",
+        title: "Built for hybrid environments",
         description:
-          "Data center networking connects servers, storage, and networking equipment with high-speed links, ensuring efficient data transfer and reliable application performance. It supports modern workloads like cloud computing, virtualization, and big data analytics while minimizing latency.",
+          "Users, branches, cloud services, and data centers all need to be secured as one connected estate, not as isolated pieces.",
       },
       {
-        title: "What are WAN and LAN Infrastructure?",
+        title: "Scalable protection",
         description:
-          "WANs connect multiple LANs over large geographical areas, allowing businesses to maintain seamless communication across different locations. LANs link devices within a localized area, ensuring fast and secure data exchange. Both are essential for business continuity and efficient network operations.",
-      },
-      {
-        title: "Why are Wireless Solutions vital for modern businesses?",
-        description:
-          "Wireless solutions provide secure, flexible connectivity for mobile devices, allowing employees to work from anywhere without being tied to physical connections. This improves productivity, enhances collaboration, and enables businesses to support remote work environments effectively.",
-      },
-      {
-        title: "What is Network Monitoring and Management?",
-        description:
-          "Network monitoring and management involve continuously overseeing network performance, traffic, and configurations to ensure optimal operations. By proactively detecting and resolving issues, businesses can minimize downtime, improve security, and maintain peak network efficiency.",
-      },
-      {
-        title: "How does Endpoint Protection secure remote work?",
-        description:
-          "Endpoint protection secures all devices accessing the network, including those used by remote employees, by preventing unauthorized access and malware attacks. It ensures that business-critical data remains protected, even in a distributed work environment.",
-      },
-      {
-        title: "What is Security Fabric in network security?",
-        description:
-          "Security Fabric is a unified security approach that integrates and automates multiple security solutions across an organization’s network. It enables real-time threat detection, streamlined security management, and a coordinated response to cyber threats, enhancing overall protection.",
-      },
-      {
-        title: "What are Next-Generation Firewalls (NGFW)?",
-        description:
-          "Next-Generation Firewalls (NGFWs) go beyond traditional firewalls by offering deep packet inspection, intrusion prevention, and application control. They provide advanced security against modern cyber threats while maintaining high network performance.",
-      },
-      {
-        title: "How does Secure SD-WAN benefit organizations?",
-        description:
-          "Secure SD-WAN combines SDN with robust security features, ensuring secure, reliable, and cost-effective connectivity across multiple locations. It improves network efficiency, enhances application performance, and provides centralized control for streamlined operations.",
-      },
-      {
-        title: "What is Advanced Threat Protection (ATP)?",
-        description:
-          "Advanced Threat Protection (ATP) includes security technologies designed to prevent, detect, and respond to sophisticated cyber threats. It uses AI-driven threat intelligence, behavioral analytics, and automated response mechanisms to safeguard critical data and infrastructure.",
-      },
-      {
-        title: "What are SOC Platforms?",
-        description:
-          "Security Operations Center (SOC) platforms provide centralized tools for monitoring, detecting, and responding to security threats. They enhance visibility, streamline incident response, and enable organizations to maintain a strong security posture against evolving cyber risks.",
-      },
-      {
-        title: "Why is Web Application Security important?",
-        description:
-          "Web application security focuses on protecting online platforms from cyber threats like SQL injection, cross-site scripting (XSS), and DDoS attacks. It ensures that web applications remain secure, reliable, and compliant with industry regulations.",
-      },
-      {
-        title:
-          "What are Data Loss Prevention (DLP) and Risk Management Solutions?",
-        description:
-          "Data Loss Prevention (DLP) solutions prevent unauthorized access and accidental data leaks, ensuring sensitive information is protected. Risk management solutions help businesses identify and mitigate vulnerabilities, reducing potential security threats and ensuring compliance with regulations.",
+          "From wireless access and endpoint security to segmentation and advanced firewalling, the right architecture should grow with the business.",
       },
     ],
   },
-  // Add more services if needed
+};
+
+const accentConfig = {
+  "deployment-services": {
+    pill: "text-cyan-300",
+    hero: "from-slate-950 via-slate-900 to-cyan-950",
+    cta: "from-blue-600 to-cyan-500",
+    icon: FaGear,
+    summary: "Execution-focused delivery that turns plans and platforms into production-ready systems.",
+  },
+  "consulting-services": {
+    pill: "text-teal-300",
+    hero: "from-slate-950 via-slate-900 to-teal-950",
+    cta: "from-blue-600 to-teal-500",
+    icon: FaLightbulb,
+    summary: "Advisory services that connect strategy, architecture, and practical next steps.",
+  },
+  "support-services": {
+    pill: "text-amber-300",
+    hero: "from-slate-950 via-slate-900 to-amber-950",
+    cta: "from-blue-600 to-teal-500",
+    icon: FaBriefcase,
+    summary: "Reliable support models for teams that need responsiveness and continuity.",
+  },
+  "odoo-erp-system": {
+    pill: "text-sky-300",
+    hero: "from-slate-950 via-slate-900 to-blue-950",
+    cta: "from-blue-600 to-teal-500",
+    icon: FaLayerGroup,
+    summary: "A connected ERP operating layer for finance, operations, sales, HR, and growth.",
+  },
+  "networking-security-solutions": {
+    pill: "text-emerald-300",
+    hero: "from-slate-950 via-slate-900 to-emerald-950",
+    cta: "from-blue-600 to-teal-500",
+    icon: FaGlobe,
+    summary: "Secure connectivity architecture for modern hybrid and distributed environments.",
+  },
 };
 
 const ServiceDetail = () => {
@@ -468,120 +190,168 @@ const ServiceDetail = () => {
   const service = serviceDetails[serviceId];
 
   useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      easing: "ease-in-out",
-    });
+    AOS.init({ duration: 900, easing: "ease-out-cubic", once: true });
   }, []);
 
   if (!service) {
-    return <div className="text-center text-2xl py-20">Service Not Found</div>;
+    return <div className="py-24 text-center text-2xl">Service Not Found</div>;
   }
 
+  const accent = accentConfig[serviceId] || accentConfig["consulting-services"];
+  const AccentIcon = accent.icon;
+
+  const handleContact = () => {
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        const contactSection = document.getElementById("contact");
+        if (contactSection) {
+          contactSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 450);
+      return;
+    }
+
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   return (
-    <div className="bg-gray-50 min-h-screen">
-      {/* Banner Section */}
-      <div className="relative w-full h-96">
-        <img
-          src={service.image}
-          alt={service.title}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <h1 className="text-white text-5xl font-bold" data-aos="fade-down">
-            {service.title}
-          </h1>
-        </div>
-      </div>
-
-      {/* Description Section */}
-      <div className="container mx-auto py-16 px-6 lg:px-24">
-        <p className="text-lg text-gray-700 leading-relaxed" data-aos="fade-up">
-          {service.description}
-        </p>
-      </div>
-
-      {/* Key Features Section */}
-      <div className="bg-white py-16 px-6 lg:px-24">
-        <h2
-          className="text-3xl font-bold text-gray-800 mb-8 text-center"
-          data-aos="fade-up">
-          Key Features
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {service.features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-gray-100 p-6 rounded-lg shadow-md flex flex-col items-center text-center"
-              data-aos="fade-up"
-              data-aos-delay={`${index * 100}`}>
-              <span className="text-4xl mb-4">{feature.icon}</span>
-              <h3 className="text-xl font-semibold text-gray-800">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 mt-2">{feature.description}</p>
+    <main className="min-h-screen overflow-hidden bg-[linear-gradient(180deg,#f7fbff_0%,#ffffff_100%)] pt-28 text-slate-950">
+      <section className="px-4 pb-14 sm:px-6 lg:px-8">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1.04fr_0.96fr]">
+          <div className={`relative overflow-hidden rounded-[2.8rem] bg-gradient-to-br ${accent.hero} p-8 text-white shadow-[0_30px_100px_rgba(2,6,23,0.35)] sm:p-10`}>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.08),transparent_28%)]" />
+            <div className="relative">
+              <p className={`section-kicker ${accent.pill}`}>{service.title}</p>
+              <h1 className="mt-4 font-display text-5xl font-semibold leading-[0.92] sm:text-6xl">
+                Modern delivery for organizations that need technology to perform, not just exist.
+              </h1>
+              <p className="mt-6 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
+                {service.description}
+              </p>
+              <div className="mt-8 inline-flex rounded-full border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
+                {accent.summary}
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      {/* Additional Info Section */}
-      {service.additionalInfo && Array.isArray(service.additionalInfo) && (
-        <div className="container mx-auto py-16 px-6 lg:px-24">
-          {service.additionalInfo.map((info, index) => (
-            <div key={index} className="mb-12" data-aos="fade-up">
-              <h2 className="text-3xl font-bold text-gray-800 mb-4">
-                {info.title}
+          <div className="grid gap-5">
+            <div className="overflow-hidden rounded-[2.6rem] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
+              <img
+                src={service.image}
+                alt={service.title}
+                className="h-[320px] w-full object-cover sm:h-[360px] lg:h-[420px]"
+              />
+            </div>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div className="rounded-[2rem] border border-slate-200 bg-white p-6">
+                <div className="inline-flex rounded-2xl bg-slate-950 p-3 text-white">
+                  <AccentIcon />
+                </div>
+                <h2 className="mt-5 text-2xl font-semibold text-slate-950">Structured delivery</h2>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  Every engagement is shaped around scope clarity, execution quality, and outcomes that matter to operations.
+                </p>
+              </div>
+              <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-6">
+                <div className="inline-flex rounded-2xl bg-white p-3 text-blue-700 shadow-sm">
+                  <FaBolt />
+                </div>
+                <h2 className="mt-5 text-2xl font-semibold text-slate-950">Business fit</h2>
+                <p className="mt-3 text-sm leading-7 text-slate-600">
+                  We focus on workflow improvement, resilience, visibility, and long-term maintainability.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl rounded-[2.6rem] border border-slate-200 bg-white p-6 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8 lg:p-10">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="section-kicker">Capability System</p>
+              <h2 className="section-heading mt-4">
+                Key features presented as a clearer service architecture instead of a generic checklist.
               </h2>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                {info.description}
+            </div>
+            <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
+              These are the areas where Sanaya creates practical business impact inside this solution line.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {service.features.map((feature, index) => (
+              <div
+                key={feature.title}
+                className="rounded-[2rem] bg-slate-50 p-6"
+                data-aos="fade-up"
+                data-aos-delay={index * 60}
+              >
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-teal-500 text-lg text-white">
+                  {feature.icon}
+                </div>
+                <h3 className="mt-5 text-xl font-semibold text-slate-950">{feature.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {service.additionalInfo && Array.isArray(service.additionalInfo) && (
+        <section className="px-4 py-14 sm:px-6 lg:px-8">
+          <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+            <div className={`rounded-[2.4rem] bg-gradient-to-br ${accent.hero} p-8 text-white shadow-[0_30px_90px_rgba(2,6,23,0.28)] sm:p-10`}>
+              <p className={`section-kicker ${accent.pill}`}>Further Insight</p>
+              <h2 className="mt-4 text-4xl font-semibold leading-tight">
+                Strategic details that help define fit, growth path, and deployment approach.
+              </h2>
+              <p className="mt-5 text-sm leading-7 text-slate-300 sm:text-base">
+                These supporting notes explain why the service matters operationally, not just functionally.
               </p>
             </div>
-          ))}
-        </div>
+
+            <div className="space-y-4">
+              {service.additionalInfo.map((info, index) => (
+                <div
+                  key={info.title}
+                  className="rounded-[1.9rem] border border-slate-200 bg-white p-6 shadow-sm"
+                  data-aos="fade-up"
+                  data-aos-delay={index * 90}
+                >
+                  <h3 className="text-2xl font-semibold text-slate-950">{info.title}</h3>
+                  <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">{info.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       )}
 
-      {/* Call-to-Action Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-teal-500 py-16 text-center text-white">
-        <h2 className="text-3xl font-bold mb-4" data-aos="fade-up">
-          Get Started with {service.title}
-        </h2>
-        <p className="text-lg mb-6" data-aos="fade-up" data-aos-delay="200">
-          Transform your business operations today with {service.title}.
-        </p>
-
-        <button
-          onClick={() => {
-            if (location.pathname !== "/") {
-              navigate("/");
-
-              setTimeout(() => {
-                requestAnimationFrame(() => {
-                  const contactSection = document.getElementById("contact");
-                  if (contactSection) {
-                    contactSection.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
-                  }
-                });
-              }, 500);
-            } else {
-              const contactSection = document.getElementById("contact");
-              if (contactSection) {
-                contactSection.scrollIntoView({
-                  behavior: "smooth",
-                  block: "start",
-                });
-              }
-            }
-          }}
-          className="bg-white text-blue-600 font-semibold py-3 px-8 rounded-full shadow-lg transition-all duration-300 hover:bg-gray-200 pointer-events-auto"
-          data-aos="zoom-in">
-          Contact Us
-        </button>
-      </div>
-    </div>
+      <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8">
+        <div className={`mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 rounded-[2.6rem] bg-gradient-to-r ${accent.cta} px-8 py-10 text-white shadow-[0_20px_60px_rgba(14,165,233,0.28)] lg:flex-row lg:items-center`}>
+          <div className="max-w-2xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-100">Next Step</p>
+            <h2 className="mt-3 font-display text-4xl font-semibold leading-tight">
+              Ready to move forward with {service.title}?
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={handleContact}
+            className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-semibold text-blue-700 transition duration-300 hover:scale-[1.02]"
+          >
+            Contact Sanaya
+            <FaArrowRight />
+          </button>
+        </div>
+      </section>
+    </main>
   );
 };
 
