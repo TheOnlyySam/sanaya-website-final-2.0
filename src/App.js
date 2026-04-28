@@ -18,6 +18,8 @@ import PaymentTest from "./components/PaymentTest";
 import ScrollToTop from "./components/ScrollToTop";
 import ConsultingServices from "./components/ConsultingServices";
 import OurTeam from "./components/OurTeam";
+import FilesLogin from "./components/FilesLogin";
+import SanayaFiles from "./components/SanayaFiles";
 
 function App() {
   useEffect(() => {
@@ -71,6 +73,8 @@ function App() {
         <Route path="/services/fire-alarm-systems" element={<FireAlarmService />} />
         <Route path="/services/software-engineering" element={<SoftwareEngineering />} />
         <Route path="/our-team" element={<OurTeam />} />
+        <Route path="/login" element={<FilesLogin />} />
+        <Route path="/sanaya-files" element={<SanayaFiles />} />
         <Route path="/test-payment" element={<PaymentTest />} />
       </Routes>
 

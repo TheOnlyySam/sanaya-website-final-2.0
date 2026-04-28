@@ -27,6 +27,33 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
+## Sanaya Files
+
+The private files area uses Supabase Auth and a private Supabase Storage bucket.
+
+In Supabase:
+
+- Create a project.
+- Create a private Storage bucket named `sanaya-files`.
+- Create user accounts in Authentication.
+- Add Storage policies that allow authenticated users to select, insert, update, and delete objects in the `sanaya-files` bucket.
+
+Policy expression for each operation:
+
+```sql
+bucket_id = 'sanaya-files'
+```
+
+Use the same expression for `WITH CHECK` on insert/update policies. Folder creation uses a hidden `.emptyFolderPlaceholder` object because Supabase Storage folders are virtual.
+
+Set these environment variables in Vercel:
+
+- `REACT_APP_SUPABASE_URL`: Supabase project URL.
+- `REACT_APP_SUPABASE_ANON_KEY`: Supabase anon public key.
+- `REACT_APP_SUPABASE_FILES_BUCKET`: usually `sanaya-files`.
+
+The navbar login opens `/login`. After login, users can access `/sanaya-files`.
+
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 ### `npm run eject`
