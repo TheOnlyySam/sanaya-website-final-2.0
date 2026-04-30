@@ -31,8 +31,8 @@ import {
 } from "../lib/supabaseFiles";
 
 const OFFICE_EXTENSIONS = new Set(["doc", "docx", "xls", "xlsx", "ppt", "pptx"]);
-const DEFAULT_ONLYOFFICE_DOCUMENT_SERVER_URL = "https://office.sanayatechs.iq";
-const DEFAULT_ONLYOFFICE_CALLBACK_URL = "https://office-api.sanayatechs.iq/onlyoffice/callback";
+const DEFAULT_ONLYOFFICE_DOCUMENT_SERVER_URL = "https://office.sanayatechs.com";
+const DEFAULT_ONLYOFFICE_CALLBACK_URL = "https://office-api.sanayatechs.com/onlyoffice/callback";
 let onlyOfficeScriptPromise = null;
 
 function formatBytes(size) {
