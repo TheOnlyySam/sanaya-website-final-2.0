@@ -110,7 +110,10 @@ function loadOnlyOfficeScript(serverUrl) {
       script.src = `${serverUrl}/web-apps/apps/api/documents/api.js`;
       script.async = true;
       script.onload = resolve;
-      script.onerror = () => reject(new Error("OnlyOffice editor failed to load."));
+      script.onerror = () => {
+        onlyOfficeScriptPromise = null;
+        reject(new Error(`OnlyOffice editor failed to load from ${script.src}`));
+      };
       document.body.appendChild(script);
     });
   }
