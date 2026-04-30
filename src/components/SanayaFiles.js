@@ -20,7 +20,10 @@ import {
   createSupabaseDownloadUrl,
   deleteSupabaseFolder,
   deleteSupabaseItems,
+  getSupabaseUserEmail,
   listSupabaseFiles,
+  listSupabaseFileActivity,
+  logSupabaseFileActivity,
   logoutSupabaseFiles,
   renameSupabaseItem,
   replaceSupabaseFile,
@@ -28,6 +31,7 @@ import {
 } from "../lib/supabaseFiles";
 
 const OFFICE_EXTENSIONS = new Set(["doc", "docx", "xls", "xlsx", "ppt", "pptx"]);
+let onlyOfficeScriptPromise = null;
 
 function formatBytes(size) {
   if (!size) {
@@ -51,15 +55,58 @@ function getOfficeViewerUrl(fileUrl) {
   return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
 }
 
+function getOnlyOfficeDocumentType(fileName) {
+  const extension = getFileExtension(fileName);
+
+  if (["xls", "xlsx"].includes(extension)) {
+    return "cell";
+  }
+
+  if (["ppt", "pptx"].includes(extension)) {
+    return "slide";
+  }
+
+  return "word";
+}
+
+function getDocumentKey(file) {
+  const key = window.btoa(unescape(encodeURIComponent(`${file.path}-${file.modifiedAt || ""}-${file.size || 0}`)));
+  return key.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 120);
+}
+
+function loadOnlyOfficeScript(serverUrl) {
+  if (window.DocsAPI?.DocEditor) {
+    return Promise.resolve();
+  }
+
+  if (!onlyOfficeScriptPromise) {
+    onlyOfficeScriptPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = `${serverUrl}/web-apps/apps/api/documents/api.js`;
+      script.async = true;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error("OnlyOffice editor failed to load."));
+      document.body.appendChild(script);
+    });
+  }
+
+  return onlyOfficeScriptPromise;
+}
+
 const SanayaFiles = () => {
   const [files, setFiles] = useState([]);
+  const [fileActivity, setFileActivity] = useState({});
   const [path, setPath] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [currentAction, setCurrentAction] = useState("");
   const [previewFile, setPreviewFile] = useState(null);
+  const [editorError, setEditorError] = useState("");
   const fileInputRef = useRef(null);
   const replaceInputRef = useRef(null);
+  const editorRef = useRef(null);
+  const onlyOfficeServer = (process.env.REACT_APP_ONLYOFFICE_DOCUMENT_SERVER_URL || "").replace(/\/$/, "");
+  const publicSiteUrl = (process.env.REACT_APP_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, "");
   const navigate = useNavigate();
 
   const crumbs = useMemo(() => path.split("/").filter(Boolean), [path]);
@@ -77,9 +124,17 @@ const SanayaFiles = () => {
         }
 
         const data = await listSupabaseFiles(query.get("path") || "");
+        const filePaths = (data || []).filter((item) => item.type === "file").map((item) => item.path);
 
         setFiles(data || []);
         setPath(query.get("path") || "");
+
+        try {
+          setFileActivity(await listSupabaseFileActivity(filePaths));
+        } catch (activityError) {
+          setFileActivity({});
+          console.warn(activityError);
+        }
       } catch (error) {
         if (error.message === "AUTH_REQUIRED") {
           navigate("/login");
@@ -106,9 +161,22 @@ const SanayaFiles = () => {
     loadFiles(crumbs.slice(0, -1).join("/"));
   };
 
-  const downloadFile = async (filePath) => {
+  const recordActivity = async (file, action) => {
     try {
+      await logSupabaseFileActivity(file, action);
+      await loadFiles(path);
+    } catch (error) {
+      console.warn(error);
+    }
+  };
+
+  const downloadFile = async (file) => {
+    try {
+      const filePath = typeof file === "string" ? file : file.path;
       const url = await createSupabaseDownloadUrl(filePath);
+      if (typeof file !== "string") {
+        await recordActivity(file, "downloaded");
+      }
       window.location.href = url;
     } catch (error) {
       if (error.message === "AUTH_REQUIRED") {
@@ -122,7 +190,7 @@ const SanayaFiles = () => {
 
   const openFile = async (file) => {
     if (!canPreviewOfficeFile(file)) {
-      await downloadFile(file.path);
+      await downloadFile(file);
       return;
     }
 
@@ -131,11 +199,13 @@ const SanayaFiles = () => {
 
     try {
       const url = await createSupabaseDownloadUrl(file.path);
+      await recordActivity(file, "viewed");
       setPreviewFile({
         ...file,
-        downloadUrl: url,
+        editorUrl: onlyOfficeServer ? url : "",
         viewerUrl: getOfficeViewerUrl(url),
       });
+      setEditorError("");
     } catch (error) {
       if (error.message === "AUTH_REQUIRED") {
         navigate("/login");
@@ -181,6 +251,14 @@ const SanayaFiles = () => {
     await runFileAction(async () => {
       for (const selectedFile of selectedFiles) {
         await uploadSupabaseFile(path, selectedFile);
+        try {
+          await logSupabaseFileActivity({
+            name: selectedFile.name,
+            path: [path, selectedFile.name].filter(Boolean).join("/"),
+          }, "updated");
+        } catch (error) {
+          console.warn(error);
+        }
       }
     }, `${selectedFiles.length} file${selectedFiles.length === 1 ? "" : "s"} uploaded.`);
   };
@@ -207,11 +285,80 @@ const SanayaFiles = () => {
       setPreviewFile((current) => current && {
         ...current,
         size: selectedFile.size,
-        downloadUrl: url,
+        editorUrl: onlyOfficeServer ? url : "",
         viewerUrl: getOfficeViewerUrl(url),
       });
+      try {
+        await logSupabaseFileActivity(previewFile, "updated");
+      } catch (error) {
+        console.warn(error);
+      }
     }, "File changes saved.");
   };
+
+  useEffect(() => {
+    if (!previewFile || !onlyOfficeServer || !previewFile.editorUrl) {
+      return undefined;
+    }
+
+    let editor = null;
+    let isCancelled = false;
+    const userEmail = getSupabaseUserEmail();
+
+    loadOnlyOfficeScript(onlyOfficeServer)
+      .then(() => {
+        if (isCancelled) {
+          return;
+        }
+
+        const callbackUrl = `${publicSiteUrl}/api/onlyoffice?path=${encodeURIComponent(previewFile.path)}&fileName=${encodeURIComponent(previewFile.name)}&userEmail=${encodeURIComponent(userEmail)}`;
+
+        editor = new window.DocsAPI.DocEditor("onlyoffice-editor", {
+          document: {
+            fileType: getFileExtension(previewFile.name),
+            key: getDocumentKey(previewFile),
+            title: previewFile.name,
+            url: previewFile.editorUrl,
+            permissions: {
+              download: true,
+              edit: true,
+              print: true,
+            },
+          },
+          documentType: getOnlyOfficeDocumentType(previewFile.name),
+          editorConfig: {
+            callbackUrl,
+            lang: "en",
+            mode: "edit",
+            user: {
+              id: userEmail || "sanaya-user",
+              name: userEmail || "Sanaya user",
+            },
+            customization: {
+              autosave: true,
+              forcesave: true,
+            },
+          },
+          events: {
+            onAppReady: () => setEditorError(""),
+            onError: () => setEditorError("OnlyOffice could not open this file."),
+          },
+          height: "100%",
+          width: "100%",
+        });
+
+        editorRef.current = editor;
+      })
+      .catch((error) => setEditorError(error.message));
+
+    return () => {
+      isCancelled = true;
+      if (editor?.destroyEditor) {
+        editor.destroyEditor();
+      }
+      editorRef.current = null;
+    };
+  }, [onlyOfficeServer, previewFile, publicSiteUrl]);
 
   const createFolder = async () => {
     const folderName = window.prompt("New folder name");
@@ -377,7 +524,7 @@ const SanayaFiles = () => {
             {files.map((file) => (
               <div
                 key={`${file.type}-${file.path}`}
-                className="grid grid-cols-[1fr_auto] items-center gap-4 px-5 py-4 transition hover:bg-slate-50 md:grid-cols-[1fr_130px_170px_150px]"
+                className="grid grid-cols-[1fr_auto] items-center gap-4 px-5 py-4 transition hover:bg-slate-50 md:grid-cols-[1fr_120px_140px_220px_150px]"
               >
                 <button
                   type="button"
@@ -398,6 +545,15 @@ const SanayaFiles = () => {
                 <span className="hidden text-sm text-slate-500 md:block">
                   {file.modifiedAt ? new Date(file.modifiedAt).toLocaleDateString() : ""}
                 </span>
+                <span className="hidden text-xs leading-5 text-slate-500 md:block">
+                  {fileActivity[file.path]?.updated
+                    ? `Updated by ${fileActivity[file.path].updated.email}`
+                    : fileActivity[file.path]?.viewed
+                      ? `Viewed by ${fileActivity[file.path].viewed.email}`
+                      : fileActivity[file.path]?.downloaded
+                        ? `Downloaded by ${fileActivity[file.path].downloaded.email}`
+                        : ""}
+                </span>
                 <div className="flex items-center justify-end gap-2">
                   {canPreviewOfficeFile(file) && (
                     <button
@@ -414,7 +570,7 @@ const SanayaFiles = () => {
                   {file.type === "file" && (
                     <button
                       type="button"
-                      onClick={() => downloadFile(file.path)}
+                      onClick={() => downloadFile(file)}
                       className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-900 transition hover:border-teal-400 hover:text-teal-700"
                       aria-label={`Download ${file.name}`}
                       title="Download"
@@ -465,11 +621,11 @@ const SanayaFiles = () => {
                   className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 px-3 text-sm font-semibold text-slate-900 transition hover:border-teal-400 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <FaFloppyDisk />
-                  Save
+                  Upload Copy
                 </button>
                 <button
                   type="button"
-                  onClick={() => downloadFile(previewFile.path)}
+                  onClick={() => downloadFile(previewFile)}
                   className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-900 transition hover:border-teal-400 hover:text-teal-700"
                   aria-label={`Download ${previewFile.name}`}
                   title="Download"
@@ -487,11 +643,27 @@ const SanayaFiles = () => {
                 </button>
               </div>
             </div>
-            <iframe
-              title={`Preview ${previewFile.name}`}
-              src={previewFile.viewerUrl}
-              className="min-h-0 flex-1 border-0"
-            />
+            {onlyOfficeServer ? (
+              <div className="relative min-h-0 flex-1">
+                {editorError && (
+                  <p className="absolute left-4 top-4 z-10 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {editorError}
+                  </p>
+                )}
+                <div id="onlyoffice-editor" className="h-full w-full" />
+              </div>
+            ) : (
+              <div className="flex min-h-0 flex-1 flex-col">
+                <p className="border-b border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  Live editing needs an OnlyOffice Document Server URL. This preview is read-only.
+                </p>
+                <iframe
+                  title={`Preview ${previewFile.name}`}
+                  src={previewFile.viewerUrl}
+                  className="min-h-0 flex-1 border-0"
+                />
+              </div>
+            )}
           </section>
         </div>
       )}

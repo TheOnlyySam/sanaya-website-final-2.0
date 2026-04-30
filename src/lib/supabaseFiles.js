@@ -1,6 +1,7 @@
 const SESSION_KEY = "sanaya_supabase_session";
 const DEFAULT_BUCKET = "sanaya-files";
 const FOLDER_PLACEHOLDER = ".emptyFolderPlaceholder";
+const ACTIVITY_TABLE = "sanaya_file_activity";
 
 function getConfig() {
   const url = process.env.REACT_APP_SUPABASE_URL;
@@ -87,6 +88,10 @@ export function isSupabaseAuthenticated() {
   return Boolean(getStoredSession());
 }
 
+export function getSupabaseUserEmail() {
+  return getStoredSession()?.user?.email || "";
+}
+
 export function logoutSupabaseFiles() {
   localStorage.removeItem(SESSION_KEY);
 }
@@ -136,6 +141,67 @@ export async function listSupabaseFiles(path = "") {
     }));
 }
 
+export async function listSupabaseFileActivity(paths = []) {
+  if (!paths.length) {
+    return {};
+  }
+
+  const config = getAuthedConfig();
+  const encodedPaths = paths.map((path) => `"${String(path).replace(/"/g, '\\"')}"`).join(",");
+  const query = new URLSearchParams({
+    select: "file_path,action,user_email,created_at",
+    file_path: `in.(${encodedPaths})`,
+    order: "created_at.desc",
+    limit: "500",
+  });
+
+  const response = await fetch(`${config.url}/rest/v1/${ACTIVITY_TABLE}?${query.toString()}`, {
+    headers: authHeaders(config),
+  });
+  const rows = await parseResponse(response);
+  const activity = {};
+
+  for (const row of rows || []) {
+    const current = activity[row.file_path] || {};
+
+    if (!current[row.action]) {
+      current[row.action] = {
+        email: row.user_email,
+        at: row.created_at,
+      };
+    }
+
+    activity[row.file_path] = current;
+  }
+
+  return activity;
+}
+
+export async function logSupabaseFileActivity(file, action) {
+  const config = getAuthedConfig();
+  const userEmail = getSupabaseUserEmail();
+
+  if (!userEmail) {
+    return null;
+  }
+
+  const response = await fetch(`${config.url}/rest/v1/${ACTIVITY_TABLE}`, {
+    method: "POST",
+    headers: authHeaders(config, {
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    }),
+    body: JSON.stringify({
+      file_path: file.path,
+      file_name: file.name,
+      action,
+      user_email: userEmail,
+    }),
+  });
+
+  return parseResponse(response);
+}
+
 export async function createSupabaseDownloadUrl(path) {
   const config = getAuthedConfig();
 
@@ -144,7 +210,7 @@ export async function createSupabaseDownloadUrl(path) {
     headers: authHeaders(config, {
       "Content-Type": "application/json",
     }),
-    body: JSON.stringify({ expiresIn: 60 }),
+    body: JSON.stringify({ expiresIn: 3600 }),
   });
   const data = await parseResponse(response);
 
