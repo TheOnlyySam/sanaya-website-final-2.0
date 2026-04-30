@@ -151,6 +151,21 @@ export async function createSupabaseDownloadUrl(path) {
   return data.signedURL?.startsWith("http") ? data.signedURL : `${config.url}/storage/v1${data.signedURL}`;
 }
 
+export async function replaceSupabaseFile(path, file) {
+  const config = getAuthedConfig();
+
+  const response = await fetch(`${config.url}/storage/v1/object/${config.bucket}/${encodeStoragePath(path)}`, {
+    method: "POST",
+    headers: authHeaders(config, {
+      "Content-Type": file.type || "application/octet-stream",
+      "x-upsert": "true",
+    }),
+    body: file,
+  });
+
+  return parseResponse(response);
+}
+
 export async function uploadSupabaseFile(folderPath, file) {
   const config = getAuthedConfig();
   const targetPath = joinPath(folderPath, file.name);

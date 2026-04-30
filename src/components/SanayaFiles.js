@@ -4,13 +4,16 @@ import {
   FaArrowLeft,
   FaArrowRotateRight,
   FaDownload,
+  FaEye,
   FaFile,
+  FaFloppyDisk,
   FaFolder,
   FaFolderPlus,
   FaPen,
   FaRightFromBracket,
   FaTrash,
   FaUpload,
+  FaXmark,
 } from "react-icons/fa6";
 import {
   createSupabaseFolder,
@@ -20,8 +23,11 @@ import {
   listSupabaseFiles,
   logoutSupabaseFiles,
   renameSupabaseItem,
+  replaceSupabaseFile,
   uploadSupabaseFile,
 } from "../lib/supabaseFiles";
+
+const OFFICE_EXTENSIONS = new Set(["doc", "docx", "xls", "xlsx", "ppt", "pptx"]);
 
 function formatBytes(size) {
   if (!size) {
@@ -33,13 +39,27 @@ function formatBytes(size) {
   return `${(size / 1024 ** index).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
 }
 
+function getFileExtension(name = "") {
+  return name.split(".").pop()?.toLowerCase() || "";
+}
+
+function canPreviewOfficeFile(file) {
+  return file.type === "file" && OFFICE_EXTENSIONS.has(getFileExtension(file.name));
+}
+
+function getOfficeViewerUrl(fileUrl) {
+  return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+}
+
 const SanayaFiles = () => {
   const [files, setFiles] = useState([]);
   const [path, setPath] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [currentAction, setCurrentAction] = useState("");
+  const [previewFile, setPreviewFile] = useState(null);
   const fileInputRef = useRef(null);
+  const replaceInputRef = useRef(null);
   const navigate = useNavigate();
 
   const crumbs = useMemo(() => path.split("/").filter(Boolean), [path]);
@@ -100,6 +120,34 @@ const SanayaFiles = () => {
     }
   };
 
+  const openFile = async (file) => {
+    if (!canPreviewOfficeFile(file)) {
+      await downloadFile(file.path);
+      return;
+    }
+
+    setCurrentAction("working");
+    setMessage("");
+
+    try {
+      const url = await createSupabaseDownloadUrl(file.path);
+      setPreviewFile({
+        ...file,
+        downloadUrl: url,
+        viewerUrl: getOfficeViewerUrl(url),
+      });
+    } catch (error) {
+      if (error.message === "AUTH_REQUIRED") {
+        navigate("/login");
+        return;
+      }
+
+      setMessage(error.message);
+    } finally {
+      setCurrentAction("");
+    }
+  };
+
   const runFileAction = async (action, successMessage) => {
     setCurrentAction("working");
     setMessage("");
@@ -135,6 +183,34 @@ const SanayaFiles = () => {
         await uploadSupabaseFile(path, selectedFile);
       }
     }, `${selectedFiles.length} file${selectedFiles.length === 1 ? "" : "s"} uploaded.`);
+  };
+
+  const handleReplaceFile = async (event) => {
+    const selectedFile = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!selectedFile || !previewFile) {
+      return;
+    }
+
+    const selectedExtension = getFileExtension(selectedFile.name);
+    const previewExtension = getFileExtension(previewFile.name);
+
+    if (selectedExtension !== previewExtension) {
+      setMessage(`Please choose a .${previewExtension} file to replace "${previewFile.name}".`);
+      return;
+    }
+
+    await runFileAction(async () => {
+      await replaceSupabaseFile(previewFile.path, selectedFile);
+      const url = await createSupabaseDownloadUrl(previewFile.path);
+      setPreviewFile((current) => current && {
+        ...current,
+        size: selectedFile.size,
+        downloadUrl: url,
+        viewerUrl: getOfficeViewerUrl(url),
+      });
+    }, "File changes saved.");
   };
 
   const createFolder = async () => {
@@ -196,6 +272,13 @@ const SanayaFiles = () => {
               multiple
               className="hidden"
               onChange={handleUpload}
+            />
+            <input
+              ref={replaceInputRef}
+              type="file"
+              className="hidden"
+              onChange={handleReplaceFile}
+              accept={previewFile ? `.${getFileExtension(previewFile.name)}` : undefined}
             />
             <button
               type="button"
@@ -298,7 +381,7 @@ const SanayaFiles = () => {
               >
                 <button
                   type="button"
-                  onClick={() => (file.type === "dir" ? openFolder(file.path) : downloadFile(file.path))}
+                  onClick={() => (file.type === "dir" ? openFolder(file.path) : openFile(file))}
                   className="flex min-w-0 items-center gap-3 text-left"
                 >
                   <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${file.type === "dir" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}`}>
@@ -316,6 +399,18 @@ const SanayaFiles = () => {
                   {file.modifiedAt ? new Date(file.modifiedAt).toLocaleDateString() : ""}
                 </span>
                 <div className="flex items-center justify-end gap-2">
+                  {canPreviewOfficeFile(file) && (
+                    <button
+                      type="button"
+                      onClick={() => openFile(file)}
+                      disabled={Boolean(currentAction)}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-900 transition hover:border-teal-400 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label={`Preview ${file.name}`}
+                      title="Preview"
+                    >
+                      <FaEye />
+                    </button>
+                  )}
                   {file.type === "file" && (
                     <button
                       type="button"
@@ -353,6 +448,53 @@ const SanayaFiles = () => {
           </div>
         </div>
       </section>
+
+      {previewFile && (
+        <div className="fixed inset-0 z-[100] flex bg-slate-950/80 p-3 backdrop-blur-sm sm:p-5">
+          <section className="flex min-h-0 w-full flex-col overflow-hidden rounded-2xl bg-white shadow-[0_30px_120px_rgba(15,23,42,0.35)]">
+            <div className="flex flex-col gap-3 border-b border-slate-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-slate-950">{previewFile.name}</p>
+                <p className="text-xs text-slate-500">{formatBytes(previewFile.size)}</p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => replaceInputRef.current?.click()}
+                  disabled={Boolean(currentAction)}
+                  className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 px-3 text-sm font-semibold text-slate-900 transition hover:border-teal-400 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <FaFloppyDisk />
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => downloadFile(previewFile.path)}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-900 transition hover:border-teal-400 hover:text-teal-700"
+                  aria-label={`Download ${previewFile.name}`}
+                  title="Download"
+                >
+                  <FaDownload />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewFile(null)}
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-950 text-white transition hover:bg-slate-800"
+                  aria-label="Close preview"
+                  title="Close"
+                >
+                  <FaXmark />
+                </button>
+              </div>
+            </div>
+            <iframe
+              title={`Preview ${previewFile.name}`}
+              src={previewFile.viewerUrl}
+              className="min-h-0 flex-1 border-0"
+            />
+          </section>
+        </div>
+      )}
     </main>
   );
 };
