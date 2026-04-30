@@ -2,6 +2,8 @@ const SESSION_KEY = "sanaya_supabase_session";
 const DEFAULT_BUCKET = "sanaya-files";
 const FOLDER_PLACEHOLDER = ".emptyFolderPlaceholder";
 const ACTIVITY_TABLE = "sanaya_file_activity";
+const USER_ROLES_TABLE = "sanaya_file_user_roles";
+const VISIBILITY_TABLE = "sanaya_file_visibility";
 
 function getConfig() {
   const url = process.env.REACT_APP_SUPABASE_URL;
@@ -112,6 +114,73 @@ export async function loginSupabaseFiles(email, password) {
   return session;
 }
 
+export async function requestSupabasePasswordReset(email) {
+  const { url, anonKey } = getConfig();
+  const redirectTo = `${window.location.origin}/reset-password`;
+  const response = await fetch(`${url}/auth/v1/recover`, {
+    method: "POST",
+    headers: {
+      apikey: anonKey,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, redirect_to: redirectTo }),
+  });
+
+  return parseResponse(response);
+}
+
+export async function storeSupabaseSessionFromHash(hash = window.location.hash) {
+  const params = new URLSearchParams(String(hash).replace(/^#/, ""));
+  const accessToken = params.get("access_token");
+  const refreshToken = params.get("refresh_token");
+  const expiresIn = Number(params.get("expires_in") || 3600);
+  const tokenType = params.get("token_type") || "bearer";
+
+  if (!accessToken) {
+    return null;
+  }
+
+  const { url, anonKey } = getConfig();
+  const userResponse = await fetch(`${url}/auth/v1/user`, {
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const user = await parseResponse(userResponse);
+  const session = {
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    expires_at: Math.floor(Date.now() / 1000) + expiresIn,
+    token_type: tokenType,
+    user,
+  };
+
+  localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  window.history.replaceState(null, "", window.location.pathname);
+
+  return session;
+}
+
+export async function updateSupabasePassword(password) {
+  const config = getAuthedConfig();
+  const response = await fetch(`${config.url}/auth/v1/user`, {
+    method: "PUT",
+    headers: authHeaders(config, {
+      "Content-Type": "application/json",
+    }),
+    body: JSON.stringify({ password }),
+  });
+  const user = await parseResponse(response);
+
+  localStorage.setItem(SESSION_KEY, JSON.stringify({
+    ...config.session,
+    user,
+  }));
+
+  return user;
+}
+
 export async function listSupabaseFiles(path = "") {
   const config = getAuthedConfig();
 
@@ -197,6 +266,95 @@ export async function logSupabaseFileActivity(file, action) {
       action,
       user_email: userEmail,
     }),
+  });
+
+  return parseResponse(response);
+}
+
+export async function getSupabaseFileUserRole() {
+  const config = getAuthedConfig();
+  const email = getSupabaseUserEmail();
+
+  if (!email) {
+    return "user";
+  }
+
+  const query = new URLSearchParams({
+    select: "role",
+    email: `eq.${email}`,
+    limit: "1",
+  });
+  const response = await fetch(`${config.url}/rest/v1/${USER_ROLES_TABLE}?${query.toString()}`, {
+    headers: authHeaders(config),
+  });
+  const rows = await parseResponse(response);
+
+  return rows?.[0]?.role === "admin" ? "admin" : "user";
+}
+
+export async function listSupabaseFileUsers() {
+  const config = getAuthedConfig();
+  const query = new URLSearchParams({
+    select: "email,role",
+    order: "email.asc",
+  });
+  const response = await fetch(`${config.url}/rest/v1/${USER_ROLES_TABLE}?${query.toString()}`, {
+    headers: authHeaders(config),
+  });
+
+  return parseResponse(response);
+}
+
+export async function listSupabaseFileVisibility(paths = [], email = getSupabaseUserEmail()) {
+  if (!paths.length) {
+    return {};
+  }
+
+  const config = getAuthedConfig();
+  const encodedPaths = paths.map((path) => `"${String(path).replace(/"/g, '\\"')}"`).join(",");
+  const query = new URLSearchParams({
+    select: "path,email,hidden",
+    path: `in.(${encodedPaths})`,
+  });
+
+  if (email) {
+    query.set("email", `eq.${email}`);
+  }
+
+  const response = await fetch(`${config.url}/rest/v1/${VISIBILITY_TABLE}?${query.toString()}`, {
+    headers: authHeaders(config),
+  });
+  const rows = await parseResponse(response);
+
+  return (rows || []).reduce((visibility, row) => ({
+    ...visibility,
+    [row.path]: Boolean(row.hidden),
+  }), {});
+}
+
+export async function listSupabaseFileVisibilityForPath(path) {
+  const config = getAuthedConfig();
+  const query = new URLSearchParams({
+    select: "path,email,hidden,updated_at",
+    path: `eq.${path}`,
+    order: "email.asc",
+  });
+  const response = await fetch(`${config.url}/rest/v1/${VISIBILITY_TABLE}?${query.toString()}`, {
+    headers: authHeaders(config),
+  });
+
+  return parseResponse(response);
+}
+
+export async function setSupabaseFileHidden(path, email, hidden) {
+  const config = getAuthedConfig();
+  const response = await fetch(`${config.url}/rest/v1/${VISIBILITY_TABLE}`, {
+    method: "POST",
+    headers: authHeaders(config, {
+      "Content-Type": "application/json",
+      Prefer: "resolution=merge-duplicates,return=minimal",
+    }),
+    body: JSON.stringify({ path, email, hidden, updated_at: new Date().toISOString() }),
   });
 
   return parseResponse(response);

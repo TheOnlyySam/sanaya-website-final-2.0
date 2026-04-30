@@ -20,6 +20,7 @@ services:
     restart: unless-stopped
     environment:
       JWT_ENABLED: "false"
+      JWT_SECRET: ""
     volumes:
       - onlyoffice_data:/var/www/onlyoffice/Data
       - onlyoffice_logs:/var/log/onlyoffice

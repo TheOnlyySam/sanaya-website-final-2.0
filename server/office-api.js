@@ -61,6 +61,14 @@ async function logActivity(config, filePath, fileName, userEmail) {
 async function handleOnlyOfficeCallback(req, res) {
   const body = req.body || {};
 
+  console.log("ONLYOFFICE callback received:", {
+    status: body.status,
+    hasUrl: Boolean(body.url),
+    path: req.query.path,
+    fileName: req.query.fileName,
+    userEmail: req.query.userEmail,
+  });
+
   if (![2, 6].includes(body.status)) {
     return res.status(200).json({ error: 0 });
   }
@@ -71,8 +79,24 @@ async function handleOnlyOfficeCallback(req, res) {
     const fileName = String(req.query.fileName || filePath.split("/").pop() || "");
     const userEmail = String(req.query.userEmail || "");
 
-    if (!filePath || !body.url) {
+    if (!filePath) {
       throw new Error("Missing OnlyOffice callback data.");
+    }
+
+    if (body.status === 6) {
+      await logActivity(config, filePath, fileName, userEmail);
+      console.log("ONLYOFFICE edit noted:", {
+        filePath,
+        fileName,
+        userEmail,
+        status: body.status,
+      });
+
+      return res.status(200).json({ error: 0 });
+    }
+
+    if (!body.url) {
+      throw new Error("Missing OnlyOffice edited document URL.");
     }
 
     const documentResponse = await fetch(body.url);
@@ -95,6 +119,12 @@ async function handleOnlyOfficeCallback(req, res) {
 
     await parseResponse(uploadResponse);
     await logActivity(config, filePath, fileName, userEmail);
+    console.log("ONLYOFFICE file saved:", {
+      filePath,
+      fileName,
+      userEmail,
+      status: body.status,
+    });
 
     return res.status(200).json({ error: 0 });
   } catch (error) {

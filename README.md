@@ -83,6 +83,78 @@ to authenticated
 with check (auth.email() = user_email);
 ```
 
+Create these tables to allow admins to hide or show files and folders for selected user emails:
+
+```sql
+create table public.sanaya_file_user_roles (
+  email text primary key,
+  role text not null check (role in ('admin', 'user')) default 'user',
+  created_at timestamptz not null default now()
+);
+
+alter table public.sanaya_file_user_roles enable row level security;
+
+create policy "Authenticated users can read file roles"
+on public.sanaya_file_user_roles
+for select
+to authenticated
+using (true);
+
+create table public.sanaya_file_visibility (
+  path text not null,
+  email text not null,
+  hidden boolean not null default false,
+  updated_at timestamptz not null default now(),
+  primary key (path, email)
+);
+
+alter table public.sanaya_file_visibility enable row level security;
+
+create policy "Authenticated users can read file visibility"
+on public.sanaya_file_visibility
+for select
+to authenticated
+using (true);
+
+create policy "Admins can change file visibility"
+on public.sanaya_file_visibility
+for insert
+to authenticated
+with check (
+  exists (
+    select 1
+    from public.sanaya_file_user_roles
+    where email = auth.email()
+    and role = 'admin'
+  )
+);
+
+create policy "Admins can update file visibility"
+on public.sanaya_file_visibility
+for update
+to authenticated
+using (
+  exists (
+    select 1
+    from public.sanaya_file_user_roles
+    where email = auth.email()
+    and role = 'admin'
+  )
+)
+with check (
+  exists (
+    select 1
+    from public.sanaya_file_user_roles
+    where email = auth.email()
+    and role = 'admin'
+  )
+);
+
+insert into public.sanaya_file_user_roles (email, role)
+values ('admin@example.com', 'admin')
+on conflict (email) do update set role = excluded.role;
+```
+
 The navbar login opens `/login`. After login, users can access `/sanaya-files`.
 
 ## DigitalOcean Office Editing Server

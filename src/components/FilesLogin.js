@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaLock, FaRightToBracket } from "react-icons/fa6";
-import { loginSupabaseFiles } from "../lib/supabaseFiles";
+import { FaKey, FaLock, FaRightToBracket } from "react-icons/fa6";
+import { loginSupabaseFiles, requestSupabasePasswordReset } from "../lib/supabaseFiles";
 
 const FilesLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("error");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -14,11 +15,34 @@ const FilesLogin = () => {
     event.preventDefault();
     setIsLoading(true);
     setMessage("");
+    setMessageType("error");
 
     try {
       await loginSupabaseFiles(email, password);
       navigate("/sanaya-files");
     } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePasswordReset = async () => {
+    if (!email) {
+      setMessageType("error");
+      setMessage("Enter your email first, then request a password reset.");
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage("");
+
+    try {
+      await requestSupabasePasswordReset(email);
+      setMessageType("success");
+      setMessage("Password reset email sent. Check your inbox.");
+    } catch (error) {
+      setMessageType("error");
       setMessage(error.message);
     } finally {
       setIsLoading(false);
@@ -72,7 +96,11 @@ const FilesLogin = () => {
           />
 
           {message && (
-            <p className="mt-4 rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <p className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${
+              messageType === "success"
+                ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                : "border-red-100 bg-red-50 text-red-700"
+            }`}>
               {message}
             </p>
           )}
@@ -84,6 +112,16 @@ const FilesLogin = () => {
           >
             <FaRightToBracket />
             {isLoading ? "Signing in..." : "Open Files"}
+          </button>
+
+          <button
+            type="button"
+            onClick={handlePasswordReset}
+            disabled={isLoading}
+            className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:border-teal-400 hover:text-teal-700 disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            <FaKey />
+            Reset Password
           </button>
         </form>
       </section>

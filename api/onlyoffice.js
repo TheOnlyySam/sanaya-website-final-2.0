@@ -71,8 +71,17 @@ export default async function handler(req, res) {
     const fileName = String(req.query.fileName || filePath.split("/").pop() || "");
     const userEmail = String(req.query.userEmail || "");
 
-    if (!filePath || !body.url) {
+    if (!filePath) {
       throw new Error("Missing OnlyOffice callback data.");
+    }
+
+    if (body.status === 6) {
+      await logActivity(config, filePath, fileName, userEmail);
+      return res.status(200).json({ error: 0 });
+    }
+
+    if (!body.url) {
+      throw new Error("Missing OnlyOffice edited document URL.");
     }
 
     const documentResponse = await fetch(body.url);

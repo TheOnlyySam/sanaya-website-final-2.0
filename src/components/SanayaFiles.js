@@ -5,6 +5,7 @@ import {
   FaArrowRotateRight,
   FaDownload,
   FaEye,
+  FaEyeSlash,
   FaFile,
   FaFloppyDisk,
   FaFolder,
@@ -20,13 +21,18 @@ import {
   createSupabaseDownloadUrl,
   deleteSupabaseFolder,
   deleteSupabaseItems,
+  getSupabaseFileUserRole,
   getSupabaseUserEmail,
   listSupabaseFiles,
   listSupabaseFileActivity,
+  listSupabaseFileUsers,
+  listSupabaseFileVisibilityForPath,
+  listSupabaseFileVisibility,
   logSupabaseFileActivity,
   logoutSupabaseFiles,
   renameSupabaseItem,
   replaceSupabaseFile,
+  setSupabaseFileHidden,
   uploadSupabaseFile,
 } from "../lib/supabaseFiles";
 
@@ -84,7 +90,9 @@ function formatActivity(activity) {
     return "No activity yet";
   }
 
-  const actionLabel = activity.action.charAt(0).toUpperCase() + activity.action.slice(1);
+  const actionLabel = activity.action === "updated"
+    ? "Edited"
+    : activity.action.charAt(0).toUpperCase() + activity.action.slice(1);
   const date = new Date(activity.at);
   const when = Number.isNaN(date.getTime()) ? "" : ` on ${date.toLocaleDateString()}`;
 
@@ -135,6 +143,8 @@ function loadOnlyOfficeScript(serverUrl) {
 const SanayaFiles = () => {
   const [files, setFiles] = useState([]);
   const [fileActivity, setFileActivity] = useState({});
+  const [fileVisibility, setFileVisibility] = useState({});
+  const [userRole, setUserRole] = useState("user");
   const [path, setPath] = useState("");
   const [message, setMessage] = useState("");
   const [activityWarning, setActivityWarning] = useState("");
@@ -163,10 +173,18 @@ const SanayaFiles = () => {
           query.set("path", nextPath);
         }
 
-        const data = await listSupabaseFiles(query.get("path") || "");
-        const filePaths = (data || []).filter((item) => item.type === "file").map((item) => item.path);
+        const [data, role] = await Promise.all([
+          listSupabaseFiles(query.get("path") || ""),
+          getSupabaseFileUserRole().catch(() => "user"),
+        ]);
+        const itemPaths = (data || []).map((item) => item.path);
+        const visibility = await listSupabaseFileVisibility(itemPaths).catch(() => ({}));
+        const visibleData = role === "admin" ? data || [] : (data || []).filter((item) => !visibility[item.path]);
+        const filePaths = visibleData.filter((item) => item.type === "file").map((item) => item.path);
 
-        setFiles(data || []);
+        setUserRole(role);
+        setFileVisibility(visibility);
+        setFiles(visibleData);
         setPath(query.get("path") || "");
 
         try {
@@ -388,7 +406,7 @@ const SanayaFiles = () => {
             },
             customization: {
               autosave: true,
-              forcesave: true,
+              forcesave: false,
             },
           },
           events: {
@@ -443,6 +461,42 @@ const SanayaFiles = () => {
       () => (item.type === "dir" ? deleteSupabaseFolder(item.path) : deleteSupabaseItems([item.path])),
       "Item deleted."
     );
+  };
+
+  const toggleHidden = async (item) => {
+    let knownUsers = [];
+    let existingRules = [];
+
+    try {
+      [knownUsers, existingRules] = await Promise.all([
+        listSupabaseFileUsers(),
+        listSupabaseFileVisibilityForPath(item.path),
+      ]);
+    } catch (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    const knownEmails = knownUsers.map((user) => user.email).join(", ");
+    const activeRules = existingRules
+      .filter((rule) => rule.hidden)
+      .map((rule) => rule.email)
+      .join(", ");
+    const targetEmail = window.prompt(
+      `Email to hide/show "${item.name}" for${knownEmails ? `\n\nKnown users: ${knownEmails}` : ""}${activeRules ? `\n\nCurrently hidden for: ${activeRules}` : ""}`
+    );
+
+    if (!targetEmail) {
+      return;
+    }
+
+    const normalizedEmail = targetEmail.trim().toLowerCase();
+    const existingRule = existingRules.find((rule) => rule.email.toLowerCase() === normalizedEmail);
+    const nextHidden = !existingRule?.hidden;
+
+    await runFileAction(async () => {
+      await setSupabaseFileHidden(item.path, normalizedEmail, nextHidden);
+    }, nextHidden ? `Item hidden for ${normalizedEmail}.` : `Item visible for ${normalizedEmail}.`);
   };
 
   const logout = () => {
@@ -586,7 +640,7 @@ const SanayaFiles = () => {
               return (
               <div
                 key={`${file.type}-${file.path}`}
-                className="grid grid-cols-[1fr_auto] items-center gap-4 px-5 py-4 transition hover:bg-slate-50 md:grid-cols-[1fr_115px_130px_minmax(280px,1fr)_150px]"
+                className="grid grid-cols-[1fr_auto] items-center gap-4 px-5 py-4 transition hover:bg-slate-50 md:grid-cols-[1fr_115px_130px_minmax(260px,1fr)_190px]"
               >
                 <button
                   type="button"
@@ -603,7 +657,7 @@ const SanayaFiles = () => {
                     </span>
                     {file.type === "file" && (
                       <span className="mt-1 block text-xs leading-5 text-slate-500 md:hidden">
-                        {activityText}
+                        {userRole === "admin" && fileVisibility[file.path] ? "Hidden from you" : activityText}
                       </span>
                     )}
                   </span>
@@ -613,9 +667,21 @@ const SanayaFiles = () => {
                   {file.modifiedAt ? new Date(file.modifiedAt).toLocaleDateString() : ""}
                 </span>
                 <span className="hidden text-xs leading-5 text-slate-500 md:block">
-                  {activityText}
+                  {userRole === "admin" && fileVisibility[file.path] ? "Hidden from you" : activityText}
                 </span>
                 <div className="flex items-center justify-end gap-2">
+                  {userRole === "admin" && (
+                    <button
+                      type="button"
+                      onClick={() => toggleHidden(file)}
+                      disabled={Boolean(currentAction)}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-900 transition hover:border-amber-300 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label={`Visibility rules for ${file.name}`}
+                      title="Visibility by email"
+                    >
+                      <FaEyeSlash />
+                    </button>
+                  )}
                   {canPreviewOfficeFile(file) && (
                     <button
                       type="button"
