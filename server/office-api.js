@@ -114,6 +114,14 @@ app.get("/health", (req, res) => {
   res.json({ ok: true });
 });
 
+app.get("/onlyoffice/callback", (req, res) => {
+  res.json({
+    ok: true,
+    message: "OnlyOffice callback is ready. ONLYOFFICE must POST save events to this URL.",
+    query: req.query,
+  });
+});
+
 app.post("/onlyoffice/callback", handleOnlyOfficeCallback);
 
 app.listen(PORT, () => {
