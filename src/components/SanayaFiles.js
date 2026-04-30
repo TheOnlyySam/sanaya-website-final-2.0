@@ -33,6 +33,7 @@ import {
 const OFFICE_EXTENSIONS = new Set(["doc", "docx", "xls", "xlsx", "ppt", "pptx"]);
 const DEFAULT_ONLYOFFICE_DOCUMENT_SERVER_URL = "https://office.sanayatechs.com";
 const DEFAULT_ONLYOFFICE_CALLBACK_URL = "https://office-api.sanayatechs.com/onlyoffice/callback";
+const ONLYOFFICE_CONFIG_VERSION = "2026-04-30-save-callback-v2";
 let onlyOfficeScriptPromise = null;
 
 function formatBytes(size) {
@@ -104,8 +105,8 @@ function getOnlyOfficeDocumentType(fileName) {
   return "word";
 }
 
-function getDocumentKey(file) {
-  const key = window.btoa(unescape(encodeURIComponent(`${file.path}-${file.modifiedAt || ""}-${file.size || 0}`)));
+function getDocumentKey(file, callbackUrl) {
+  const key = window.btoa(unescape(encodeURIComponent(`${ONLYOFFICE_CONFIG_VERSION}-${callbackUrl}-${file.path}-${file.modifiedAt || ""}-${file.size || 0}`)));
   return key.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 120);
 }
 
@@ -367,7 +368,7 @@ const SanayaFiles = () => {
         editor = new window.DocsAPI.DocEditor("onlyoffice-editor", {
           document: {
             fileType: getFileExtension(previewFile.name),
-            key: getDocumentKey(previewFile),
+            key: getDocumentKey(previewFile, onlyOfficeCallbackUrl),
             title: previewFile.name,
             url: previewFile.editorUrl,
             permissions: {
