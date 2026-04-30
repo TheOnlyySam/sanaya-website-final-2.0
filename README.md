@@ -27,9 +27,9 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
-## Sanaya Files
+## Sanaya Drive
 
-The private files area uses Supabase Auth and a private Supabase Storage bucket.
+The private drive area uses Supabase Auth and a private Supabase Storage bucket.
 
 In Supabase:
 

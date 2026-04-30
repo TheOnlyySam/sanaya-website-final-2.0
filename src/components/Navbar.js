@@ -135,7 +135,7 @@ const Navbar = () => {
             className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition duration-300 hover:border-teal-400 hover:text-teal-700"
           >
             {filesAuthenticated ? <FaFolderOpen /> : <FaLock />}
-            {filesAuthenticated ? "Sanaya Files" : "Login"}
+            {filesAuthenticated ? "Sanaya Drive" : "Login"}
           </button>
           <a
             href="/Sanaya%20Company%20Profile.pdf"
@@ -207,7 +207,7 @@ const Navbar = () => {
               }}
               className="inline-flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-900"
             >
-              {filesAuthenticated ? "Sanaya Files" : "Login"}
+              {filesAuthenticated ? "Sanaya Drive" : "Login"}
               {filesAuthenticated ? <FaFolderOpen className="text-sm" /> : <FaLock className="text-sm" />}
             </button>
             <a

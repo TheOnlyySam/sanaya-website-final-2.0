@@ -548,10 +548,10 @@ const SanayaFiles = () => {
           <div>
             <p className="section-kicker">Private Library</p>
             <h1 className="mt-3 font-display text-4xl font-bold leading-tight text-slate-950 sm:text-5xl">
-              Sanaya Files
+              Sanaya Drive
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
-              Files are served from a private Supabase Storage bucket after secure login.
+              Drive documents are served from a private Supabase Storage bucket after secure login.
             </p>
           </div>
 
