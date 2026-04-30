@@ -31,6 +31,8 @@ import {
 } from "../lib/supabaseFiles";
 
 const OFFICE_EXTENSIONS = new Set(["doc", "docx", "xls", "xlsx", "ppt", "pptx"]);
+const DEFAULT_ONLYOFFICE_DOCUMENT_SERVER_URL = "https://office.sanayatechs.iq";
+const DEFAULT_ONLYOFFICE_CALLBACK_URL = "https://office-api.sanayatechs.iq/onlyoffice/callback";
 let onlyOfficeScriptPromise = null;
 
 function formatBytes(size) {
@@ -129,8 +131,8 @@ const SanayaFiles = () => {
   const fileInputRef = useRef(null);
   const replaceInputRef = useRef(null);
   const editorRef = useRef(null);
-  const onlyOfficeServer = (process.env.REACT_APP_ONLYOFFICE_DOCUMENT_SERVER_URL || "").replace(/\/$/, "");
-  const onlyOfficeCallbackUrl = (process.env.REACT_APP_ONLYOFFICE_CALLBACK_URL || `${window.location.origin}/api/onlyoffice`).replace(/\/$/, "");
+  const onlyOfficeServer = (process.env.REACT_APP_ONLYOFFICE_DOCUMENT_SERVER_URL || DEFAULT_ONLYOFFICE_DOCUMENT_SERVER_URL).replace(/\/$/, "");
+  const onlyOfficeCallbackUrl = (process.env.REACT_APP_ONLYOFFICE_CALLBACK_URL || DEFAULT_ONLYOFFICE_CALLBACK_URL).replace(/\/$/, "");
   const navigate = useNavigate();
 
   const crumbs = useMemo(() => path.split("/").filter(Boolean), [path]);
