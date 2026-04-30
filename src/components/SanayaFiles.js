@@ -452,6 +452,11 @@ const SanayaFiles = () => {
   };
 
   const deleteItem = async (item) => {
+    if (item.type === "dir" && userRole !== "admin") {
+      setMessage("Only admins can delete folders.");
+      return;
+    }
+
     const confirmed = window.confirm(`Delete "${item.name}"? This cannot be undone.`);
 
     if (!confirmed) {
@@ -673,6 +678,7 @@ const SanayaFiles = () => {
             {files.map((file) => {
               const latestActivity = getLatestFileActivity(fileActivity[file.path]);
               const activityText = file.type === "file" ? formatActivity(latestActivity) : "";
+              const canDeleteItem = userRole === "admin" || file.type !== "dir";
 
               return (
               <div
@@ -752,16 +758,18 @@ const SanayaFiles = () => {
                   >
                     <FaPen />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => deleteItem(file)}
-                    disabled={Boolean(currentAction)}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-900 transition hover:border-red-300 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label={`Delete ${file.name}`}
-                    title="Delete"
-                  >
-                    <FaTrash />
-                  </button>
+                  {canDeleteItem && (
+                    <button
+                      type="button"
+                      onClick={() => deleteItem(file)}
+                      disabled={Boolean(currentAction)}
+                      className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-900 transition hover:border-red-300 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label={`Delete ${file.name}`}
+                      title="Delete"
+                    >
+                      <FaTrash />
+                    </button>
+                  )}
                 </div>
               </div>
               );

@@ -37,6 +37,7 @@ In Supabase:
 - Create a private Storage bucket named `sanaya-files`.
 - Create user accounts in Authentication.
 - Add Storage policies that allow authenticated users to select, insert, update, and delete objects in the `sanaya-files` bucket.
+- In the app, normal `user` accounts can upload files, create folders, rename items, edit Office documents, and delete files. Only `admin` accounts can delete folders and manage visibility rules.
 
 Policy expression for each operation:
 
@@ -151,9 +152,23 @@ with check (
 );
 
 insert into public.sanaya_file_user_roles (email, role)
-values ('admin@example.com', 'admin')
+values
+  ('baqer.haider@sanayatechs.iq', 'user'),
+  ('yousif.ahmed@sanayatechs.iq', 'user'),
+  ('aws.wathiq@sanayatechs.iq', 'user'),
+  ('hasan.sajid@sanayatechs.iq', 'user'),
+  ('sama.kadhim@sanayatechs.iq', 'user'),
+  ('adyan.saady@sanayatechs.iq', 'user')
 on conflict (email) do update set role = excluded.role;
 ```
+
+Create the matching Auth users in Supabase Dashboard > Authentication > Users > Add user:
+
+- Email: each address above.
+- Password: `11223344` for the five new users.
+- Auto confirm user: enabled.
+
+For `adyan.saady@sanayatechs.iq`, only update the role to `user` unless you also want to reset that user's password.
 
 The navbar login opens `/login`. After login, users can access `/sanaya-files`.
 
