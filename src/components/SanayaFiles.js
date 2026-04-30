@@ -151,6 +151,7 @@ const SanayaFiles = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [currentAction, setCurrentAction] = useState("");
   const [previewFile, setPreviewFile] = useState(null);
+  const [visibilityModal, setVisibilityModal] = useState(null);
   const [editorError, setEditorError] = useState("");
   const fileInputRef = useRef(null);
   const replaceInputRef = useRef(null);
@@ -463,40 +464,76 @@ const SanayaFiles = () => {
     );
   };
 
-  const toggleHidden = async (item) => {
-    let knownUsers = [];
-    let existingRules = [];
+  const openVisibilityModal = async (item) => {
+    setCurrentAction("working");
+    setMessage("");
 
     try {
-      [knownUsers, existingRules] = await Promise.all([
+      const [knownUsers, existingRules] = await Promise.all([
         listSupabaseFileUsers(),
         listSupabaseFileVisibilityForPath(item.path),
       ]);
+      const rules = existingRules.reduce((nextRules, rule) => ({
+        ...nextRules,
+        [rule.email.toLowerCase()]: Boolean(rule.hidden),
+      }), {});
+
+      setVisibilityModal({
+        item,
+        users: knownUsers,
+        rules,
+        email: "",
+        message: "",
+      });
     } catch (error) {
       setMessage(error.message);
+    } finally {
+      setCurrentAction("");
+    }
+  };
+
+  const setVisibilityForEmail = async (email, hidden) => {
+    if (!visibilityModal) {
       return;
     }
 
-    const knownEmails = knownUsers.map((user) => user.email).join(", ");
-    const activeRules = existingRules
-      .filter((rule) => rule.hidden)
-      .map((rule) => rule.email)
-      .join(", ");
-    const targetEmail = window.prompt(
-      `Email to hide/show "${item.name}" for${knownEmails ? `\n\nKnown users: ${knownEmails}` : ""}${activeRules ? `\n\nCurrently hidden for: ${activeRules}` : ""}`
-    );
+    const normalizedEmail = email.trim().toLowerCase();
 
-    if (!targetEmail) {
+    if (!normalizedEmail) {
+      setVisibilityModal((current) => current && {
+        ...current,
+        message: "Enter a user email first.",
+      });
       return;
     }
 
-    const normalizedEmail = targetEmail.trim().toLowerCase();
-    const existingRule = existingRules.find((rule) => rule.email.toLowerCase() === normalizedEmail);
-    const nextHidden = !existingRule?.hidden;
+    setCurrentAction("working");
 
-    await runFileAction(async () => {
-      await setSupabaseFileHidden(item.path, normalizedEmail, nextHidden);
-    }, nextHidden ? `Item hidden for ${normalizedEmail}.` : `Item visible for ${normalizedEmail}.`);
+    try {
+      await setSupabaseFileHidden(visibilityModal.item.path, normalizedEmail, hidden);
+      setVisibilityModal((current) => current && {
+        ...current,
+        rules: {
+          ...current.rules,
+          [normalizedEmail]: hidden,
+        },
+        email: "",
+        message: hidden ? `${normalizedEmail} cannot see this item.` : `${normalizedEmail} can see this item.`,
+      });
+      if (normalizedEmail === getSupabaseUserEmail().toLowerCase()) {
+        setFileVisibility((current) => ({
+          ...current,
+          [visibilityModal.item.path]: hidden,
+        }));
+      }
+    } catch (error) {
+      setVisibilityModal((current) => current && {
+        ...current,
+        message: error.message,
+      });
+    } finally {
+      setCurrentAction("");
+    }
   };
 
   const logout = () => {
@@ -673,7 +710,7 @@ const SanayaFiles = () => {
                   {userRole === "admin" && (
                     <button
                       type="button"
-                      onClick={() => toggleHidden(file)}
+                      onClick={() => openVisibilityModal(file)}
                       disabled={Boolean(currentAction)}
                       className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 text-slate-900 transition hover:border-amber-300 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
                       aria-label={`Visibility rules for ${file.name}`}
@@ -792,6 +829,109 @@ const SanayaFiles = () => {
                 />
               </div>
             )}
+          </section>
+        </div>
+      )}
+
+      {visibilityModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+          <section className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-[0_30px_120px_rgba(15,23,42,0.35)]">
+            <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-slate-500">Visibility Rules</p>
+                <h2 className="mt-1 truncate text-xl font-bold text-slate-950">{visibilityModal.item.name}</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setVisibilityModal(null)}
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-950 text-white transition hover:bg-slate-800"
+                aria-label="Close visibility rules"
+                title="Close"
+              >
+                <FaXmark />
+              </button>
+            </div>
+
+            <div className="max-h-[70vh] overflow-y-auto px-5 py-5">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <label htmlFor="visibility-email" className="text-sm font-semibold text-slate-900">
+                  Add user by email
+                </label>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                  <input
+                    id="visibility-email"
+                    type="email"
+                    value={visibilityModal.email}
+                    onChange={(event) => setVisibilityModal((current) => current && {
+                      ...current,
+                      email: event.target.value,
+                    })}
+                    className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950 outline-none transition focus:border-teal-400"
+                    placeholder="user@sanayatechs.com"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setVisibilityForEmail(visibilityModal.email, true)}
+                    disabled={Boolean(currentAction)}
+                    className="rounded-full border border-red-100 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 transition hover:border-red-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    Hide
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setVisibilityForEmail(visibilityModal.email, false)}
+                    disabled={Boolean(currentAction)}
+                    className="rounded-full border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 transition hover:border-emerald-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    Show
+                  </button>
+                </div>
+              </div>
+
+              {visibilityModal.message && (
+                <p className="mt-4 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                  {visibilityModal.message}
+                </p>
+              )}
+
+              <div className="mt-5 divide-y divide-slate-100 rounded-2xl border border-slate-200">
+                {visibilityModal.users.length === 0 && (
+                  <p className="px-4 py-6 text-center text-sm text-slate-500">No known users yet.</p>
+                )}
+                {visibilityModal.users.map((user) => {
+                  const hidden = Boolean(visibilityModal.rules[user.email.toLowerCase()]);
+
+                  return (
+                    <div key={user.email} className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-950">{user.email}</p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {hidden ? "Hidden for this user" : "Visible for this user"} · {user.role}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setVisibilityForEmail(user.email, true)}
+                          disabled={hidden || Boolean(currentAction)}
+                          className="rounded-full border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-900 transition hover:border-red-200 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Hide
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setVisibilityForEmail(user.email, false)}
+                          disabled={!hidden || Boolean(currentAction)}
+                          className="rounded-full border border-slate-200 px-3 py-2 text-sm font-semibold text-slate-900 transition hover:border-emerald-200 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Show
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </section>
         </div>
       )}

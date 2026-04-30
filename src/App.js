@@ -24,6 +24,11 @@ import ResetPassword from "./components/ResetPassword";
 
 function App() {
   useEffect(() => {
+    if (window.location.hash.includes("type=recovery") && window.location.pathname !== "/reset-password") {
+      window.location.replace(`/reset-password${window.location.hash}`);
+      return;
+    }
+
     AOS.init({
       duration: 900,
       easing: "ease-out-cubic",
