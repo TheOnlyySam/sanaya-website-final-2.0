@@ -57,6 +57,16 @@ function getOfficeViewerUrl(fileUrl) {
   return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
 }
 
+function getOnlyOfficeServerUrl() {
+  const configuredUrl = process.env.REACT_APP_ONLYOFFICE_DOCUMENT_SERVER_URL || "";
+
+  if (!configuredUrl || configuredUrl.includes("/onlyoffice/callback") || configuredUrl.includes("office-api.")) {
+    return DEFAULT_ONLYOFFICE_DOCUMENT_SERVER_URL;
+  }
+
+  return configuredUrl;
+}
+
 function getLatestFileActivity(activity) {
   if (!activity) {
     return null;
@@ -134,7 +144,7 @@ const SanayaFiles = () => {
   const fileInputRef = useRef(null);
   const replaceInputRef = useRef(null);
   const editorRef = useRef(null);
-  const onlyOfficeServer = (process.env.REACT_APP_ONLYOFFICE_DOCUMENT_SERVER_URL || DEFAULT_ONLYOFFICE_DOCUMENT_SERVER_URL).replace(/\/$/, "");
+  const onlyOfficeServer = getOnlyOfficeServerUrl().replace(/\/$/, "");
   const onlyOfficeCallbackUrl = (process.env.REACT_APP_ONLYOFFICE_CALLBACK_URL || DEFAULT_ONLYOFFICE_CALLBACK_URL).replace(/\/$/, "");
   const navigate = useNavigate();
 
