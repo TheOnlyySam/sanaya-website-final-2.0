@@ -52,7 +52,7 @@ Set these environment variables in Vercel:
 - `REACT_APP_SUPABASE_ANON_KEY`: Supabase anon public key.
 - `REACT_APP_SUPABASE_FILES_BUCKET`: usually `sanaya-files`.
 - `REACT_APP_ONLYOFFICE_DOCUMENT_SERVER_URL`: OnlyOffice Docs server URL, for live editing Word, Excel, and PowerPoint files.
-- `REACT_APP_PUBLIC_SITE_URL`: public deployed website URL, used by OnlyOffice to call back into `/api/onlyoffice`.
+- `REACT_APP_ONLYOFFICE_CALLBACK_URL`: public callback URL, usually `https://office-api.example.com/onlyoffice/callback`.
 - `SUPABASE_SERVICE_ROLE_KEY`: Supabase service role key, used only by the server callback to save edited Office files.
 - `SUPABASE_FILES_BUCKET`: usually `sanaya-files`, used by the server callback.
 
@@ -84,6 +84,45 @@ with check (auth.email() = user_email);
 ```
 
 The navbar login opens `/login`. After login, users can access `/sanaya-files`.
+
+## DigitalOcean Office Editing Server
+
+Use this when the frontend is hosted on cPanel and files are stored in Supabase. The DigitalOcean droplet runs:
+
+- ONLYOFFICE Docs Community for free browser editing.
+- A small Node API that receives ONLYOFFICE save callbacks and writes edited files back to Supabase.
+- Caddy for automatic HTTPS.
+
+Create two DNS `A` records that point to the droplet IP, for example:
+
+- `office.example.com`
+- `office-api.example.com`
+
+On the droplet:
+
+```bash
+sudo apt update
+sudo apt install -y docker.io docker-compose-plugin git
+sudo systemctl enable --now docker
+git clone <your-repo-url> sanaya-website
+cd sanaya-website
+cp deploy/digitalocean.env.example .env
+```
+
+Edit `.env`, then start the stack:
+
+```bash
+docker compose --env-file .env -f docker-compose.digitalocean.yml up -d --build
+```
+
+Set these frontend build variables before uploading the cPanel build:
+
+```bash
+REACT_APP_ONLYOFFICE_DOCUMENT_SERVER_URL=https://office.example.com
+REACT_APP_ONLYOFFICE_CALLBACK_URL=https://office-api.example.com/onlyoffice/callback
+```
+
+Then rebuild and upload the `build` folder to cPanel.
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 

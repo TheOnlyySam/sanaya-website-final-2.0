@@ -1,0 +1,7 @@
+{$OFFICE_DOMAIN} {
+  reverse_proxy onlyoffice:80
+}
+
+{$OFFICE_API_DOMAIN} {
+  reverse_proxy office-api:4000
+}

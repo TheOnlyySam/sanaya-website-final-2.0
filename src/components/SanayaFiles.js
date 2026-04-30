@@ -55,6 +55,29 @@ function getOfficeViewerUrl(fileUrl) {
   return `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
 }
 
+function getLatestFileActivity(activity) {
+  if (!activity) {
+    return null;
+  }
+
+  return Object.entries(activity)
+    .map(([action, details]) => ({ action, ...details }))
+    .filter((details) => details.email && details.at)
+    .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())[0] || null;
+}
+
+function formatActivity(activity) {
+  if (!activity) {
+    return "No activity yet";
+  }
+
+  const actionLabel = activity.action.charAt(0).toUpperCase() + activity.action.slice(1);
+  const date = new Date(activity.at);
+  const when = Number.isNaN(date.getTime()) ? "" : ` on ${date.toLocaleDateString()}`;
+
+  return `${actionLabel} by ${activity.email}${when}`;
+}
+
 function getOnlyOfficeDocumentType(fileName) {
   const extension = getFileExtension(fileName);
 
@@ -98,6 +121,7 @@ const SanayaFiles = () => {
   const [fileActivity, setFileActivity] = useState({});
   const [path, setPath] = useState("");
   const [message, setMessage] = useState("");
+  const [activityWarning, setActivityWarning] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [currentAction, setCurrentAction] = useState("");
   const [previewFile, setPreviewFile] = useState(null);
@@ -106,7 +130,7 @@ const SanayaFiles = () => {
   const replaceInputRef = useRef(null);
   const editorRef = useRef(null);
   const onlyOfficeServer = (process.env.REACT_APP_ONLYOFFICE_DOCUMENT_SERVER_URL || "").replace(/\/$/, "");
-  const publicSiteUrl = (process.env.REACT_APP_PUBLIC_SITE_URL || window.location.origin).replace(/\/$/, "");
+  const onlyOfficeCallbackUrl = (process.env.REACT_APP_ONLYOFFICE_CALLBACK_URL || `${window.location.origin}/api/onlyoffice`).replace(/\/$/, "");
   const navigate = useNavigate();
 
   const crumbs = useMemo(() => path.split("/").filter(Boolean), [path]);
@@ -131,9 +155,10 @@ const SanayaFiles = () => {
 
         try {
           setFileActivity(await listSupabaseFileActivity(filePaths));
+          setActivityWarning("");
         } catch (activityError) {
           setFileActivity({});
-          console.warn(activityError);
+          setActivityWarning(`File activity is not available: ${activityError.message}`);
         }
       } catch (error) {
         if (error.message === "AUTH_REQUIRED") {
@@ -164,9 +189,20 @@ const SanayaFiles = () => {
   const recordActivity = async (file, action) => {
     try {
       await logSupabaseFileActivity(file, action);
+      setFileActivity((current) => ({
+        ...current,
+        [file.path]: {
+          ...current[file.path],
+          [action]: {
+            email: getSupabaseUserEmail(),
+            at: new Date().toISOString(),
+          },
+        },
+      }));
+      setActivityWarning("");
       await loadFiles(path);
     } catch (error) {
-      console.warn(error);
+      setActivityWarning(`Could not save file activity: ${error.message}`);
     }
   };
 
@@ -257,7 +293,7 @@ const SanayaFiles = () => {
             path: [path, selectedFile.name].filter(Boolean).join("/"),
           }, "updated");
         } catch (error) {
-          console.warn(error);
+          setActivityWarning(`Could not save file activity: ${error.message}`);
         }
       }
     }, `${selectedFiles.length} file${selectedFiles.length === 1 ? "" : "s"} uploaded.`);
@@ -291,7 +327,7 @@ const SanayaFiles = () => {
       try {
         await logSupabaseFileActivity(previewFile, "updated");
       } catch (error) {
-        console.warn(error);
+        setActivityWarning(`Could not save file activity: ${error.message}`);
       }
     }, "File changes saved.");
   };
@@ -311,7 +347,7 @@ const SanayaFiles = () => {
           return;
         }
 
-        const callbackUrl = `${publicSiteUrl}/api/onlyoffice?path=${encodeURIComponent(previewFile.path)}&fileName=${encodeURIComponent(previewFile.name)}&userEmail=${encodeURIComponent(userEmail)}`;
+        const callbackUrl = `${onlyOfficeCallbackUrl}?path=${encodeURIComponent(previewFile.path)}&fileName=${encodeURIComponent(previewFile.name)}&userEmail=${encodeURIComponent(userEmail)}`;
 
         editor = new window.DocsAPI.DocEditor("onlyoffice-editor", {
           document: {
@@ -358,7 +394,7 @@ const SanayaFiles = () => {
       }
       editorRef.current = null;
     };
-  }, [onlyOfficeServer, previewFile, publicSiteUrl]);
+  }, [onlyOfficeCallbackUrl, onlyOfficeServer, previewFile]);
 
   const createFolder = async () => {
     const folderName = window.prompt("New folder name");
@@ -516,15 +552,25 @@ const SanayaFiles = () => {
             </p>
           )}
 
+          {activityWarning && (
+            <p className="m-5 rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              {activityWarning}
+            </p>
+          )}
+
           {!message && !isLoading && files.length === 0 && (
             <div className="px-5 py-12 text-center text-slate-500">No files found in this folder.</div>
           )}
 
           <div className="divide-y divide-slate-100">
-            {files.map((file) => (
+            {files.map((file) => {
+              const latestActivity = getLatestFileActivity(fileActivity[file.path]);
+              const activityText = file.type === "file" ? formatActivity(latestActivity) : "";
+
+              return (
               <div
                 key={`${file.type}-${file.path}`}
-                className="grid grid-cols-[1fr_auto] items-center gap-4 px-5 py-4 transition hover:bg-slate-50 md:grid-cols-[1fr_120px_140px_220px_150px]"
+                className="grid grid-cols-[1fr_auto] items-center gap-4 px-5 py-4 transition hover:bg-slate-50 md:grid-cols-[1fr_115px_130px_minmax(280px,1fr)_150px]"
               >
                 <button
                   type="button"
@@ -539,6 +585,11 @@ const SanayaFiles = () => {
                     <span className="block text-sm text-slate-500 md:hidden">
                       {file.type === "dir" ? "Folder" : formatBytes(file.size)}
                     </span>
+                    {file.type === "file" && (
+                      <span className="mt-1 block text-xs leading-5 text-slate-500 md:hidden">
+                        {activityText}
+                      </span>
+                    )}
                   </span>
                 </button>
                 <span className="hidden text-sm text-slate-500 md:block">{file.type === "dir" ? "Folder" : formatBytes(file.size)}</span>
@@ -546,13 +597,7 @@ const SanayaFiles = () => {
                   {file.modifiedAt ? new Date(file.modifiedAt).toLocaleDateString() : ""}
                 </span>
                 <span className="hidden text-xs leading-5 text-slate-500 md:block">
-                  {fileActivity[file.path]?.updated
-                    ? `Updated by ${fileActivity[file.path].updated.email}`
-                    : fileActivity[file.path]?.viewed
-                      ? `Viewed by ${fileActivity[file.path].viewed.email}`
-                      : fileActivity[file.path]?.downloaded
-                        ? `Downloaded by ${fileActivity[file.path].downloaded.email}`
-                        : ""}
+                  {activityText}
                 </span>
                 <div className="flex items-center justify-end gap-2">
                   {canPreviewOfficeFile(file) && (
@@ -600,7 +645,8 @@ const SanayaFiles = () => {
                   </button>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
