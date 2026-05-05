@@ -8,6 +8,7 @@ const partnersData = [
       { name: "Huawei", logo: "/partners/Huawei.png" },
       { name: "Canovate", logo: "/partners/Canovate Logo.png" },
       { name: "Vertiv", logo: "/partners/Vertiv.png" },
+      { name: "Conteg", logo: "/Conteg-730-x-300.png" },
     ],
   },
   {
@@ -31,6 +32,7 @@ const partnersData = [
     partners: [
       { name: "Hawk", logo: "/partners/hawk.png" },
       { name: "Tiandy", logo: "/partners/tiandy.png" },
+      { name: "Hikvision", logo: "/Hikvision-Logo.wine.png" },
       { name: "Bosch", logo: "/partners/bosch.png" },
       { name: "Genetec", logo: "/partners/genetec.png" },
       { name: "Axis", logo: "/partners/axis.png" },
