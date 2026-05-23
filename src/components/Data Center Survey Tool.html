@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Data Center Sizing & Compliance Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --slate-950: #020617;
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-100: #f1f5f9;
+            --blue-600: #2563eb;
+            --blue-500: #2563eb;
+            --teal-500: #14b8a6;
+            --emerald-500: #10b981;
+            --emerald-950: #022c22;
+            --rose-500: #ef4444;
+            --rose-950: #450a0a;
+            --amber-500: #f59e0b;
+            --border-ui: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(180deg, #eef6ff 0%, #ffffff 48%, #f8fbff 100%);
+            color: var(--slate-800);
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Executive Grid Shell */
+        .dashboard-container {
+            max-width: 1600px;
+            width: 100%;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid var(--border-ui);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 32px);
+            overflow: hidden;
+        }
+
+        /* High-Tech Top Navigation Menu Bar */
+        .header-bar {
+            background: linear-gradient(120deg, var(--slate-950), #0f2f4a 54%, #0f766e);
+            color: #ffffff;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 3px solid var(--teal-500);
+        }
+
+        .brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-lockup img {
+            height: 38px;
+            width: auto;
+            display: block;
+            filter: drop-shadow(0 10px 24px rgba(20, 184, 166, 0.24));
+        }
+
+        .header-title-zone h1 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .header-title-zone h1 span {
+            color: #67e8f9;
+            font-size: 11px;
+            font-family: monospace;
+            background: rgba(20, 184, 166, 0.16);
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(45, 212, 191, 0.32);
+        }
+
+        .action-button-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .btn-secondary { background-color: var(--slate-800); color: #cbd5e1; }
+        .btn-secondary:hover { background-color: var(--slate-700); }
+        .btn-primary { background-color: var(--blue-600); color: #ffffff; }
+        .btn-primary:hover { background-color: #1d4ed8; }
+
+        .portal-back-link {
+            position: fixed;
+            left: 18px;
+            top: 18px;
+            z-index: 1000;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(45, 212, 191, 0.42);
+            border-radius: 999px;
+            background: rgba(2, 6, 23, 0.92);
+            color: #ffffff;
+            padding: 9px 14px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+            box-shadow: 0 14px 35px rgba(15, 23, 42, 0.22);
+            backdrop-filter: blur(10px);
+        }
+
+        .portal-back-link:hover {
+            border-color: var(--teal-500);
+            color: #99f6e4;
+        }
+
+        /* Unified Executive Metadata Bar */
+        .metadata-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            padding: 14px 24px;
+            background-color: var(--slate-900);
+            border-bottom: 1px solid var(--slate-800);
+        }
+
+        .metadata-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .metadata-item label {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #94a3b8;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .metadata-item input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--slate-700);
+            border-radius: 6px;
+            padding: 6px 12px;
+            color: #ffffff;
+            font-size: 13px;
+            width: 100%;
+        }
+
+        /* Split View Optimization Workspace */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1fr 450px;
+            flex-grow: 1;
+            overflow: hidden;
+            background-color: var(--slate-100);
+        }
+
+        /* Left Scrollable Entry Tray */
+        .entry-tray {
+            padding: 20px;
+            overflow-y: auto;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card-section {
+            background: #ffffff;
+            border: 1px solid var(--border-ui);
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .card-section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--slate-900);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+            border-left: 3px solid var(--blue-600);
+            padding-left: 8px;
+        }
+
+        /* Balanced Field Component Layout Row Grid */
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .field-row:last-child { margin-bottom: 0; }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .field-group label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--slate-700);
+        }
+
+        /* Multi-input Grid Row for Sizing Coordinates */
+        .matrix-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        /* Polished Minimalist Inputs */
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border-ui);
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--slate-900);
+            background-color: #ffffff;
+            box-sizing: border-box;
+            transition: all 0.15s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--blue-600);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Right Fixed Analytics Command Center Hub */
+        .telemetry-hub {
+            background-color: var(--slate-900);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            border-left: 1px solid var(--slate-800);
+            color: #ffffff;
+        }
+
+        .hub-main-gauge {
+            background: radial-gradient(circle at top left, var(--slate-800), var(--slate-900));
+            border: 1px solid var(--slate-700);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .hub-main-gauge .title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .hub-main-gauge .value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #38bdf8;
+            line-height: 1;
+        }
+
+        /* Dynamic Progress Bar component */
+        .progress-wrapper {
+            margin-top: 12px;
+            background: var(--slate-950);
+            border-radius: 20px;
+            height: 6px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--blue-500), #38bdf8);
+            transition: width 0.3s ease;
+        }
+
+        /* Dynamic Telemetry Status Report Cards */
+        .telemetry-card {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--slate-800);
+            border-radius: 8px;
+            padding: 14px;
+            transition: border-color 0.15s ease;
+        }
+
+        .tel-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed var(--slate-800);
+            padding-bottom: 6px;
+        }
+
+        .tel-card-title {
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #f1f5f9;
+        }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pass { background-color: var(--emerald-950); color: var(--emerald-500); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .status-fail { background-color: var(--rose-950); color: var(--rose-500); border: 1px solid rgba(239, 68, 68, 0.2); }
+
+        .tel-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .tel-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .tel-row span:last-child {
+            font-weight: 600;
+            color: #f1f5f9;
+            font-family: monospace;
+        }
+
+        /* Horizontal Compact Bottom Signature Row */
+        .signatures-footer {
+            background-color: var(--slate-100);
+            border-top: 1px solid var(--border-ui);
+            padding: 12px 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .sig-block-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #ffffff;
+            border: 1px solid var(--border-ui);
+            border-radius: 6px;
+            padding: 6px 12px;
+        }
+
+        .sig-block-wrapper span {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--slate-700);
+            white-space: nowrap;
+        }
+
+        .sig-block-wrapper input {
+            border: none;
+            background: transparent;
+            font-size: 12px;
+            padding: 4px 0;
+            width: 100%;
+        }
+        .sig-block-wrapper input:focus { box-shadow: none; outline: none; }
+
+        @media (max-width: 1180px) {
+            body {
+                height: auto;
+                padding: 10px;
+            }
+
+            .dashboard-container {
+                height: auto;
+                min-height: calc(100vh - 20px);
+                overflow: visible;
+            }
+
+            .workspace-grid {
+                grid-template-columns: 1fr;
+                overflow: visible;
+            }
+
+            .entry-tray,
+            .telemetry-hub {
+                overflow: visible;
+            }
+
+            .telemetry-hub {
+                border-left: 0;
+                border-top: 1px solid var(--slate-800);
+            }
+        }
+
+        @media (max-width: 820px) {
+            .header-bar,
+            .brand-lockup,
+            .metadata-item,
+            .sig-block-wrapper {
+                align-items: flex-start;
+            }
+
+            .header-bar {
+                flex-direction: column;
+            }
+
+            .brand-lockup {
+                width: 100%;
+            }
+
+            .action-button-group {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .metadata-bar,
+            .signatures-footer,
+            .field-row,
+            .matrix-grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .metadata-item,
+            .sig-block-wrapper {
+                flex-direction: column;
+                gap: 6px;
+            }
+
+            .sig-block-wrapper span,
+            .metadata-item label {
+                white-space: normal;
+            }
+        }
+
+        @media (max-width: 560px) {
+            body {
+                padding: 0;
+                background: #ffffff;
+            }
+
+            .dashboard-container {
+                min-height: 100vh;
+                border: 0;
+                border-radius: 0;
+            }
+
+            .header-bar,
+            .metadata-bar,
+            .entry-tray,
+            .telemetry-hub,
+            .signatures-footer {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .header-title-zone h1 {
+                font-size: 16px;
+            }
+
+            .brand-lockup img {
+                height: 32px;
+            }
+
+            .btn {
+                flex: 1 1 150px;
+            }
+
+            .hub-main-gauge .value {
+                font-size: 30px;
+            }
+
+            .tel-row {
+                flex-direction: column;
+                gap: 2px;
+            }
+        }
+
+        /* Unified Media Print Override System for Single Page PDF Outputs */
+        @media print {
+            @page { size: A4 landscape; margin: 6mm; }
+            body { padding: 0; background-color: #ffffff; height: auto; }
+            .portal-back-link { display: none; }
+            .dashboard-container { border: none; box-shadow: none; height: auto; overflow: visible; }
+            .header-bar, .action-button-group { display: none; }
+            .metadata-bar { background-color: #ffffff; border-bottom: 2px solid #000; padding: 10px 0; }
+            .metadata-item input { color: #000; border: none; font-weight: 600; padding: 0; }
+            .metadata-item label { color: #334155; }
+            .workspace-grid { grid-template-columns: 1fr 400px; overflow: visible; background-color: #ffffff; }
+            .entry-tray { overflow: visible; padding: 10px 10px 0 0; }
+            .telemetry-hub { background-color: #ffffff; border-left: 2px solid #000; color: #000; overflow: visible; padding: 10px 0 0 10px; }
+            .hub-main-gauge { background: #ffffff; border: 2px solid #000; color: #000; box-shadow: none; }
+            .hub-main-gauge .value { color: #000; }
+            .progress-wrapper { display: none; }
+            .telemetry-card { background: #ffffff; border: 1px solid #cbd5e1; margin-bottom: 8px; }
+            .tel-card-title, .tel-grid, .tel-row span:last-child { color: #000; }
+            .status-badge { border: 1px solid #000; color: #000 !important; background: transparent !important; }
+            .card-section { border: 1px solid #cbd5e1; margin-bottom: 10px; page-break-inside: avoid; }
+            input, select { border: none; background: transparent; appearance: none; padding: 0; font-weight: 600; color: #000; }
+            .signatures-footer { background: #ffffff; padding: 10px 0; }
+            .sig-block-wrapper { border: 1px solid #cbd5e1; }
+        }
+    </style>
+</head>
+<body>
+
+<a class="portal-back-link" href="/portal">&larr; Back to Portal</a>
+
+<div class="dashboard-container">
+    
+    <div class="header-bar">
+        <div class="header-title-zone brand-lockup">
+            <img src="/logo1.png" alt="Sanaya Techs">
+            <h1>DATA CENTER TELEMETRY AUDIT HUB <span>ENGINE ACTIVE v3.1</span></h1>
+        </div>
+        <div class="action-button-group">
+            <button class="btn btn-secondary" onclick="clearDashboardData()">Reset Fields</button>
+            <button class="btn btn-primary" onclick="window.print()">Export Report (PDF)</button>
+        </div>
+    </div>
+
+    <div class="metadata-bar">
+        <div class="metadata-item">
+            <label>Client Entity</label>
+            <input type="text" id="metaClient" value="Enterprise Corporate Infrastructure Project">
+        </div>
+        <div class="metadata-item">
+            <label>Facility Class</label>
+            <input type="text" id="metaClass" placeholder="e.g., Core Finance Private Cloud Hub">
+        </div>
+        <div class="metadata-item">
+            <label>Audit Date</label>
+            <input type="text" id="metaDate">
+        </div>
+    </div>
+
+    <div class="workspace-grid">
+        
+        <div class="entry-tray">
+            
+            <div class="card-section">
+                <div class="card-section-title">1. Project Framework Details</div>
+                <div class="field-row">
+                    <div class="field-group">
+                        <label>Deployment Execution Type</label>
+                        <select>
+                            <option>New Equipment room</option>
+                            <option>Equipment room reconstruction</option>
+                            <option>Equipment room relocation project</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>Core Business Purpose</label>
+                        <select>
+                            <option>Self use Data Center</option>
+                            <option>External services Data Center (hosting/leasing)</option>
+                            <option>Hybrid Service Data Center</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-section">
+                <div class="card-section-title">2. Architectural &amp; Civil Footprint (Sizing Dimensions in mm)</div>
+                <div class="field-row">
+                    <div class="field-group"><label>Server White Space Floor Sizing</label><input type="text" placeholder="W * L * H mm"></div>
+                    <div class="field-group"><label>UPS &amp; Battery Room Allocation</label><input type="text" placeholder="W * L * H mm"></div>
+                </div>
+                <div class="field-row">
+                    <div class="field-group"><label>Main Electrical Switchgear Plant</label><input type="text" placeholder="W * L * H mm"></div>
+                    <div class="field-group"><label>Mechanical Yard / Chiller Location</label><input type="text" placeholder="W * L * H mm"></div>
+                </div>
+                <div class="field-row">
+                    <div class="field-group"><label>Slab Static Load Limit Capacity</label><input type="text" placeholder="e.g., 1500 kg/m²"></div>
+                    <div class="field-group"><label>Target Structural Floor Level</label><input type="number" placeholder="Floor Level No."></div>
+                </div>
+            </div>
+
+            <div class="card-section">
+                <div class="card-section-title">3. Power Grid Stability &amp; Infrastructure Parameters</div>
+                <div class="field-row">
+                    <div class="field-group"><label>Main Feeder Path Route Length</label><input type="number" placeholder="Meters to Transformer"></div>
+                    <div class="field-group"><label>Local Grid Outage Frequency</label><input type="text" placeholder="Outages per week/month"></div>
+                </div>
+                <div class="field-row">
+                    <div class="field-group"><label>Average Power Outage Duration</label><input type="text" placeholder="Hours / Mins"></div>
+                    <div class="field-group"><label>Site Target Operational Earthing</label><input type="text" placeholder="Grounding Target Resistance"></div>
+                </div>
+            </div>
+
+            <div class="card-section" style="background-color: #fafafa; border: 1px dashed var(--blue-500);">
+                <div class="card-section-title" style="color: var(--blue-600);">4. Sizing Matrix Parameters &amp; Redundancy Modules</div>
+                
+                <div class="field-row" style="margin-bottom: 14px;">
+                    <div class="field-group">
+                        <label style="font-weight: 700; color: var(--slate-900);">Total Cabinet/Rack Count</label>
+                        <input type="number" id="itRacks" value="5" style="border-color: var(--blue-500); font-weight: bold;" oninput="computeTelemetryEngine()">
+                    </div>
+                    <div class="field-group">
+                        <label style="font-weight: 700; color: var(--slate-900);">Power Density Per Cabinet (kW)</label>
+                        <input type="number" id="itKw" value="5.0" step="0.5" style="border-color: var(--blue-500); font-weight: bold;" oninput="computeTelemetryEngine()">
+                    </div>
+                </div>
+
+                <div class="matrix-grid-3">
+                    <div class="field-group">
+                        <label style="font-size: 11px; text-transform: uppercase; font-weight: 700;">UPS Qty (N)</label>
+                        <input type="number" id="qtyUps" value="2" min="1" style="font-weight: bold; background: #fffdfa;" oninput="computeTelemetryEngine()">
+                    </div>
+                    <div class="field-group">
+                        <label style="font-size: 11px; text-transform: uppercase; font-weight: 700;">Generator Qty (N)</label>
+                        <input type="number" id="qtyGen" value="2" min="1" style="font-weight: bold; background: #fffdfa;" oninput="computeTelemetryEngine()">
+                    </div>
+                    <div class="field-group">
+                        <label style="font-size: 11px; text-transform: uppercase; font-weight: 700;">Cooling Qty (N)</label>
+                        <input type="number" id="qtyCooling" value="2" min="1" style="font-weight: bold; background: #fffdfa;" oninput="computeTelemetryEngine()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-section">
+                <div class="card-section-title">5. Mechanical Piping Run Routing</div>
+                <div class="field-row">
+                    <div class="field-group"><label>Copper Lines Vertical Rise Rise Length</label><input type="number" placeholder="Meters to Roof Farm"></div>
+                    <div class="field-group"><label>Condenser Line Set Horizontal Bridge</label><input type="number" placeholder="Meters Across Containment"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="telemetry-hub">
+            
+            <div class="hub-main-gauge">
+                <div class="title">Cumulative Net IT Compute Load</div>
+                <div class="value"><span id="lblNetLoad">25.0</span> <span style="font-size: 20px; font-weight:500;">kW</span></div>
+                <div class="progress-wrapper">
+                    <div id="gaugeProgress" class="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="telemetry-card" id="blockUps">
+                <div class="tel-card-header">
+                    <div class="tel-card-title">Uninterruptible Power Subsystem</div>
+                    <span id="badgeUps" class="status-badge">--</span>
+                </div>
+                <div class="tel-grid">
+                    <div class="tel-row"><span>Architecture Logic:</span><span id="txtUpsLogic">--</span></div>
+                    <div class="tel-row"><span>Per-Unit Module Size:</span><span id="txtUpsUnit">0.0 kW</span></div>
+                    <div class="tel-row"><span>Total Active Footprint:</span><span id="txtUpsTotal">0.0 kW</span></div>
+                </div>
+            </div>
+
+            <div class="telemetry-card" id="blockGen">
+                <div class="tel-card-header">
+                    <div class="tel-card-title">Emergency Generation Pool</div>
+                    <span id="badgeGen" class="status-badge">--</span>
+                </div>
+                <div class="tel-grid">
+                    <div class="tel-row"><span>Architecture Logic:</span><span id="txtGenLogic">--</span></div>
+                    <div class="tel-row"><span>Required Prime Block Rating:</span><span id="txtGenUnit">0.0 kW</span></div>
+                    <div class="tel-row"><span>Total Yard Pool Output:</span><span id="txtGenTotal">0.0 kW</span></div>
+                </div>
+            </div>
+
+            <div class="telemetry-card" id="blockCooling">
+                <div class="tel-card-header">
+                    <div class="tel-card-title">Precision Thermal Air Control</div>
+                    <span id="badgeCooling" class="status-badge">--</span>
+                </div>
+                <div class="tel-grid">
+                    <div class="tel-row"><span>Architecture Logic:</span><span id="txtCoolLogic">--</span></div>
+                    <div class="tel-row"><span>Per-Unit Capacity Frame:</span><span id="txtCoolUnitKw">0.0 kW</span></div>
+                    <div class="tel-row"><span>Required Frame Rating (TR):</span><span id="txtCoolUnitTr">0.0 TR</span></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="signatures-footer">
+        <div class="sig-block-wrapper">
+            <span>Auditor Validation:</span>
+            <input type="text" value="Digital Wall Lead Design Engineer Matrix">
+        </div>
+        <div class="sig-block-wrapper">
+            <span>Customer Sign-off:</span>
+            <input type="text" placeholder="Corporate End-User Authority Sign Block">
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Initialize real-time calendar date tracking parameters
+    document.getElementById('metaDate').value = new Date().toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    function computeTelemetryEngine() {
+        // Collect basic entry metrics
+        const racks = parseFloat(document.getElementById('itRacks').value) || 0;
+        const kwPerRack = parseFloat(document.getElementById('itKw').value) || 0;
+        
+        const totalNetLoadKw = racks * kwPerRack;
+        document.getElementById('lblNetLoad').innerText = totalNetLoadKw.toFixed(1);
+
+        // Adjust real-time meter gauge bar percentage wrapper
+        const maxExpectedBaseline = 150; // Cap visual reference at 150kW for standard scaling
+        const gaugePercentage = Math.min((totalNetLoadKw / maxExpectedBaseline) * 100, 100);
+        document.getElementById('gaugeProgress').style.width = gaugePercentage + '%';
+
+        // Extract raw structural unit count vectors
+        const nUps = parseInt(document.getElementById('qtyUps').value) || 1;
+        const nGen = parseInt(document.getElementById('qtyGen').value) || 1;
+        const nCooling = parseInt(document.getElementById('qtyCooling').value) || 1;
+
+        // Engineering Safety Overhead Margin Configurations (Power 25% Buffer, Cooling 30% Buffer)
+        const totalElectricalDesignLoad = totalNetLoadKw * 1.25;
+        const totalThermalDesignLoad = totalNetLoadKw * 1.30;
+
+        // 1. DYNAMIC UPS N+1 ENGINE METHOD
+        const badgeUps = document.getElementById('badgeUps');
+        if (totalNetLoadKw === 0) {
+            badgeUps.className = "status-badge"; badgeUps.innerText = "--";
+            document.getElementById('txtUpsLogic').innerText = "--";
+            document.getElementById('txtUpsUnit').innerText = "0.0 kW";
+            document.getElementById('txtUpsTotal').innerText = "0.0 kW";
+        } else if (nUps <= 1) {
+            badgeUps.className = "status-badge status-fail"; badgeUps.innerText = "N Non-Comply";
+            document.getElementById('txtUpsLogic').innerText = "Load-Sharing (No Backup)";
+            document.getElementById('txtUpsUnit').innerText = "N/A - Critical Deficit";
+            document.getElementById('txtUpsTotal').innerText = totalElectricalDesignLoad.toFixed(1) + " kW";
+        } else {
+            badgeUps.className = "status-badge status-pass"; badgeUps.innerText = "Tier III Comply";
+            document.getElementById('txtUpsLogic').innerText = "N+1 Concurrent Resilient";
+            const individualUpsSizing = totalElectricalDesignLoad / (nUps - 1);
+            document.getElementById('txtUpsUnit').innerText = individualUpsSizing.toFixed(1) + " kW";
+            document.getElementById('txtUpsTotal').innerText = (individualUpsSizing * nUps).toFixed(1) + " kW (" + nUps + " Units)";
+        }
+
+        // 2. DYNAMIC GENERATOR STANBY POOL METHOD
+        const badgeGen = document.getElementById('badgeGen');
+        if (totalNetLoadKw === 0) {
+            badgeGen.className = "status-badge"; badgeGen.innerText = "--";
+            document.getElementById('txtGenLogic').innerText = "--";
+            document.getElementById('txtGenUnit').innerText = "0.0 kW";
+            document.getElementById('txtGenTotal').innerText = "0.0 kW";
+        } else if (nGen <= 1) {
+            badgeGen.className = "status-badge status-fail"; badgeGen.innerText = "N Non-Comply";
+            document.getElementById('txtGenLogic').innerText = "Single Engine Path Block";
+            document.getElementById('txtGenUnit').innerText = "N/A";
+            document.getElementById('txtGenTotal').innerText = totalElectricalDesignLoad.toFixed(1) + " kW";
+        } else {
+            badgeGen.className = "status-badge status-pass"; badgeGen.innerText = "Tier III Comply";
+            document.getElementById('txtGenLogic').innerText = "N+1 Standby Redundant";
+            const individualGenSizing = totalElectricalDesignLoad / (nGen - 1);
+            document.getElementById('txtGenUnit').innerText = individualGenSizing.toFixed(1) + " kW Prime";
+            document.getElementById('txtGenTotal').innerText = (individualGenSizing * nGen).toFixed(1) + " kW Engine Total";
+        }
+
+        // 3. DYNAMIC PRECISION CLIMATE RUN METHOD
+        const badgeCooling = document.getElementById('badgeCooling');
+        if (totalNetLoadKw === 0) {
+            badgeCooling.className = "status-badge"; badgeCooling.innerText = "--";
+            document.getElementById('txtCoolLogic').innerText = "--";
+            document.getElementById('txtCoolUnitKw').innerText = "0.0 kW";
+            document.getElementById('txtCoolUnitTr').innerText = "0.0 TR";
+        } else if (nCooling <= 1) {
+            badgeCooling.className = "status-badge status-fail"; badgeCooling.innerText = "N Non-Comply";
+            document.getElementById('txtCoolLogic').innerText = "Unprotected Air Stream";
+            document.getElementById('txtCoolUnitKw').innerText = "N/A";
+            document.getElementById('txtCoolUnitTr').innerText = "N/A";
+        } else {
+            badgeCooling.className = "status-badge status-pass"; badgeCooling.innerText = "Tier III Comply";
+            document.getElementById('txtCoolLogic').innerText = "N+1 Constant Air Volume";
+            const individualCoolingSizingKw = totalThermalDesignLoad / (nCooling - 1);
+            const individualCoolingSizingTr = individualCoolingSizingKw / 3.517;
+            document.getElementById('txtCoolUnitKw').innerText = individualCoolingSizingKw.toFixed(1) + " kW";
+            document.getElementById('txtCoolUnitTr').innerText = individualCoolingSizingTr.toFixed(1) + " TR per unit";
+        }
+    }
+
+    function clearDashboardData() {
+        if (confirm("Restore default executive panel variables? Current structural entry fields will be flushed.")) {
+            const inputs = document.querySelectorAll('.entry-tray input[type="text"], .entry-tray input[type="number"]');
+            inputs.forEach(element => {
+                if (!['itRacks', 'itKw', 'qtyUps', 'qtyGen', 'qtyCooling'].includes(element.id)) {
+                    element.value = '';
+                }
+            });
+            document.getElementById('itRacks').value = 5;
+            document.getElementById('itKw').value = 5.0;
+            document.getElementById('qtyUps').value = 2;
+            document.getElementById('qtyGen').value = 2;
+            document.getElementById('qtyCooling').value = 2;
+            computeTelemetryEngine();
+        }
+    }
+
+    // Trigger calculation script initialization on module startup
+    computeTelemetryEngine();
+</script>
+
+</body>
+</html>

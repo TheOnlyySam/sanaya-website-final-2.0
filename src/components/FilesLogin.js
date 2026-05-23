@@ -19,7 +19,7 @@ const FilesLogin = () => {
 
     try {
       await loginSupabaseFiles(email, password);
-      navigate("/sanaya-files");
+      navigate("/portal");
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -55,10 +55,10 @@ const FilesLogin = () => {
         <div>
           <p className="section-kicker">Private Access</p>
           <h1 className="mt-4 font-display text-5xl font-bold leading-none text-slate-950 sm:text-6xl">
-            Sanaya Drive
+            Sanaya Portal
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            Secure access for company documents stored in Sanaya Supabase Storage.
+            Secure access to Sanaya apps, engineering tools, and company files.
           </p>
         </div>
 
@@ -111,7 +111,7 @@ const FilesLogin = () => {
             className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-5 py-3 text-sm font-semibold text-white shadow-[0_14px_35px_rgba(14,165,233,0.28)] transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
           >
             <FaRightToBracket />
-            {isLoading ? "Signing in..." : "Open Drive"}
+            {isLoading ? "Signing in..." : "Open Portal"}
           </button>
 
           <button

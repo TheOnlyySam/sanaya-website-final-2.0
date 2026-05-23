@@ -65,8 +65,8 @@ const ResetPassword = () => {
     try {
       await updateSupabasePassword(password);
       setMessageType("success");
-      setMessage("Password updated. Redirecting to files...");
-      setTimeout(() => navigate("/sanaya-files"), 900);
+      setMessage("Password updated. Redirecting to portal...");
+      setTimeout(() => navigate("/portal"), 900);
     } catch (error) {
       setMessageType("error");
       setMessage(error.message);

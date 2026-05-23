@@ -11,7 +11,6 @@ import {
   FaFolder,
   FaFolderPlus,
   FaPen,
-  FaRightFromBracket,
   FaTrash,
   FaUpload,
   FaXmark,
@@ -29,7 +28,6 @@ import {
   listSupabaseFileVisibilityForPath,
   listSupabaseFileVisibility,
   logSupabaseFileActivity,
-  logoutSupabaseFiles,
   renameSupabaseItem,
   replaceSupabaseFile,
   setSupabaseFileHidden,
@@ -541,11 +539,6 @@ const SanayaFiles = () => {
     }
   };
 
-  const logout = () => {
-    logoutSupabaseFiles();
-    navigate("/login");
-  };
-
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#eef6ff_0%,#ffffff_38%,#f8fbff_100%)] px-4 pb-16 pt-32 sm:px-6 lg:px-8">
       <section className="mx-auto w-full max-w-7xl">
@@ -561,6 +554,14 @@ const SanayaFiles = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("/portal")}
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-900 transition hover:border-teal-400 hover:text-teal-700"
+            >
+              <FaArrowLeft />
+              Back to Portal
+            </button>
             <input
               ref={fileInputRef}
               type="file"
@@ -600,14 +601,6 @@ const SanayaFiles = () => {
             >
               <FaArrowRotateRight />
               Refresh
-            </button>
-            <button
-              type="button"
-              onClick={logout}
-              className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              <FaRightFromBracket />
-              Logout
             </button>
           </div>
         </div>

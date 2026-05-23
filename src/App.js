@@ -21,6 +21,8 @@ import OurTeam from "./components/OurTeam";
 import FilesLogin from "./components/FilesLogin";
 import SanayaFiles from "./components/SanayaFiles";
 import ResetPassword from "./components/ResetPassword";
+import Portal from "./components/Portal";
+import StaticHtmlApp from "./components/StaticHtmlApp";
 
 function App() {
   useEffect(() => {
@@ -80,6 +82,8 @@ function App() {
         <Route path="/services/software-engineering" element={<SoftwareEngineering />} />
         <Route path="/our-team" element={<OurTeam />} />
         <Route path="/login" element={<FilesLogin />} />
+        <Route path="/portal" element={<Portal />} />
+        <Route path="/portal/apps/:appSlug" element={<StaticHtmlApp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/sanaya-files" element={<SanayaFiles />} />
         <Route path="/test-payment" element={<PaymentTest />} />
