@@ -51,7 +51,7 @@ const AboutUs = () => {
         <div className="flex flex-col justify-center">
           <p className="section-kicker">About Sanaya</p>
           <h2 className="section-heading mt-4 max-w-2xl">
-            A technology company focused on the systems your business depends on every day.
+            A company focused on the systems your business depends on every day.
           </h2>
           <p className="section-copy mt-6 max-w-2xl">
             At Alsanaya Alarabia, we deliver the infrastructure, applications, and advisory services that keep organizations secure, connected, and ready to grow. Our work spans enterprise facilities, digital platforms, and mission-critical support.
