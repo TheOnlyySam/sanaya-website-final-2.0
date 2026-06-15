@@ -12,6 +12,8 @@ const menuItems = [
   { label: "Contact", id: "contact" },
 ];
 
+const showProductsLink = false;
+
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -112,17 +114,19 @@ const Navbar = () => {
               </button>
             </li>
           ))}
-          <li>
-            <a
-              href="https://sanayatechs.odoo.com/shop"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-medium transition duration-300 hover:text-teal-400"
-            >
-              Products
-              <FaArrowUpRightFromSquare className="text-xs" />
-            </a>
-          </li>
+          {showProductsLink && (
+            <li>
+              <a
+                href="https://sanayatechs.odoo.com/shop"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-medium transition duration-300 hover:text-teal-400"
+              >
+                Products
+                <FaArrowUpRightFromSquare className="text-xs" />
+              </a>
+            </li>
+          )}
         </ul>
 
         <div className="hidden shrink-0 items-center gap-3 lg:flex">
@@ -189,16 +193,18 @@ const Navbar = () => {
                 {item.label}
               </button>
             ))}
-            <a
-              href="https://sanayatechs.odoo.com/shop"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-900"
-              onClick={() => setIsOpen(false)}
-            >
-              Products
-              <FaArrowUpRightFromSquare className="text-sm" />
-            </a>
+            {showProductsLink && (
+              <a
+                href="https://sanayatechs.odoo.com/shop"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-900"
+                onClick={() => setIsOpen(false)}
+              >
+                Products
+                <FaArrowUpRightFromSquare className="text-sm" />
+              </a>
+            )}
             <button
               type="button"
               onClick={() => {
