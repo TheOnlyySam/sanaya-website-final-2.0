@@ -35,7 +35,7 @@ const teamMembers = [
   },
   {
     id: "se",
-    name: "Salam Alta'ey",
+    name: "Abdulsalam Alta'ey",
     role: "Lead Software Engineer & Product Architect",
     image: "/salam3.jpg",
     description:
@@ -57,7 +57,7 @@ const teamMembers = [
     id: "yousif",
     name: "Yousif Ahmed",
     role: "IT & Infrastructure Engineer",
-    image: "/yousif.png",
+    image: "/yousif.jpg",
     description:
       "Maintains core IT systems, supports infrastructure rollout, and ensures secure day-to-day business continuity.",
     quote:
