@@ -57,7 +57,7 @@ const teamMembers = [
     id: "yousif",
     name: "Yousif Ahmed",
     role: "IT & Infrastructure Engineer",
-    image: "/yousif.jpg",
+    image: "/yousif.jpeg",
     description:
       "Maintains core IT systems, supports infrastructure rollout, and ensures secure day-to-day business continuity.",
     quote:
