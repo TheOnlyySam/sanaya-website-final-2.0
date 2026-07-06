@@ -7,7 +7,7 @@ const teamMembers = [
     id: "ceo",
     name: "Ahmed Hasan",
     role: "Chief Executive Officer",
-    image: "/ahmed.jpeg",
+    image: "/AhmedB.jpeg",
     description:
       "Sets company direction, drives strategic partnerships, and ensures every major initiative delivers measurable business value.",
     quote:
