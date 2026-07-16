@@ -23,6 +23,8 @@ import SanayaFiles from "./components/SanayaFiles";
 import ResetPassword from "./components/ResetPassword";
 import Portal from "./components/Portal";
 import StaticHtmlApp from "./components/StaticHtmlApp";
+import Academy from "./components/Academy";
+import AcademyUpload from "./components/AcademyUpload";
 
 function App() {
   useEffect(() => {
@@ -81,8 +83,10 @@ function App() {
         <Route path="/services/fire-alarm-systems" element={<FireAlarmService />} />
         <Route path="/services/software-engineering" element={<SoftwareEngineering />} />
         <Route path="/our-team" element={<OurTeam />} />
+        <Route path="/academy" element={<Academy />} />
         <Route path="/login" element={<FilesLogin />} />
         <Route path="/portal" element={<Portal />} />
+        <Route path="/portal/academy-upload" element={<AcademyUpload />} />
         <Route path="/portal/apps/:appSlug" element={<StaticHtmlApp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/sanaya-files" element={<SanayaFiles />} />

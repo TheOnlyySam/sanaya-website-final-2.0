@@ -9,6 +9,7 @@ const menuItems = [
   { label: "Solutions", id: "services" },
   { label: "Services", id: "ConsultingServices" },
   { label: "Team", path: "/our-team" },
+  { label: "Academy", path: "/academy" },
   { label: "Contact", id: "contact" },
 ];
 

@@ -18,6 +18,11 @@ const urls = [
     priority: "0.7",
   },
   {
+    loc: "https://www.sanayatechs.com/academy",
+    changefreq: "weekly",
+    priority: "0.8",
+  },
+  {
     loc: "https://www.sanayatechs.com/partners",
     changefreq: "monthly",
     priority: "0.6",

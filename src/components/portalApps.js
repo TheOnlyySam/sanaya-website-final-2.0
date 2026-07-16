@@ -25,4 +25,12 @@ export const portalApps = [
     route: "/sanaya-files",
     icon: "folder",
   },
+  {
+    slug: "academy-upload",
+    name: "Academy Upload",
+    eyebrow: "Learning Manager",
+    description: "Manage Academy sections, playlists, YouTube lessons, notes, publishing, and resource links.",
+    route: "/portal/academy-upload",
+    icon: "academy",
+  },
 ];
