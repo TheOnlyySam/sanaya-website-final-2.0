@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import {
@@ -14,7 +15,9 @@ import {
   FaXmark,
 } from "react-icons/fa6";
 
-const PDFModal = ({ url, title, onClose }) => (
+const PDFModal = ({ url, title, onClose }) => {
+  const { t } = useTranslation();
+  return (
   <div
     className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 px-4 backdrop-blur-sm"
     onClick={onClose}
@@ -29,7 +32,7 @@ const PDFModal = ({ url, title, onClose }) => (
           type="button"
           className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-700"
           onClick={onClose}
-          aria-label="Close PDF"
+          aria-label={t("site.fire.closePdf")}
         >
           <FaXmark />
         </button>
@@ -37,16 +40,17 @@ const PDFModal = ({ url, title, onClose }) => (
       <div className="h-[calc(88vh-74px)] w-full">
         <object data={url} type="application/pdf" width="100%" height="100%" className="border-0">
           <p className="p-4 text-slate-700">
-            Your browser does not support inline PDFs.
+            {t("site.fire.pdfUnsupported")}
             <a href={url} target="_blank" rel="noopener noreferrer" className="ml-2 text-blue-600 underline">
-              Open the document
+              {t("site.fire.openDocument")}
             </a>
           </p>
         </object>
       </div>
     </div>
   </div>
-);
+  );
+};
 
 const features = [
   {
@@ -117,6 +121,11 @@ const faqs = [
 ];
 
 const FireAlarmService = () => {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.resolvedLanguage === "ar";
+  const benefitCopy = t("site.fire.benefits", { returnObjects: true });
+  const featureCopy = t("site.fire.features", { returnObjects: true });
+  const faqCopy = t("site.fire.faqs", { returnObjects: true });
   const navigate = useNavigate();
   const [modalUrl, setModalUrl] = useState("");
   const [modalTitle, setModalTitle] = useState("");
@@ -142,15 +151,15 @@ const FireAlarmService = () => {
           <div className="relative overflow-hidden rounded-[2.8rem] bg-slate-950 p-8 text-white shadow-[0_30px_100px_rgba(2,6,23,0.35)] sm:p-10">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,146,60,0.22),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.18),transparent_34%)]" />
             <div className="relative">
-              <p className="section-kicker !text-amber-300">Fire Alarm Systems</p>
+              <p className="section-kicker !text-amber-300">{t("site.fire.kicker")}</p>
               <h1 className="mt-4 font-display text-5xl font-semibold leading-[0.92] sm:text-6xl">
-                Fire safety systems designed like operational infrastructure, not just hardware packages.
+                {t("site.fire.title")}
               </h1>
               <p className="mt-6 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                Under the Teknim brand, Sanaya delivers addressable, conventional, wireless, and monitoring-ready fire alarm solutions built for reliable detection, fast response, and long-term manageability.
+                {t("site.fire.intro")}
               </p>
               <div className="mt-8 inline-flex rounded-full border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
-                Design, supply, deployment, and monitoring support
+                {t("site.fire.scope")}
               </div>
             </div>
           </div>
@@ -158,7 +167,7 @@ const FireAlarmService = () => {
           <div className="overflow-hidden rounded-[2.6rem] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
             <img
               src="/assets/teknim_banner.png"
-              alt="Fire alarm systems"
+              alt={t("site.fire.imageAlt")}
               className="h-[320px] w-full object-cover sm:h-[360px] lg:h-[460px]"
             />
           </div>
@@ -169,20 +178,22 @@ const FireAlarmService = () => {
         <div className="mx-auto w-full max-w-7xl rounded-[2.6rem] border border-slate-200 bg-white p-6 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8 lg:p-10">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="section-kicker">System Value</p>
+              <p className="section-kicker">{t("site.fire.value")}</p>
               <h2 className="section-heading mt-4">
-                Safety systems need to be dependable in the moment that matters most.
+                {t("site.fire.valueTitle")}
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-              The real value is not just detection. It is clarity, response speed, compliance readiness, and easier long-term operation.
+              {t("site.fire.valueText")}
             </p>
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {operationalBenefits.map(({ icon: Icon, title, text }, index) => (
+            {operationalBenefits.map(({ icon: Icon }, index) => {
+              const content = Array.isArray(benefitCopy) ? benefitCopy[index] : operationalBenefits[index];
+              return (
               <div
-                key={title}
+                key={content.title}
                 className="rounded-[2rem] bg-slate-50 p-6"
                 data-aos="fade-up"
                 data-aos-delay={index * 100}
@@ -190,10 +201,11 @@ const FireAlarmService = () => {
                 <div className="inline-flex rounded-2xl bg-white p-3 text-amber-600 shadow-sm">
                   <Icon />
                 </div>
-                <h3 className="mt-5 text-2xl font-semibold text-slate-950">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-600">{text}</p>
+                <h3 className="mt-5 text-2xl font-semibold text-slate-950">{content.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{content.text}</p>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -202,55 +214,58 @@ const FireAlarmService = () => {
         <div className="mx-auto w-full max-w-7xl">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="section-kicker">Solution Lines</p>
+              <p className="section-kicker">{t("site.fire.lines")}</p>
               <h2 className="section-heading mt-4">
-                A complete portfolio from field devices to monitoring software.
+                {t("site.fire.linesTitle")}
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-              Each solution line includes technical documentation so your team can evaluate fit, deployment model, and system capability in more depth.
+              {t("site.fire.linesText")}
             </p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-2">
-            {features.map(({ icon: Icon, title, desc, url, img }, index) => (
+            {features.map(({ icon: Icon, title, url, img }, index) => {
+              const content = Array.isArray(featureCopy) ? featureCopy[index] : features[index];
+              return (
               <div
-                key={title}
+                key={url}
                 className="overflow-hidden rounded-[2.4rem] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.08)]"
                 data-aos="fade-up"
                 data-aos-delay={index * 100}
               >
-                <img src={img} alt={title} className="h-60 w-full object-cover" />
+                <img src={img} alt={content.title} className="h-60 w-full object-cover" />
                 <div className="p-7">
                   <div className="inline-flex rounded-2xl bg-slate-950 p-3 text-amber-300">
                     <Icon />
                   </div>
-                  <h3 className="mt-5 text-2xl font-semibold text-slate-950">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-slate-600">{desc}</p>
+                  <h3 className="mt-5 text-2xl font-semibold text-slate-950">{content.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{content.desc}</p>
                   <div className="mt-7 flex flex-wrap gap-3">
                     <button
                       type="button"
                       onClick={() => {
                         setModalUrl(url);
-                        setModalTitle(title);
+                        setModalTitle(content.title);
                       }}
                       className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white"
                     >
-                      View catalog
-                      <FaArrowRight />
+                      {t("site.common.viewCatalog")}
+                      <FaArrowRight className={isArabic ? "rotate-180" : ""} />
                     </button>
                     <a
                       href={url}
                       download
                       className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-900 transition duration-300 hover:border-amber-400 hover:text-amber-700"
                     >
-                      Download
+                      {t("site.common.download")}
                       <FaDownload />
                     </a>
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -258,17 +273,17 @@ const FireAlarmService = () => {
       <section className="px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr]">
           <div className="rounded-[2.4rem] bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950 p-8 text-white shadow-[0_30px_90px_rgba(2,6,23,0.3)] sm:p-10">
-            <p className="section-kicker !text-amber-300">Design Lens</p>
+            <p className="section-kicker !text-amber-300">{t("site.fire.design")}</p>
             <h2 className="mt-4 text-4xl font-semibold leading-tight">
-              The right system starts with the site, not with the brochure.
+              {t("site.fire.designTitle")}
             </h2>
             <p className="mt-5 text-sm leading-7 text-slate-300 sm:text-base">
-              Retrofit complexity, floor coverage, wiring constraints, evacuation requirements, and monitoring expectations all shape the final fire alarm design. Sanaya treats this as an engineered safety project, not a simple install.
+              {t("site.fire.designText")}
             </p>
           </div>
 
           <div className="space-y-4">
-            {faqs.map((item, index) => (
+            {(Array.isArray(faqCopy) ? faqCopy : faqs).map((item, index) => (
               <div
                 key={item.q}
                 className="rounded-[1.9rem] border border-slate-200 bg-white p-6 shadow-sm"
@@ -286,9 +301,9 @@ const FireAlarmService = () => {
       <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 rounded-[2.6rem] bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-10 text-white shadow-[0_20px_60px_rgba(249,115,22,0.28)] lg:flex-row lg:items-center">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-100">Safety Consultation</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-100">{t("site.fire.consultation")}</p>
             <h2 className="mt-3 font-display text-4xl font-semibold leading-tight">
-              Planning a new facility, extension, or compliance-focused system upgrade?
+              {t("site.fire.consultationTitle")}
             </h2>
           </div>
           <button
@@ -296,8 +311,8 @@ const FireAlarmService = () => {
             onClick={handleContact}
             className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-semibold text-orange-600"
           >
-            Contact Sanaya
-            <FaArrowRight />
+            {t("site.common.contactSanaya")}
+            <FaArrowRight className={isArabic ? "rotate-180" : ""} />
           </button>
         </div>
       </section>

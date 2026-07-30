@@ -1,0 +1,17 @@
+{
+  "rewrites": [
+    { "source": "/services/:serviceId", "destination": "/index.html" },
+    { "source": "/our-team", "destination": "/index.html" },
+    { "source": "/academy", "destination": "/index.html" },
+    { "source": "/service-packages", "destination": "/index.html" },
+    { "source": "/service-request", "destination": "/index.html" },
+    { "source": "/login", "destination": "/index.html" },
+    { "source": "/portal", "destination": "/index.html" },
+    { "source": "/portal/academy-upload", "destination": "/index.html" },
+    { "source": "/portal/service-requests", "destination": "/index.html" },
+    { "source": "/portal/apps/:appSlug", "destination": "/index.html" },
+    { "source": "/reset-password", "destination": "/index.html" },
+    { "source": "/sanaya-files", "destination": "/index.html" },
+    { "source": "/test-payment", "destination": "/index.html" }
+  ]
+}

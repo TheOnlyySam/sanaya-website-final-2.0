@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   FaArrowRight,
   FaBookOpen,
@@ -16,6 +17,8 @@ import { getPublishedAcademy, getYouTubeThumbnail } from "../lib/supabaseAcademy
 const emptyAcademy = { sections: [], playlists: [], videos: [], attachments: [] };
 
 const Academy = () => {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.resolvedLanguage === "ar";
   const [academy, setAcademy] = useState(emptyAcademy);
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -82,12 +85,12 @@ const Academy = () => {
       <section className="px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[1fr_0.55fr] lg:items-end">
           <div>
-            <p className="section-kicker">Learn with Sanaya</p>
+            <p className="section-kicker">{t("site.academy.kicker")}</p>
             <h1 className="mt-4 font-display text-5xl font-bold leading-none tracking-tight text-slate-950 sm:text-7xl">
-              Academy
+              {t("site.academy.title")}
             </h1>
             <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-600">
-              Practical video learning for the platforms and systems your team uses every day.
+              {t("site.academy.intro")}
             </p>
           </div>
           <div className="rounded-[1.75rem] border border-teal-200 bg-white/85 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.10)]">
@@ -96,8 +99,8 @@ const Academy = () => {
                 <FaGraduationCap />
               </span>
               <div>
-                <p className="font-display text-2xl font-bold text-slate-950">Learn at your pace</p>
-                <p className="mt-1 text-sm text-slate-600">Videos, notes, and useful resources in one place.</p>
+                <p className="font-display text-2xl font-bold text-slate-950">{t("site.academy.pace")}</p>
+                <p className="mt-1 text-sm text-slate-600">{t("site.academy.paceText")}</p>
               </div>
             </div>
           </div>
@@ -108,27 +111,27 @@ const Academy = () => {
         <div className="mx-auto w-full max-w-7xl">
           {isLoading && (
             <div className="rounded-[2rem] border border-slate-200 bg-white p-12 text-center text-slate-600 shadow-sm">
-              Loading Academy…
+              {t("site.academy.loading")}
             </div>
           )}
 
           {!isLoading && message && (
             <div className="rounded-[2rem] border border-red-100 bg-red-50 p-8 text-center text-red-700">
-              Academy could not be loaded. {message}
+              {t("site.academy.loadError")} {message}
             </div>
           )}
 
           {!isLoading && !message && !academy.sections.length && (
             <div className="rounded-[2rem] border border-slate-200 bg-white p-12 text-center shadow-sm">
               <FaBookOpen className="mx-auto text-3xl text-teal-500" />
-              <h2 className="mt-4 font-display text-3xl font-bold text-slate-950">Courses are coming soon</h2>
-              <p className="mt-3 text-slate-600">Published Academy content will appear here.</p>
+              <h2 className="mt-4 font-display text-3xl font-bold text-slate-950">{t("site.academy.comingSoon")}</h2>
+              <p className="mt-3 text-slate-600">{t("site.academy.comingSoonText")}</p>
             </div>
           )}
 
           {!isLoading && !message && academy.sections.length > 0 && (
             <>
-              <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar" aria-label="Academy sections">
+              <div className="flex gap-3 overflow-x-auto pb-4 no-scrollbar" aria-label={t("site.academy.sectionsLabel")}>
                 {academy.sections.map((section) => (
                   <button
                     key={section.id}
@@ -148,18 +151,18 @@ const Academy = () => {
               <div className="mt-5 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_25px_80px_rgba(15,23,42,0.09)] sm:p-7">
                 <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.25em] text-teal-700">Section</p>
+                    <p className="text-xs font-bold uppercase tracking-[0.25em] text-teal-700">{t("site.academy.section")}</p>
                     <h2 className="mt-2 font-display text-4xl font-bold text-slate-950">{selectedSection?.name}</h2>
                     {selectedSection?.description && <p className="mt-3 max-w-3xl text-slate-600">{selectedSection.description}</p>}
                   </div>
                   <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500">
-                    <FaList /> {playlists.length} {playlists.length === 1 ? "playlist" : "playlists"}
+                    <FaList /> {playlists.length} {playlists.length === 1 ? t("site.academy.playlist") : t("site.academy.playlists")}
                   </span>
                 </div>
 
                 {!playlists.length ? (
                   <div className="mt-8 rounded-3xl bg-slate-50 p-8 text-center text-slate-600">
-                    Playlists for this section are coming soon.
+                    {t("site.academy.sectionSoon")}
                   </div>
                 ) : (
                   <>
@@ -171,7 +174,7 @@ const Academy = () => {
                             key={playlist.id}
                             type="button"
                             onClick={() => selectPlaylist(playlist)}
-                            className={`group rounded-2xl border p-4 text-left transition ${
+                            className={`group rounded-2xl border p-4 transition ${isArabic ? "text-right" : "text-left"} ${
                               selectedPlaylist?.id === playlist.id
                                 ? "border-teal-400 bg-teal-50"
                                 : "border-slate-200 bg-white hover:border-teal-300"
@@ -179,7 +182,7 @@ const Academy = () => {
                           >
                             <div className="flex items-center justify-between gap-3">
                               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-blue-600 to-teal-500 text-white"><FaPlay /></span>
-                              <span className="text-xs font-semibold text-slate-500">{count} videos</span>
+                              <span className="text-xs font-semibold text-slate-500">{count} {t("site.academy.videos")}</span>
                             </div>
                             <h3 className="mt-4 font-display text-xl font-bold text-slate-950">{playlist.title}</h3>
                             {playlist.description && <p className="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{playlist.description}</p>}
@@ -215,13 +218,13 @@ const Academy = () => {
                                   <div className="mt-6 grid gap-4 md:grid-cols-2">
                                     {selectedVideo.notes && (
                                       <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
-                                        <p className="text-sm font-bold text-slate-950">Lesson notes</p>
+                                        <p className="text-sm font-bold text-slate-950">{t("site.academy.lessonNotes")}</p>
                                         <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-600">{selectedVideo.notes}</p>
                                       </div>
                                     )}
                                     {attachments.length > 0 && (
                                       <div className="rounded-2xl border border-teal-100 bg-teal-50/70 p-5">
-                                        <p className="text-sm font-bold text-slate-950">Resources</p>
+                                        <p className="text-sm font-bold text-slate-950">{t("site.academy.resources")}</p>
                                         <div className="mt-3 space-y-2">
                                           {attachments.map((attachment) => (
                                             <a
@@ -232,7 +235,7 @@ const Academy = () => {
                                               className="flex items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 text-sm font-semibold text-blue-700 transition hover:text-teal-700"
                                             >
                                               <span className="inline-flex items-center gap-2"><FaLink /> {attachment.title}</span>
-                                              <FaArrowRight />
+                                              <FaArrowRight className={isArabic ? "rotate-180" : ""} />
                                             </a>
                                           ))}
                                         </div>
@@ -244,14 +247,14 @@ const Academy = () => {
                             </>
                           ) : (
                             <div className="flex aspect-video items-center justify-center rounded-3xl bg-slate-950 px-6 text-center text-slate-300">
-                              Videos for this playlist are coming soon.
+                              {t("site.academy.videosSoon")}
                             </div>
                           )}
                         </div>
 
                         <aside className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 xl:max-h-[42rem]">
                           <div className="border-b border-slate-200 bg-white p-5">
-                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">Now learning</p>
+                            <p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700">{t("site.academy.nowLearning")}</p>
                             <h3 className="mt-2 font-display text-xl font-bold text-slate-950">{selectedPlaylist.title}</h3>
                           </div>
                           <div className="space-y-2 overflow-y-auto p-3 xl:max-h-[35rem]">
@@ -260,7 +263,7 @@ const Academy = () => {
                                 key={video.id}
                                 type="button"
                                 onClick={() => selectVideo(video)}
-                                className={`flex w-full gap-3 rounded-2xl p-3 text-left transition ${
+                                className={`flex w-full gap-3 rounded-2xl p-3 transition ${isArabic ? "text-right" : "text-left"} ${
                                   selectedVideo?.id === video.id ? "bg-slate-950 text-white" : "bg-white text-slate-950 hover:bg-teal-50"
                                 }`}
                               >
@@ -269,7 +272,7 @@ const Academy = () => {
                                   <span className="absolute inset-0 flex items-center justify-center bg-slate-950/25 text-white"><FaCirclePlay /></span>
                                 </div>
                                 <div className="min-w-0 pt-1">
-                                  <p className={`text-xs font-semibold ${selectedVideo?.id === video.id ? "text-teal-300" : "text-slate-500"}`}>Lesson {index + 1}</p>
+                                  <p className={`text-xs font-semibold ${selectedVideo?.id === video.id ? "text-teal-300" : "text-slate-500"}`}>{t("site.academy.lesson")} {index + 1}</p>
                                   <p className="mt-1 line-clamp-2 text-sm font-bold leading-5">{video.title}</p>
                                 </div>
                               </button>

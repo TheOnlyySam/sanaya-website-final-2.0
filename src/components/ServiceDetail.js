@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import {
@@ -184,6 +185,8 @@ const accentConfig = {
 };
 
 const ServiceDetail = () => {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.resolvedLanguage === "ar";
   const navigate = useNavigate();
   const location = useLocation();
   const { serviceId } = useParams();
@@ -194,11 +197,20 @@ const ServiceDetail = () => {
   }, []);
 
   if (!service) {
-    return <div className="py-24 text-center text-2xl">Service Not Found</div>;
+    return <div className="py-24 text-center text-2xl">{t("site.serviceDetail.notFound")}</div>;
   }
 
   const accent = accentConfig[serviceId] || accentConfig["consulting-services"];
   const AccentIcon = accent.icon;
+  const translatedService = isArabic ? t(`site.serviceDetail.services.${serviceId}`, { returnObjects: true }) : null;
+  const displayService = isArabic && translatedService && typeof translatedService === "object"
+    ? {
+        ...service,
+        ...translatedService,
+        features: service.features.map((feature, index) => ({ ...feature, ...translatedService.features?.[index] })),
+        additionalInfo: service.additionalInfo?.map((info, index) => ({ ...info, ...translatedService.additionalInfo?.[index] })),
+      }
+    : service;
 
   const handleContact = () => {
     if (location.pathname !== "/") {
@@ -225,15 +237,15 @@ const ServiceDetail = () => {
           <div className={`relative overflow-hidden rounded-[2.8rem] bg-gradient-to-br ${accent.hero} p-8 text-white shadow-[0_30px_100px_rgba(2,6,23,0.35)] sm:p-10`}>
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.08),transparent_22%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.08),transparent_28%)]" />
             <div className="relative">
-              <p className={`section-kicker ${accent.pill}`}>{service.title}</p>
+              <p className={`section-kicker ${accent.pill}`}>{displayService.title}</p>
               <h1 className="mt-4 font-display text-5xl font-semibold leading-[0.92] sm:text-6xl">
-                Modern delivery for organizations that need technology to perform, not just exist.
+                {t("site.serviceDetail.heroTitle")}
               </h1>
               <p className="mt-6 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                {service.description}
+                {displayService.description}
               </p>
               <div className="mt-8 inline-flex rounded-full border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
-                {accent.summary}
+                {translatedService?.summary || accent.summary}
               </div>
             </div>
           </div>
@@ -241,8 +253,8 @@ const ServiceDetail = () => {
           <div className="grid gap-5">
             <div className="overflow-hidden rounded-[2.6rem] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
               <img
-                src={service.image}
-                alt={service.title}
+                src={displayService.image}
+                alt={displayService.title}
                 className="h-[320px] w-full object-cover sm:h-[360px] lg:h-[420px]"
               />
             </div>
@@ -251,18 +263,18 @@ const ServiceDetail = () => {
                 <div className="inline-flex rounded-2xl bg-slate-950 p-3 text-white">
                   <AccentIcon />
                 </div>
-                <h2 className="mt-5 text-2xl font-semibold text-slate-950">Structured delivery</h2>
+                <h2 className="mt-5 text-2xl font-semibold text-slate-950">{t("site.serviceDetail.structured")}</h2>
                 <p className="mt-3 text-sm leading-7 text-slate-600">
-                  Every engagement is shaped around scope clarity, execution quality, and outcomes that matter to operations.
+                  {t("site.serviceDetail.structuredText")}
                 </p>
               </div>
               <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-6">
                 <div className="inline-flex rounded-2xl bg-white p-3 text-blue-700 shadow-sm">
                   <FaBolt />
                 </div>
-                <h2 className="mt-5 text-2xl font-semibold text-slate-950">Business fit</h2>
+                <h2 className="mt-5 text-2xl font-semibold text-slate-950">{t("site.serviceDetail.businessFit")}</h2>
                 <p className="mt-3 text-sm leading-7 text-slate-600">
-                  We focus on workflow improvement, resilience, visibility, and long-term maintainability.
+                  {t("site.serviceDetail.businessFitText")}
                 </p>
               </div>
             </div>
@@ -274,18 +286,18 @@ const ServiceDetail = () => {
         <div className="mx-auto w-full max-w-7xl rounded-[2.6rem] border border-slate-200 bg-white p-6 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8 lg:p-10">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="section-kicker">Capability System</p>
+              <p className="section-kicker">{t("site.serviceDetail.capability")}</p>
               <h2 className="section-heading mt-4">
-                Key features presented as a clearer service architecture instead of a generic checklist.
+                {t("site.serviceDetail.capabilityTitle")}
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-              These are the areas where Sanaya creates practical business impact inside this solution line.
+              {t("site.serviceDetail.capabilityText")}
             </p>
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {service.features.map((feature, index) => (
+            {displayService.features.map((feature, index) => (
               <div
                 key={feature.title}
                 className="rounded-[2rem] bg-slate-50 p-6"
@@ -303,21 +315,21 @@ const ServiceDetail = () => {
         </div>
       </section>
 
-      {service.additionalInfo && Array.isArray(service.additionalInfo) && (
+      {displayService.additionalInfo && Array.isArray(displayService.additionalInfo) && (
         <section className="px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.92fr_1.08fr]">
             <div className={`rounded-[2.4rem] bg-gradient-to-br ${accent.hero} p-8 text-white shadow-[0_30px_90px_rgba(2,6,23,0.28)] sm:p-10`}>
-              <p className={`section-kicker ${accent.pill}`}>Further Insight</p>
+              <p className={`section-kicker ${accent.pill}`}>{t("site.serviceDetail.insight")}</p>
               <h2 className="mt-4 text-4xl font-semibold leading-tight">
-                Strategic details that help define fit, growth path, and deployment approach.
+                {t("site.serviceDetail.insightTitle")}
               </h2>
               <p className="mt-5 text-sm leading-7 text-slate-300 sm:text-base">
-                These supporting notes explain why the service matters operationally, not just functionally.
+                {t("site.serviceDetail.insightText")}
               </p>
             </div>
 
             <div className="space-y-4">
-              {service.additionalInfo.map((info, index) => (
+              {displayService.additionalInfo.map((info, index) => (
                 <div
                   key={info.title}
                   className="rounded-[1.9rem] border border-slate-200 bg-white p-6 shadow-sm"
@@ -336,9 +348,9 @@ const ServiceDetail = () => {
       <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8">
         <div className={`mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 rounded-[2.6rem] bg-gradient-to-r ${accent.cta} px-8 py-10 text-white shadow-[0_20px_60px_rgba(14,165,233,0.28)] lg:flex-row lg:items-center`}>
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-100">Next Step</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-100">{t("site.serviceDetail.next")}</p>
             <h2 className="mt-3 font-display text-4xl font-semibold leading-tight">
-              Ready to move forward with {service.title}?
+              {t("site.serviceDetail.ready", { service: displayService.title })}
             </h2>
           </div>
           <button
@@ -346,8 +358,8 @@ const ServiceDetail = () => {
             onClick={handleContact}
             className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-semibold text-blue-700 transition duration-300 hover:scale-[1.02]"
           >
-            Contact Sanaya
-            <FaArrowRight />
+            {t("site.common.contactSanaya")}
+            <FaArrowRight className={isArabic ? "rotate-180" : ""} />
           </button>
         </div>
       </section>

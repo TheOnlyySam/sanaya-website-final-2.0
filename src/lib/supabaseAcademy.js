@@ -53,7 +53,11 @@ async function request(path, { method = "GET", body, authenticated = false, pref
     method,
     headers: {
       apikey: config.anonKey,
-      Authorization: `Bearer ${session?.access_token || config.anonKey}`,
+      ...(session?.access_token
+        ? { Authorization: `Bearer ${session.access_token}` }
+        : !config.anonKey.startsWith("sb_publishable_")
+          ? { Authorization: `Bearer ${config.anonKey}` }
+          : {}),
       ...(body ? { "Content-Type": "application/json" } : {}),
       ...(prefer ? { Prefer: prefer } : {}),
     },

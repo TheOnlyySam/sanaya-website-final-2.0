@@ -33,4 +33,12 @@ export const portalApps = [
     route: "/portal/academy-upload",
     icon: "academy",
   },
+  {
+    slug: "service-requests",
+    name: "Service Requests",
+    eyebrow: "Operations",
+    description: "Review package requests, update follow-up status, add internal notes, and export request records.",
+    route: "/portal/service-requests",
+    icon: "requests",
+  },
 ];

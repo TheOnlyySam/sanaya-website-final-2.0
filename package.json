@@ -7,26 +7,20 @@
     "aos": "^2.3.4",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
-    "cra-template": "1.2.0",
-    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "framer-motion": "^12.7.4",
-    "highlight.js": "^11.11.1",
     "i18next": "^25.1.2",
     "i18next-browser-languagedetector": "^8.1.0",
     "lucide-react": "^0.477.0",
-    "nodemailer": "^6.10.0",
+    "nodemailer": "^9.0.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-highlight.js": "^1.0.7",
-    "react-highlights": "^100.0.0",
     "react-i18next": "^15.5.1",
     "react-icons": "^5.4.0",
     "react-router-dom": "^7.1.5",
-    "react-scripts": "5.0.1",
     "react-scroll": "^1.9.0",
     "recharts": "^2.15.3",
-    "swiper": "^11.2.4",
+    "swiper": "^14.0.7",
     "web-vitals": "^4.2.4"
   },
   "scripts": {
@@ -42,6 +36,13 @@
       "react-app/jest"
     ]
   },
+  "jest": {
+    "moduleNameMapper": {
+      "^react-router-dom$": "<rootDir>/node_modules/react-router-dom/dist/index.js",
+      "^react-router$": "<rootDir>/node_modules/react-router/dist/development/index.js",
+      "^react-router/dom$": "<rootDir>/node_modules/react-router/dist/development/dom-export.js"
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -55,8 +56,13 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
+    "react-scripts": "^5.0.1",
     "sitemap": "^7.1.0",
     "tailwindcss": "^3.4.17"
   }

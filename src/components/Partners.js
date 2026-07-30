@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const partnersData = [
   {
@@ -65,6 +66,8 @@ const partnersData = [
 
 const Partners = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const { t } = useTranslation();
+  const categories = t("site.partners.categories", { returnObjects: true });
 
   return (
     <section id="partners" className="px-4 py-24 sm:px-6 lg:px-8">
@@ -72,13 +75,13 @@ const Partners = () => {
         <div className="rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-[0_24px_70px_rgba(15,23,42,0.08)] sm:p-8 lg:p-10">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="section-kicker">Strategic Partners</p>
+              <p className="section-kicker">{t("site.partners.kicker")}</p>
               <h2 className="section-heading mt-4">
-                Trusted technology alliances across infrastructure, security, communications, and enterprise systems.
+                {t("site.partners.title")}
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-              Our vendor ecosystem lets us build solutions with proven hardware and software platforms while keeping delivery unified through one team.
+              {t("site.partners.intro")}
             </p>
           </div>
 
@@ -94,7 +97,7 @@ const Partners = () => {
                     : "border-slate-200 bg-slate-50 text-slate-700 hover:border-teal-300 hover:text-teal-700"
                 }`}
               >
-                {item.category}
+                {Array.isArray(categories) ? categories[index] : item.category}
               </button>
             ))}
           </div>

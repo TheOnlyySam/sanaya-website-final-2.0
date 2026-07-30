@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -145,6 +146,13 @@ const performanceSignals = [
 ];
 
 const DataCenter = () => {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.resolvedLanguage === "ar";
+  const signals = t("site.dataCenter.signals", { returnObjects: true });
+  const laneCopy = t("site.dataCenter.lanes", { returnObjects: true });
+  const overviewPoints = t("site.dataCenter.overviewPoints", { returnObjects: true });
+  const featureCopy = t("site.dataCenter.features", { returnObjects: true });
+  const modelCopy = t("site.dataCenter.modelItems", { returnObjects: true });
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedImage, setSelectedImage] = useState(null);
@@ -178,12 +186,12 @@ const DataCenter = () => {
           <div className="relative overflow-hidden rounded-[2.8rem] bg-slate-950 p-8 text-white shadow-[0_30px_100px_rgba(2,6,23,0.35)] sm:p-10">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.22),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(37,99,235,0.3),transparent_32%)]" />
             <div className="relative">
-              <p className="section-kicker !text-teal-300">Data Centers</p>
+              <p className="section-kicker !text-teal-300">{t("site.dataCenter.kicker")}</p>
               <h1 className="mt-4 font-display text-5xl font-semibold leading-[0.92] sm:text-6xl">
-                Infrastructure architecture for organizations that cannot afford downtime.
+                {t("site.dataCenter.title")}
               </h1>
               <p className="mt-6 max-w-2xl text-sm leading-7 text-slate-300 sm:text-base">
-                {dataCenterDetails.description}
+                {t("site.dataCenter.description")}
               </p>
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -192,16 +200,16 @@ const DataCenter = () => {
                   onClick={goToContact}
                   className="inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-6 py-4 text-sm font-semibold text-white"
                 >
-                  Discuss your infrastructure
-                  <FaArrowRight />
+                  {t("site.dataCenter.discuss")}
+                  <FaArrowRight className={isArabic ? "rotate-180" : ""} />
                 </button>
                 <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
-                  Enterprise, government, and distributed-site delivery
+                  {t("site.dataCenter.scope")}
                 </div>
               </div>
 
               <div className="mt-10 grid gap-4 sm:grid-cols-3">
-                {performanceSignals.map((item) => (
+                {(Array.isArray(signals) ? signals : performanceSignals).map((item) => (
                   <div key={item.label} className="rounded-[1.7rem] border border-white/10 bg-white/5 p-4">
                     <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{item.label}</p>
                     <p className="mt-3 text-base font-semibold text-white">{item.value}</p>
@@ -215,7 +223,7 @@ const DataCenter = () => {
             <div className="overflow-hidden rounded-[2.6rem] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
               <img
                 src={dataCenterDetails.image}
-                alt={dataCenterDetails.title}
+                alt={t("site.dataCenter.kicker")}
                 className="h-[320px] w-full object-cover sm:h-[360px] lg:h-[420px]"
               />
             </div>
@@ -224,18 +232,18 @@ const DataCenter = () => {
                 <div className="inline-flex rounded-2xl bg-slate-950 p-3 text-teal-300">
                   <FaServer />
                 </div>
-                <h2 className="mt-5 text-2xl font-semibold text-slate-950">Facility systems</h2>
+                <h2 className="mt-5 text-2xl font-semibold text-slate-950">{t("site.dataCenter.facility")}</h2>
                 <p className="mt-3 text-sm leading-7 text-slate-600">
-                  Critical infrastructure is delivered as a coordinated environment, not as disconnected products.
+                  {t("site.dataCenter.facilityText")}
                 </p>
               </div>
               <div className="rounded-[2rem] border border-slate-200 bg-slate-50 p-6">
                 <div className="inline-flex rounded-2xl bg-white p-3 text-blue-700 shadow-sm">
                   <FaDatabase />
                 </div>
-                <h2 className="mt-5 text-2xl font-semibold text-slate-950">Operational continuity</h2>
+                <h2 className="mt-5 text-2xl font-semibold text-slate-950">{t("site.dataCenter.continuity")}</h2>
                 <p className="mt-3 text-sm leading-7 text-slate-600">
-                  We design around uptime, maintainability, and clean expansion paths as needs grow.
+                  {t("site.dataCenter.continuityText")}
                 </p>
               </div>
             </div>
@@ -247,20 +255,22 @@ const DataCenter = () => {
         <div className="mx-auto w-full max-w-7xl rounded-[2.6rem] border border-slate-200 bg-white p-6 shadow-[0_22px_70px_rgba(15,23,42,0.08)] sm:p-8 lg:p-10">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="section-kicker">System Architecture</p>
+              <p className="section-kicker">{t("site.dataCenter.architecture")}</p>
               <h2 className="section-heading mt-4">
-                The data center only works when every layer supports the others.
+                {t("site.dataCenter.architectureTitle")}
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-              Power, cooling, fire response, surveillance, cabling, and growth planning must be designed like one operating system for the building.
+              {t("site.dataCenter.architectureText")}
             </p>
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {architectureLanes.map(({ icon: Icon, title, text }, index) => (
+            {architectureLanes.map(({ icon: Icon }, index) => {
+              const content = Array.isArray(laneCopy) ? laneCopy[index] : architectureLanes[index];
+              return (
               <div
-                key={title}
+                key={content.title}
                 className="rounded-[2rem] bg-slate-50 p-6"
                 data-aos="fade-up"
                 data-aos-delay={index * 90}
@@ -268,10 +278,11 @@ const DataCenter = () => {
                 <div className="inline-flex rounded-2xl bg-white p-3 text-blue-700 shadow-sm">
                   <Icon />
                 </div>
-                <h3 className="mt-5 text-xl font-semibold text-slate-950">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-600">{text}</p>
+                <h3 className="mt-5 text-xl font-semibold text-slate-950">{content.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{content.text}</p>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -279,23 +290,15 @@ const DataCenter = () => {
       <section className="px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto grid w-full max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="rounded-[2.4rem] bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 p-8 text-white shadow-[0_30px_90px_rgba(2,6,23,0.28)] sm:p-10">
-            <p className="section-kicker !text-teal-300">Overview</p>
+            <p className="section-kicker !text-teal-300">{t("site.dataCenter.overview")}</p>
             <h2 className="mt-4 text-4xl font-semibold leading-tight">
-              High-performance environments shaped for both reliability and practical expansion.
+              {t("site.dataCenter.overviewTitle")}
             </h2>
             <p className="mt-5 text-sm leading-7 text-slate-300 sm:text-base">
-              Sanaya supports on-premises builds, edge deployments, modular growth paths, and specialized environments that need fast implementation without sacrificing resilience or manageability.
+              {t("site.dataCenter.overviewText")}
             </p>
             <div className="mt-8 space-y-4">
-              <div className="rounded-[1.6rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
-                Compute, storage, and physical systems are planned together.
-              </div>
-              <div className="rounded-[1.6rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
-                Delivery models flex based on facility constraints and timeline.
-              </div>
-              <div className="rounded-[1.6rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">
-                Long-term serviceability is treated as part of the initial design.
-              </div>
+              {Array.isArray(overviewPoints) && overviewPoints.map((point) => <div key={point} className="rounded-[1.6rem] border border-white/10 bg-white/5 px-5 py-4 text-sm text-slate-200">{point}</div>)}
             </div>
           </div>
 
@@ -312,7 +315,7 @@ const DataCenter = () => {
                 <SwiperSlide key={image}>
                   <img
                     src={image}
-                    alt={`Data center infrastructure ${index + 1}`}
+                    alt={t("site.dataCenter.imageAlt", { number: index + 1 })}
                     className="h-[420px] w-full cursor-pointer object-cover"
                     onClick={() => setSelectedImage(image)}
                   />
@@ -327,20 +330,22 @@ const DataCenter = () => {
         <div className="mx-auto w-full max-w-7xl">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
-              <p className="section-kicker">Core Systems</p>
+              <p className="section-kicker">{t("site.dataCenter.core")}</p>
               <h2 className="section-heading mt-4">
-                Mission-critical components presented as a complete operating environment.
+                {t("site.dataCenter.coreTitle")}
               </h2>
             </div>
             <p className="max-w-xl text-sm leading-7 text-slate-600 sm:text-base">
-              These systems are what convert a room of equipment into a dependable production environment.
+              {t("site.dataCenter.coreText")}
             </p>
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {dataCenterDetails.features.map((feature, index) => (
+            {dataCenterDetails.features.map((feature, index) => {
+              const content = Array.isArray(featureCopy) ? featureCopy[index] : feature;
+              return (
               <div
-                key={feature.title}
+                key={feature.icon}
                 className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-[0_22px_45px_rgba(15,23,42,0.1)]"
                 data-aos="fade-up"
                 data-aos-delay={index * 50}
@@ -348,25 +353,28 @@ const DataCenter = () => {
                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-teal-500 text-sm font-semibold text-white">
                   {feature.icon}
                 </div>
-                <h3 className="mt-5 text-xl font-semibold text-slate-950">{feature.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-slate-600">{feature.description}</p>
+                <h3 className="mt-5 text-xl font-semibold text-slate-950">{content.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-slate-600">{content.description}</p>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
 
       <section className="px-4 py-14 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
-          <p className="section-kicker">Deployment Models</p>
+          <p className="section-kicker">{t("site.dataCenter.models")}</p>
           <h2 className="section-heading mt-4 max-w-3xl">
-            Multiple ways to deploy modern capacity, depending on how your operation actually runs.
+            {t("site.dataCenter.modelsTitle")}
           </h2>
 
           <div className="mt-10 space-y-8">
-            {dataCenterDetails.additionalInfo.map((info, index) => (
+            {dataCenterDetails.additionalInfo.map((info, index) => {
+              const content = Array.isArray(modelCopy) ? modelCopy[index] : info;
+              return (
               <div
-                key={info.title}
+                key={content.title}
                 className="grid gap-6 rounded-[2.4rem] border border-slate-200 bg-white p-6 shadow-[0_20px_70px_rgba(15,23,42,0.08)] lg:grid-cols-[1.08fr_0.92fr]"
                 data-aos="fade-up"
               >
@@ -383,7 +391,7 @@ const DataCenter = () => {
                       >
                         <img
                           src={image}
-                          alt={`${info.title} ${imageIndex + 1}`}
+                          alt={`${content.title} ${imageIndex + 1}`}
                           className={`w-full object-cover transition duration-300 hover:scale-[1.03] ${
                             imageIndex === 0 ? "h-[320px] sm:h-full sm:min-h-[336px]" : "h-[156px]"
                           }`}
@@ -398,15 +406,16 @@ const DataCenter = () => {
                     <div className="inline-flex rounded-2xl bg-slate-50 p-3 text-blue-700">
                       <FaMicrochip />
                     </div>
-                    <h3 className="mt-5 text-3xl font-semibold text-slate-950">{info.title}</h3>
-                    <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">{info.description}</p>
+                    <h3 className="mt-5 text-3xl font-semibold text-slate-950">{content.title}</h3>
+                    <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base">{content.description}</p>
                   </div>
                   <div className="mt-8 rounded-[1.6rem] bg-slate-50 px-5 py-4 text-sm font-medium text-slate-700">
-                    Best when the business needs a deployment model that matches real site, budget, and growth constraints.
+                    {t("site.dataCenter.modelFit")}
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -414,9 +423,9 @@ const DataCenter = () => {
       <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8">
         <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 rounded-[2.6rem] bg-gradient-to-r from-blue-600 to-teal-500 px-8 py-10 text-white shadow-[0_20px_60px_rgba(14,165,233,0.28)] lg:flex-row lg:items-center">
           <div className="max-w-2xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-100">Infrastructure Strategy</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-100">{t("site.dataCenter.strategy")}</p>
             <h2 className="mt-3 font-display text-4xl font-semibold leading-tight">
-              Planning a new facility, an edge site, or a phased capacity expansion?
+              {t("site.dataCenter.strategyTitle")}
             </h2>
           </div>
           <button
@@ -424,7 +433,7 @@ const DataCenter = () => {
             onClick={goToContact}
             className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-4 text-sm font-semibold text-blue-700 transition duration-300 hover:scale-[1.02]"
           >
-            Talk to Sanaya
+            {t("site.dataCenter.talk")}
             <FaDatabase />
           </button>
         </div>
@@ -440,13 +449,13 @@ const DataCenter = () => {
               type="button"
               className="absolute right-4 top-4 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-slate-900"
               onClick={() => setSelectedImage(null)}
-              aria-label="Close image"
+              aria-label={t("site.dataCenter.closeImage")}
             >
               <FaXmark />
             </button>
             <img
               src={selectedImage}
-              alt="Expanded infrastructure view"
+              alt={t("site.dataCenter.expandedAlt")}
               className="max-h-[88vh] max-w-full rounded-[1.8rem] object-contain"
             />
           </div>

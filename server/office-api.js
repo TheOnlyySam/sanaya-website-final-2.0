@@ -21,6 +21,13 @@ function encodeStoragePath(path) {
   return encodeURIComponent(path).replace(/%2F/g, "/");
 }
 
+function getServiceHeaders(serviceKey) {
+  return {
+    apikey: serviceKey,
+    ...(!serviceKey.startsWith("sb_secret_") ? { Authorization: `Bearer ${serviceKey}` } : {}),
+  };
+}
+
 async function parseResponse(response) {
   const text = await response.text();
   const data = text ? JSON.parse(text) : null;
@@ -40,8 +47,7 @@ async function logActivity(config, filePath, fileName, userEmail) {
   const response = await fetch(`${config.url}/rest/v1/${ACTIVITY_TABLE}`, {
     method: "POST",
     headers: {
-      apikey: config.serviceKey,
-      Authorization: `Bearer ${config.serviceKey}`,
+      ...getServiceHeaders(config.serviceKey),
       "Content-Type": "application/json",
       Prefer: "return=minimal",
     },
@@ -109,8 +115,7 @@ async function handleOnlyOfficeCallback(req, res) {
     const uploadResponse = await fetch(`${config.url}/storage/v1/object/${config.bucket}/${encodeStoragePath(filePath)}`, {
       method: "POST",
       headers: {
-        apikey: config.serviceKey,
-        Authorization: `Bearer ${config.serviceKey}`,
+        ...getServiceHeaders(config.serviceKey),
         "Content-Type": documentResponse.headers.get("content-type") || "application/octet-stream",
         "x-upsert": "true",
       },

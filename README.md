@@ -2,6 +2,39 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Odoo service packages and requests
+
+The public `/service-packages` page presents Arabic-first Odoo consultation and support packages. Visitors can choose a package and submit the unauthenticated form at `/service-request`. The server validates the request, stores it in Supabase when server credentials are configured, emails both internal recipients, and then sends a localized customer confirmation. The form does not create an account, confirm an appointment, or process payment.
+
+Package identifiers, localized names, integer IQD prices, duration, inclusions, and exclusions are maintained in `src/data/servicePackages.js`. Update that file when pricing or package content changes; the browser and server both resolve packages from this trusted catalog.
+
+### Installation and migration
+
+1. Copy `.env.example` to the environment configuration used by the frontend and serverless functions.
+2. Apply `supabase/migrations/20260730_create_service_requests.sql` after the existing role and Academy migration. The service table is private and can only be read or updated by authenticated users whose `sanaya_file_user_roles.role` is `admin`.
+3. Configure the SMTP and server-only Supabase values in the deployment provider. Never expose the service role key or SMTP password through a `REACT_APP_` variable.
+4. Build and deploy the React app together with the functions in `api/`.
+
+Required server values are `SANAYATECHS_SERVICE_EMAILS`, `SANAYATECHS_SERVICE_FROM_EMAIL`, SMTP credentials, `SUPABASE_URL`, and `SUPABASE_SERVICE_ROLE_KEY`. `SANAYATECHS_SERVICE_REPLY_TO`, timezone, attachment limit, allowed origins, and rate-limit settings should also be reviewed for each environment. The recipient list is server-side and can be changed without rebuilding the frontend.
+
+The SMTP transport uses `SANAYATECHS_SERVICE_SMTP_*`. For safe local email tests, point these values to a development SMTP inbox such as Mailpit or the sandbox supplied by the transactional email provider. Do not use production recipients while testing. Customer confirmation failure is recorded but does not discard an internal request that has already been stored and emailed.
+
+Use `npm start` to work on the public interface at `http://localhost:3000`. Because the backend follows the repository's Vercel function convention, use `npx vercel dev` with a local environment file when testing submission, persistence, and email delivery end to end.
+
+Attachments are read by the browser and validated again by the server. Only PDF, PNG, JPEG, XLSX, CSV, and TXT are accepted. Extension, declared MIME type, file signature, filename, and size are checked. Attachments are sent to the internal recipients and only metadata is persisted; file contents are not placed in a public directory or retained in the database. The default is 3 MB so base64 JSON remains within common serverless body limits; confirm the provider limit before increasing it.
+
+Admins can open `/portal/service-requests` to filter and search requests, view details, change status, add notes, resend a customer confirmation, and export the filtered list to CSV. This uses the existing Supabase login and admin role.
+
+### Security and deployment checklist
+
+- Apply the database migration and verify row-level security before enabling the route.
+- Set a long random `SANAYATECHS_SERVICE_RATE_LIMIT_SALT` and the expected production origins.
+- Confirm TLS works for the SMTP server; the service request transport does not disable certificate verification.
+- Confirm both internal recipients receive a test request and the customer sandbox receives its localized confirmation.
+- Verify the frontend and server attachment limits match the provider's body-size limit.
+- Run `npm test -- --watchAll=false` and `npm run build` before deployment.
+- Review deployment logs for operational event names only; customer descriptions and attachment content are not logged.
+
 ## Available Scripts
 
 In the project directory, you can run:

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaArrowRight, FaChartLine, FaDatabase, FaFolderOpen, FaGraduationCap, FaPlus, FaRightFromBracket, FaShieldHalved } from "react-icons/fa6";
+import { FaArrowRight, FaChartLine, FaClipboardList, FaDatabase, FaFolderOpen, FaGraduationCap, FaPlus, FaRightFromBracket, FaShieldHalved } from "react-icons/fa6";
 import { isSupabaseAuthenticated, logoutSupabaseFiles } from "../lib/supabaseFiles";
 import { portalApps } from "./portalApps";
 
@@ -9,6 +9,7 @@ const iconMap = {
   database: FaDatabase,
   folder: FaFolderOpen,
   academy: FaGraduationCap,
+  requests: FaClipboardList,
 };
 
 const Portal = () => {

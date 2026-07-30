@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FaArrowUpRightFromSquare, FaBars, FaFileArrowDown, FaFolderOpen, FaHouse, FaLock, FaXmark } from "react-icons/fa6";
 import { isSupabaseAuthenticated } from "../lib/supabaseFiles";
 
 const menuItems = [
-  { label: "About", id: "about" },
-  { label: "Partners", id: "partners" },
-  { label: "Solutions", id: "services" },
-  { label: "Services", id: "ConsultingServices" },
-  { label: "Team", path: "/our-team" },
-  { label: "Academy", path: "/academy" },
-  { label: "Contact", id: "contact" },
+  { labelKey: "about", id: "about" },
+  { labelKey: "partners", id: "partners" },
+  { labelKey: "solutions", id: "services" },
+  { labelKey: "services", id: "ConsultingServices" },
+  { labelKey: "team", path: "/our-team" },
+  { labelKey: "academy", path: "/academy" },
+  { labelKey: "packages", path: "/service-packages" },
+  { labelKey: "contact", id: "contact" },
 ];
 
 const showProductsLink = false;
@@ -19,6 +21,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [filesAuthenticated, setFilesAuthenticated] = useState(false);
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.resolvedLanguage === "ar";
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -82,7 +86,7 @@ const Navbar = () => {
           type="button"
           onClick={() => scrollToSection("landing")}
           className="flex shrink-0 items-center gap-3"
-          aria-label="Go to homepage"
+          aria-label={t("site.nav.homeLabel")}
         >
           <img
             src={scrolled || isOpen || location.pathname !== "/" ? "/logo2.png" : "/logo1.png"}
@@ -100,7 +104,7 @@ const Navbar = () => {
           <span className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/20 via-teal-400/25 to-blue-500/20 opacity-70 blur-md transition duration-500 group-hover:opacity-100" />
           <span className="absolute inset-0 rounded-full border border-teal-300/25 bg-white/5 opacity-0 transition duration-300 group-hover:opacity-100" />
           <FaHouse className="relative text-teal-300 drop-shadow-[0_0_10px_rgba(45,212,191,0.9)]" />
-          <span className="relative">Home</span>
+          <span className="relative">{t("site.nav.home")}</span>
         </button>
 
         <ul className={`hidden items-center gap-6 lg:flex xl:gap-7 ${textClasses}`}>
@@ -111,7 +115,7 @@ const Navbar = () => {
                 onClick={() => handleNavItemClick(item)}
                 className="text-sm font-medium transition duration-300 hover:text-teal-400"
               >
-                {item.label}
+                {t(`site.nav.${item.labelKey}`)}
               </button>
             </li>
           ))}
@@ -123,7 +127,7 @@ const Navbar = () => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-medium transition duration-300 hover:text-teal-400"
               >
-                Products
+                {t("site.nav.products")}
                 <FaArrowUpRightFromSquare className="text-xs" />
               </a>
             </li>
@@ -140,7 +144,7 @@ const Navbar = () => {
             className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition duration-300 hover:border-teal-400 hover:text-teal-700"
           >
             {filesAuthenticated ? <FaFolderOpen /> : <FaLock />}
-            Portal
+            {t("site.nav.portal")}
           </button>
           <a
             href="/Sanaya%20Company%20Profile.pdf"
@@ -148,14 +152,14 @@ const Navbar = () => {
             className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition duration-300 hover:border-teal-400 hover:text-teal-700"
           >
             <FaFileArrowDown />
-            Profile
+            {t("site.nav.profile")}
           </a>
           <button
             type="button"
-            onClick={() => scrollToSection("contact")}
+            onClick={() => navigate("/service-packages")}
             className="inline-flex items-center whitespace-nowrap rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_14px_35px_rgba(14,165,233,0.28)] transition duration-300 hover:scale-[1.02]"
           >
-            Start a Project
+            {t("site.nav.supportCta")}
           </button>
         </div>
 
@@ -167,7 +171,7 @@ const Navbar = () => {
               ? "border-slate-200 bg-white text-slate-900"
               : "border-white/20 bg-white/10 text-white"
           }`}
-          aria-label="Toggle menu"
+          aria-label={t("site.nav.menuLabel")}
         >
           {isOpen ? <FaXmark size={18} /> : <FaBars size={18} />}
         </button>
@@ -181,7 +185,7 @@ const Navbar = () => {
               onClick={() => scrollToSection("landing")}
               className="inline-flex items-center justify-between rounded-2xl border border-teal-200 bg-teal-50 px-4 py-3 text-base font-semibold text-slate-950"
             >
-              Home
+              {t("site.nav.home")}
               <FaHouse className="text-sm text-teal-600" />
             </button>
             {menuItems.map((item) => (
@@ -189,9 +193,9 @@ const Navbar = () => {
                 key={item.path || item.id}
                 type="button"
                 onClick={() => handleNavItemClick(item)}
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-left text-base font-medium text-slate-900 transition duration-300 hover:border-teal-400 hover:bg-slate-50"
+                className={`rounded-2xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-900 transition duration-300 hover:border-teal-400 hover:bg-slate-50 ${isArabic ? "text-right" : "text-left"}`}
               >
-                {item.label}
+                {t(`site.nav.${item.labelKey}`)}
               </button>
             ))}
             {showProductsLink && (
@@ -202,7 +206,7 @@ const Navbar = () => {
                 className="inline-flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-900"
                 onClick={() => setIsOpen(false)}
               >
-                Products
+                {t("site.nav.products")}
                 <FaArrowUpRightFromSquare className="text-sm" />
               </a>
             )}
@@ -214,7 +218,7 @@ const Navbar = () => {
               }}
               className="inline-flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-900"
             >
-              Portal
+              {t("site.nav.portal")}
               {filesAuthenticated ? <FaFolderOpen className="text-sm" /> : <FaLock className="text-sm" />}
             </button>
             <a
@@ -224,8 +228,18 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               <FaFileArrowDown />
-              Download Profile
+              {t("site.nav.downloadProfile")}
             </a>
+            <button
+              type="button"
+              onClick={() => {
+                setIsOpen(false);
+                navigate("/service-packages");
+              }}
+              className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-teal-500 px-4 py-3 text-base font-semibold text-white"
+            >
+              {t("site.nav.supportCta")}
+            </button>
           </div>
         </div>
       )}

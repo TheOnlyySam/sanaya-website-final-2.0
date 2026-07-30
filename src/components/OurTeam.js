@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const DEFAULT_TEAM_IMAGE = "/teamwork.jpg";
 
@@ -106,6 +107,11 @@ const teamMembers = [
 ];
 
 const OurTeam = () => {
+  const { t, i18n } = useTranslation();
+  const isArabic = i18n.resolvedLanguage === "ar";
+  const ticker = t("site.team.ticker", { returnObjects: true });
+  const tags = t("site.team.tags", { returnObjects: true });
+  const memberCopy = t("site.team.members", { returnObjects: true });
   return (
     <section className="relative overflow-hidden bg-gray-100 pt-32 pb-12 px-4 lg:px-12">
       <div className="pointer-events-none absolute inset-0">
@@ -121,43 +127,40 @@ const OurTeam = () => {
           <div className="mx-auto max-w-3xl overflow-hidden rounded-full border border-sky-200/80 bg-white/80 backdrop-blur-sm">
             <div className="ticker-track flex items-center gap-6 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-700">
               <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 ticker-dot" />
-              <span>Building Reliable Systems</span>
+              <span>{ticker[0]}</span>
               <span className="text-slate-400">•</span>
-              <span>Engineering + Infrastructure + Operations</span>
+              <span>{ticker[1]}</span>
               <span className="text-slate-400">•</span>
-              <span>Client-Focused Delivery</span>
+              <span>{ticker[2]}</span>
               <span className="inline-flex h-2 w-2 rounded-full bg-cyan-500 ticker-dot" />
-              <span>Building Reliable Systems</span>
+              <span>{ticker[0]}</span>
               <span className="text-slate-400">•</span>
-              <span>Engineering + Infrastructure + Operations</span>
+              <span>{ticker[1]}</span>
             </div>
           </div>
         </div>
         <div className="mb-5 flex flex-col items-center text-center" data-aos="fade-up">
           <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-700">
-            Meet The People Behind Sanaya
+            {t("site.team.kicker")}
           </span>
           <p className="mt-2 max-w-2xl text-sm text-slate-600">
-            Leadership, engineering, and operations working together to deliver reliable systems and measurable outcomes.
+            {t("site.team.intro")}
           </p>
           <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
           
-            <span className="rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-700">Infrastructure</span>
-            <span className="rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-700">Data Center</span>
-            <span className="rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-700">Software Engineering</span>
-            <span className="rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-700">Odoo</span>
-            <span className="rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-700">Support & Delivery</span>
+            {Array.isArray(tags) && tags.map((tag) => <span key={tag} className="rounded-full border border-slate-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-slate-700">{tag}</span>)}
           </div>
         </div>
         <div className="mb-6 text-center" data-aos="fade-up">
           <h1 className="text-2xl lg:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Our Team
+            {t("site.team.title")}
           </h1>
           <div className="mx-auto mt-2 h-1 w-28 rounded-full bg-gradient-to-r from-blue-500 via-cyan-400 to-blue-500 bg-[length:200%_100%] title-band" />
         </div>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3" data-aos="fade-up">
           {teamMembers.map((member, index) => {
             const memberKey = `${member.id}-${index}`;
+            const content = Array.isArray(memberCopy) ? memberCopy[index] : member;
 
             return (
             <article
@@ -176,11 +179,11 @@ const OurTeam = () => {
                 />
                 <div className="flex-1 p-3.5 bg-gradient-to-b from-white/60 to-sky-50/60">
                   <h3 className="text-base font-bold text-gray-900 leading-tight">{member.name}</h3>
-                  <p className="text-xs font-semibold text-blue-700 mt-1 mb-2 tracking-wide uppercase">{member.role}</p>
-                  <p className="text-xs text-gray-600 leading-relaxed mb-3">{member.description}</p>
+                  <p className="text-xs font-semibold text-blue-700 mt-1 mb-2 tracking-wide uppercase">{content.role}</p>
+                  <p className="text-xs text-gray-600 leading-relaxed mb-3">{content.description}</p>
 
-                  <blockquote className="mt-2 border-l-4 border-cyan-300 pl-3 text-xs text-gray-700 italic">
-                    "{member.quote}"
+                  <blockquote className={`mt-2 text-xs text-gray-700 italic ${isArabic ? "border-r-4 border-cyan-300 pr-3" : "border-l-4 border-cyan-300 pl-3"}`}>
+                    "{content.quote}"
                   </blockquote>
                 </div>
               </div>
