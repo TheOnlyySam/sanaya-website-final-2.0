@@ -25,6 +25,7 @@ const Navbar = () => {
   const isArabic = i18n.resolvedLanguage === "ar";
   const location = useLocation();
   const navigate = useNavigate();
+  const visibleMenuItems = menuItems.filter((item) => item.labelKey !== "packages" || filesAuthenticated);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
@@ -108,7 +109,7 @@ const Navbar = () => {
         </button>
 
         <ul className={`hidden items-center gap-6 lg:flex xl:gap-7 ${textClasses}`}>
-          {menuItems.map((item) => (
+          {visibleMenuItems.map((item) => (
             <li key={item.path || item.id}>
               <button
                 type="button"
@@ -154,13 +155,15 @@ const Navbar = () => {
             <FaFileArrowDown />
             {t("site.nav.profile")}
           </a>
-          <button
-            type="button"
-            onClick={() => navigate("/service-packages")}
-            className="inline-flex items-center whitespace-nowrap rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_14px_35px_rgba(14,165,233,0.28)] transition duration-300 hover:scale-[1.02]"
-          >
-            {t("site.nav.supportCta")}
-          </button>
+          {filesAuthenticated && (
+            <button
+              type="button"
+              onClick={() => navigate("/service-packages")}
+              className="inline-flex items-center whitespace-nowrap rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_14px_35px_rgba(14,165,233,0.28)] transition duration-300 hover:scale-[1.02]"
+            >
+              {t("site.nav.supportCta")}
+            </button>
+          )}
         </div>
 
         <button
@@ -188,7 +191,7 @@ const Navbar = () => {
               {t("site.nav.home")}
               <FaHouse className="text-sm text-teal-600" />
             </button>
-            {menuItems.map((item) => (
+            {visibleMenuItems.map((item) => (
               <button
                 key={item.path || item.id}
                 type="button"
@@ -230,16 +233,18 @@ const Navbar = () => {
               <FaFileArrowDown />
               {t("site.nav.downloadProfile")}
             </a>
-            <button
-              type="button"
-              onClick={() => {
-                setIsOpen(false);
-                navigate("/service-packages");
-              }}
-              className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-teal-500 px-4 py-3 text-base font-semibold text-white"
-            >
-              {t("site.nav.supportCta")}
-            </button>
+            {filesAuthenticated && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/service-packages");
+                }}
+                className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-blue-600 to-teal-500 px-4 py-3 text-base font-semibold text-white"
+              >
+                {t("site.nav.supportCta")}
+              </button>
+            )}
           </div>
         </div>
       )}

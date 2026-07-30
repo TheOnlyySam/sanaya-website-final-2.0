@@ -4,7 +4,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Odoo service packages and requests
 
-The public `/service-packages` page presents Arabic-first Odoo consultation and support packages. Visitors can choose a package and submit the unauthenticated form at `/service-request`. The server validates the request, stores it in Supabase when server credentials are configured, emails both internal recipients, and then sends a localized customer confirmation. The form does not create an account, confirm an appointment, or process payment.
+The portal-only `/service-packages` page presents Arabic-first Odoo consultation and support packages to logged-in users. Portal users can choose a package and submit the form at `/service-request`. The server validates the request, stores it in Supabase when server credentials are configured, emails both internal recipients, and then sends a localized customer confirmation. The form does not create an account, confirm an appointment, or process payment.
 
 Package identifiers, localized names, integer IQD prices, duration, inclusions, and exclusions are maintained in `src/data/servicePackages.js`. Update that file when pricing or package content changes; the browser and server both resolve packages from this trusted catalog.
 

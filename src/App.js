@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaWhatsapp } from "react-icons/fa6";
 import AOS from "aos";
@@ -31,6 +31,17 @@ import ServicePackages from "./components/ServicePackages";
 import ServiceRequest from "./components/ServiceRequest";
 import ServiceRequestsAdmin from "./components/ServiceRequestsAdmin";
 import GlobalLanguageToggle from "./components/GlobalLanguageToggle";
+import { isSupabaseAuthenticated } from "./lib/supabaseFiles";
+
+const PortalOnlyRoute = ({ children }) => {
+  const location = useLocation();
+
+  if (!isSupabaseAuthenticated()) {
+    return <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />;
+  }
+
+  return children;
+};
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -98,8 +109,8 @@ function App() {
         <Route path="/services/software-engineering" element={<SoftwareEngineering />} />
         <Route path="/our-team" element={<OurTeam />} />
         <Route path="/academy" element={<Academy />} />
-        <Route path="/service-packages" element={<ServicePackages />} />
-        <Route path="/service-request" element={<ServiceRequest />} />
+        <Route path="/service-packages" element={<PortalOnlyRoute><ServicePackages /></PortalOnlyRoute>} />
+        <Route path="/service-request" element={<PortalOnlyRoute><ServiceRequest /></PortalOnlyRoute>} />
         <Route path="/login" element={<FilesLogin />} />
         <Route path="/portal" element={<Portal />} />
         <Route path="/portal/academy-upload" element={<AcademyUpload />} />
