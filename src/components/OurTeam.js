@@ -86,7 +86,7 @@ const teamMembers = [
   {
     id: "sama",
     name: "Sama Kadhim",
-    role: "Lawer",
+    role: "Lawyer",
     image: "/sama.jpeg",
     description:
       "Provides legal guidance on contracts, compliance, and risk to protect operations and support confident business decisions.",
