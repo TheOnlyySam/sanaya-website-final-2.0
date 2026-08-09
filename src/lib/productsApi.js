@@ -28,10 +28,27 @@ export function productSummary(html, maxLength = 150) {
   return text.length > maxLength ? `${text.slice(0, maxLength).trim()}…` : text;
 }
 
-export function formatProductPrice(price, currency) {
-  if (price === null || price === undefined) return "Contact for price";
+export function productDescriptionParts(html) {
+  if (!html) return { intro: "", points: [] };
+  const documentNode = new DOMParser().parseFromString(String(html), "text/html");
+  const normalize = (value) => String(value || "").replace(/\s+/g, " ").trim();
+  const points = [...documentNode.querySelectorAll("li")]
+    .map((item) => normalize(item.textContent))
+    .filter(Boolean);
+  const introCandidates = [...documentNode.querySelectorAll("p, div")]
+    .filter((item) => !item.querySelector("p, div, ul, ol"))
+    .map((item) => normalize(item.textContent))
+    .filter((item) => item && !points.includes(item));
+  const uniqueIntro = [...new Set(introCandidates)].join("\n\n");
+  return { intro: uniqueIntro || productSummary(html, 3000), points: [...new Set(points)] };
+}
+
+export function formatProductPrice(price, currency, locale = "en") {
+  if (price === null || price === undefined || Number(price) <= 0) {
+    return locale === "ar" ? "السعر عند الطلب" : "Price on request";
+  }
   try {
-    return new Intl.NumberFormat("en", {
+    return new Intl.NumberFormat(locale === "ar" ? "ar-IQ" : "en-IQ", {
       style: currency ? "currency" : "decimal",
       currency: currency || undefined,
       maximumFractionDigits: currency === "IQD" ? 0 : 2,
