@@ -1,7 +1,12 @@
+import { getSupabaseAccessToken } from "./supabaseFiles";
+
 const apiUrl = "/api";
 
 async function request(path) {
-  const response = await fetch(`${apiUrl}${path}`);
+  const accessToken = getSupabaseAccessToken();
+  const response = await fetch(`${apiUrl}${path}`, {
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+  });
   const payload = await response.json().catch(() => ({}));
 
   if (!response.ok) {

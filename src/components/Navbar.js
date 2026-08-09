@@ -24,7 +24,9 @@ const Navbar = () => {
   const isArabic = i18n.resolvedLanguage === "ar";
   const location = useLocation();
   const navigate = useNavigate();
-  const visibleMenuItems = menuItems.filter((item) => item.labelKey !== "packages" || filesAuthenticated);
+  const visibleMenuItems = menuItems.filter(
+    (item) => !["packages", "products"].includes(item.labelKey) || filesAuthenticated
+  );
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);

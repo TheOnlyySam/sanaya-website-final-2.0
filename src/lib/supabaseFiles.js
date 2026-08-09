@@ -90,6 +90,10 @@ export function isSupabaseAuthenticated() {
   return Boolean(getStoredSession());
 }
 
+export function getSupabaseAccessToken() {
+  return getStoredSession()?.access_token || "";
+}
+
 export function getSupabaseUserEmail() {
   return getStoredSession()?.user?.email || "";
 }

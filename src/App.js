@@ -113,8 +113,8 @@ function App() {
         <Route path="/academy" element={<Academy />} />
         <Route path="/service-packages" element={<PortalOnlyRoute><ServicePackages /></PortalOnlyRoute>} />
         <Route path="/service-request" element={<PortalOnlyRoute><ServiceRequest /></PortalOnlyRoute>} />
-        <Route path="/products" element={<ProductCatalog />} />
-        <Route path="/products/:productSlug" element={<ProductDetail />} />
+        <Route path="/products" element={<PortalOnlyRoute><ProductCatalog /></PortalOnlyRoute>} />
+        <Route path="/products/:productSlug" element={<PortalOnlyRoute><ProductDetail /></PortalOnlyRoute>} />
         <Route path="/login" element={<FilesLogin />} />
         <Route path="/portal" element={<Portal />} />
         <Route path="/portal/academy-upload" element={<AcademyUpload />} />

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaKey, FaLock, FaRightToBracket } from "react-icons/fa6";
 import { loginSupabaseFiles, requestSupabasePasswordReset } from "../lib/supabaseFiles";
 
@@ -10,6 +10,7 @@ const FilesLogin = () => {
   const [messageType, setMessageType] = useState("error");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -19,7 +20,11 @@ const FilesLogin = () => {
 
     try {
       await loginSupabaseFiles(email, password);
-      navigate("/portal");
+      const requestedPath = location.state?.from;
+      const destination = typeof requestedPath === "string" && requestedPath.startsWith("/") && !requestedPath.startsWith("//")
+        ? requestedPath
+        : "/portal";
+      navigate(destination, { replace: true });
     } catch (error) {
       setMessage(error.message);
     } finally {

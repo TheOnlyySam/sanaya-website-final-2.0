@@ -2,6 +2,26 @@ let odooUid = null;
 let productFields = null;
 let productCache = { expiresAt: 0, products: [] };
 
+async function requireAuthenticatedUser(req) {
+  const authorization = String(req.headers.authorization || "");
+  const accessToken = authorization.match(/^Bearer\s+(.+)$/i)?.[1];
+  const supabaseUrl = String(process.env.SUPABASE_URL || process.env.REACT_APP_SUPABASE_URL || "")
+    .replace(/\/rest\/v1\/?$/, "")
+    .replace(/\/$/, "");
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.REACT_APP_SUPABASE_ANON_KEY;
+
+  if (!accessToken || !supabaseUrl || !supabaseKey) return null;
+
+  const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    headers: {
+      apikey: supabaseKey,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  if (!response.ok) return null;
+  return response.json();
+}
+
 function getConfig() {
   const url = String(process.env.ODOO_URL || "").replace(/\/$/, "");
   const database = process.env.ODOO_DATABASE;
@@ -137,9 +157,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    const user = await requireAuthenticatedUser(req);
+    if (!user?.id) return res.status(401).json({ error: "Authentication required." });
+
     const products = await loadProducts();
     const identifier = String(req.query.identifier || "");
-    res.setHeader("Cache-Control", "s-maxage=60, stale-while-revalidate=300");
+    res.setHeader("Cache-Control", "private, no-store");
 
     if (!identifier) return res.status(200).json({ products });
 
