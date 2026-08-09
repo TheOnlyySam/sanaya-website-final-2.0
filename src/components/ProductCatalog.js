@@ -231,7 +231,7 @@ const ProductCatalog = () => {
           <FaMagnifyingGlass className="text-xs text-slate-400" />
           <input value={categorySearch} onChange={(event) => setCategorySearch(event.target.value)} placeholder={copy.categorySearch} className="w-full bg-transparent text-xs outline-none" />
         </label>
-        <div className="mt-3 space-y-1 max-lg:max-h-[18rem] max-lg:overflow-y-auto">
+        <div className="mt-3 space-y-1">
           {visibleCategories.map((category) => {
             const checked = selectedCategories.includes(category);
             return (
@@ -331,7 +331,7 @@ const ProductCatalog = () => {
 
           {!isLoading && !error && (
             <div className="grid gap-7 lg:grid-cols-[17rem_minmax(0,1fr)]">
-              <aside className="hidden self-start rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(15,23,42,0.05)] lg:sticky lg:top-28 lg:block">{filterPanel}</aside>
+              <aside className="no-scrollbar hidden self-start rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(15,23,42,0.05)] lg:sticky lg:top-28 lg:block lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto lg:overscroll-contain">{filterPanel}</aside>
               <div className="min-w-0">
                 <div className="flex flex-col gap-4 rounded-[1.5rem] border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
@@ -367,7 +367,7 @@ const ProductCatalog = () => {
         </div>
       </section>
 
-      {mobileFiltersOpen && <div className="fixed inset-0 z-[80] lg:hidden"><button type="button" className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={() => setMobileFiltersOpen(false)} aria-label="Close filters" /><aside className={`absolute inset-y-0 w-[min(90vw,24rem)] overflow-y-auto bg-white p-6 shadow-2xl ${language === "ar" ? "left-0" : "right-0"}`}><button type="button" onClick={() => setMobileFiltersOpen(false)} className="absolute end-5 top-5 rounded-full bg-slate-100 p-3 text-slate-700"><FaXmark /></button><div className="mt-12">{filterPanel}</div><button type="button" onClick={() => setMobileFiltersOpen(false)} className="mt-8 w-full rounded-full bg-slate-950 px-5 py-3.5 text-sm font-bold text-white">{filteredProducts.length} {copy.results}</button></aside></div>}
+      {mobileFiltersOpen && <div className="fixed inset-0 z-[80] lg:hidden"><button type="button" className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm" onClick={() => setMobileFiltersOpen(false)} aria-label="Close filters" /><aside style={{ WebkitOverflowScrolling: "touch" }} className={`no-scrollbar absolute inset-y-0 h-full w-[min(90vw,24rem)] touch-pan-y overflow-y-auto overscroll-contain bg-white p-6 pb-10 shadow-2xl ${language === "ar" ? "left-0" : "right-0"}`}><button type="button" onClick={() => setMobileFiltersOpen(false)} className="sticky end-0 top-0 z-10 ms-auto flex rounded-full bg-slate-100 p-3 text-slate-700 shadow-sm"><FaXmark /></button><div className="mt-5">{filterPanel}</div><button type="button" onClick={() => setMobileFiltersOpen(false)} className="mt-8 w-full rounded-full bg-slate-950 px-5 py-3.5 text-sm font-bold text-white">{filteredProducts.length} {copy.results}</button></aside></div>}
     </main>
   );
 };
