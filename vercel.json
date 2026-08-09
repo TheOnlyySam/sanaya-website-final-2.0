@@ -3,6 +3,8 @@
     { "source": "/services/:serviceId", "destination": "/index.html" },
     { "source": "/our-team", "destination": "/index.html" },
     { "source": "/academy", "destination": "/index.html" },
+    { "source": "/products", "destination": "/index.html" },
+    { "source": "/products/:productSlug", "destination": "/index.html" },
     { "source": "/service-packages", "destination": "/index.html" },
     { "source": "/service-request", "destination": "/index.html" },
     { "source": "/login", "destination": "/index.html" },

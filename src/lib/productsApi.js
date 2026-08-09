@@ -1,5 +1,5 @@
 const configuredApiUrl = (process.env.REACT_APP_STORE_API_URL || "").replace(/\/$/, "");
-const apiUrl = configuredApiUrl || (process.env.NODE_ENV === "development" ? "http://localhost:4000" : "");
+const apiUrl = configuredApiUrl || "/api";
 
 async function request(path) {
   const response = await fetch(`${apiUrl}${path}`);
@@ -18,7 +18,7 @@ export async function getProducts() {
 }
 
 export async function getProduct(identifier) {
-  const payload = await request(`/products/${encodeURIComponent(identifier)}`);
+  const payload = await request(`/products?identifier=${encodeURIComponent(identifier)}`);
   return payload.product;
 }
 
