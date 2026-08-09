@@ -1,5 +1,4 @@
-const configuredApiUrl = (process.env.REACT_APP_STORE_API_URL || "").replace(/\/$/, "");
-const apiUrl = configuredApiUrl || "/api";
+const apiUrl = "/api";
 
 async function request(path) {
   const response = await fetch(`${apiUrl}${path}`);
