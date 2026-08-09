@@ -31,6 +31,8 @@ import ServicePackages from "./components/ServicePackages";
 import ServiceRequest from "./components/ServiceRequest";
 import ServiceRequestsAdmin from "./components/ServiceRequestsAdmin";
 import GlobalLanguageToggle from "./components/GlobalLanguageToggle";
+import ProductCatalog from "./components/ProductCatalog";
+import ProductDetail from "./components/ProductDetail";
 import { isSupabaseAuthenticated } from "./lib/supabaseFiles";
 
 const PortalOnlyRoute = ({ children }) => {
@@ -111,6 +113,8 @@ function App() {
         <Route path="/academy" element={<Academy />} />
         <Route path="/service-packages" element={<PortalOnlyRoute><ServicePackages /></PortalOnlyRoute>} />
         <Route path="/service-request" element={<PortalOnlyRoute><ServiceRequest /></PortalOnlyRoute>} />
+        <Route path="/products" element={<ProductCatalog />} />
+        <Route path="/products/:productSlug" element={<ProductDetail />} />
         <Route path="/login" element={<FilesLogin />} />
         <Route path="/portal" element={<Portal />} />
         <Route path="/portal/academy-upload" element={<AcademyUpload />} />

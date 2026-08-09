@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FaArrowUpRightFromSquare, FaBars, FaFileArrowDown, FaFolderOpen, FaHouse, FaLock, FaXmark } from "react-icons/fa6";
+import { FaBars, FaFileArrowDown, FaFolderOpen, FaHouse, FaLock, FaXmark } from "react-icons/fa6";
 import { isSupabaseAuthenticated } from "../lib/supabaseFiles";
 
 const menuItems = [
@@ -12,10 +12,9 @@ const menuItems = [
   { labelKey: "team", path: "/our-team" },
   { labelKey: "academy", path: "/academy" },
   { labelKey: "packages", path: "/service-packages" },
+  { labelKey: "products", path: "/products" },
   { labelKey: "contact", id: "contact" },
 ];
-
-const showProductsLink = false;
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -120,19 +119,6 @@ const Navbar = () => {
               </button>
             </li>
           ))}
-          {showProductsLink && (
-            <li>
-              <a
-                href="https://sanayatechs.odoo.com/shop"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-medium transition duration-300 hover:text-teal-400"
-              >
-                {t("site.nav.products")}
-                <FaArrowUpRightFromSquare className="text-xs" />
-              </a>
-            </li>
-          )}
         </ul>
 
         <div className="hidden shrink-0 items-center gap-3 lg:flex">
@@ -201,18 +187,6 @@ const Navbar = () => {
                 {t(`site.nav.${item.labelKey}`)}
               </button>
             ))}
-            {showProductsLink && (
-              <a
-                href="https://sanayatechs.odoo.com/shop"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-base font-medium text-slate-900"
-                onClick={() => setIsOpen(false)}
-              >
-                {t("site.nav.products")}
-                <FaArrowUpRightFromSquare className="text-sm" />
-              </a>
-            )}
             <button
               type="button"
               onClick={() => {
