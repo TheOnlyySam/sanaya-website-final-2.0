@@ -32,6 +32,7 @@ const partnersData = [
     category: "Surveillance & Smart Systems",
     partners: [
       { name: "Hawk", logo: "/partners/hawk.png" },
+      { name: "Milestone", logo: "/partners/milestone4.png.webp" },
       { name: "Tiandy", logo: "/partners/tiandy.png" },
       { name: "Hikvision", logo: "/Hikvision-Logo.wine.png" },
       { name: "Bosch", logo: "/partners/bosch.png" },
