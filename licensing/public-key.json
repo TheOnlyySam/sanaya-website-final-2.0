@@ -1,0 +1,11 @@
+{
+  "kid": "SRD-1DDC4CBC",
+  "alg": "ES256",
+  "product": "SanRack Designer",
+  "jwk": {
+    "kty": "EC",
+    "crv": "P-256",
+    "x": "yOGygj_5jDyKv2VV2HK2XEGCcfxBM5BHC1OWibMQc2g",
+    "y": "MC4m8qh74-dTXu2Gnw4yFaEh3cpXCZSijEEERP2R6yk"
+  }
+}

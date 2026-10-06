@@ -5,6 +5,7 @@ import { isSupabaseAuthenticated, logoutSupabaseFiles } from "../lib/supabaseFil
 import { portalApps } from "./portalApps";
 
 const iconMap = {
+  license: FaShieldHalved,
   chart: FaChartLine,
   database: FaDatabase,
   folder: FaFolderOpen,

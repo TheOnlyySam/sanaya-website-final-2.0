@@ -1,5 +1,14 @@
 export const portalApps = [
   {
+    slug: "licensing",
+    name: "SanRack Licensing",
+    eyebrow: "Lifetime Licenses",
+    description: "Manage customers, computer codes, permanent activation keys, payments, and license history in Supabase. Administrator access required.",
+    route: "/portal/apps/licensing",
+    source: "/apps/license-manager.html",
+    icon: "license",
+  },
+  {
     slug: "data-center-survey",
     name: "Data Center Survey",
     eyebrow: "Audit Hub",

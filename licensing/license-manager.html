@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SanRack License Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: operations console — fixed nav rail, KPI strip, table + detail drawer */
+:root{
+  --bg:#eef1f5; --panel:#ffffff; --field:#ffffff; --ink:#132030; --muted:#5b6878; --line:#d9dfe6; --soft:#f4f6f9;
+  --brand:#0f2a47; --accent:#2590ce; --accent2:#f07c1b; --ok:#2e7d32; --okbg:#e8f4ea; --warn:#b26a00; --warnbg:#fff3df; --bad:#c62828; --badbg:#fdecea; --mutedbg:#eceff3;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',Arial,sans-serif; --mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b111a;--panel:#121a25;--field:#0e151f;--ink:#e3e9f0;--muted:#8d9bab;--line:#243243;--soft:#172231;--brand:#2590ce;--okbg:#12301a;--warnbg:#382712;--badbg:#3a1818;--mutedbg:#1c2735;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b111a;--panel:#121a25;--field:#0e151f;--ink:#e3e9f0;--muted:#8d9bab;--line:#243243;--soft:#172231;--brand:#2590ce;--okbg:#12301a;--warnbg:#382712;--badbg:#3a1818;--mutedbg:#1c2735;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 var(--sans)}
+button,input,select,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:100vh}
+nav{background:#0b1726;color:#c3d0de;padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:10px;align-items:center;padding:0 8px 16px;color:#fff;font-weight:700;line-height:1.15}
+.brand small{display:block;font-weight:400;color:#8fa6bf;font-size:11.5px}
+nav button{display:flex;align-items:center;gap:10px;border:0;background:none;color:inherit;padding:9px 10px;border-radius:8px;cursor:pointer;text-align:left;font-weight:500}
+nav button:hover{background:rgba(255,255,255,.07);color:#fff}
+nav button[aria-current="true"]{background:rgba(37,144,206,.22);color:#fff}
+nav button svg{width:18px;height:18px;flex:none}
+nav .sp{flex:1}
+.keypill{font-size:12px;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,.06);line-height:1.35}
+.keypill b{display:block;color:#fff}
+.keypill.on b::before{content:'● ';color:#4cc38a}.keypill.off b::before{content:'● ';color:#f07c1b}
+main{padding:22px 28px 60px;min-width:0;display:grid;gap:18px;align-content:start;max-width:1280px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{margin:0;font-size:22px;letter-spacing:-.2px}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.banner{border-radius:10px;padding:10px 12px;font-size:13px;border:1px solid var(--line);background:var(--panel)}
+.banner.warn{background:var(--warnbg);border-color:transparent}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi b{display:block;font-size:24px;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.kpi span{font-size:12px;color:var(--muted)}
+.kpi.ac{border-top:3px solid var(--accent)}.kpi.wa{border-top:3px solid var(--accent2)}.kpi.ba{border-top:3px solid var(--bad)}.kpi.ok{border-top:3px solid var(--ok)}
+.grid2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+.card h2{margin:0 0 10px;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card h2 span{font-weight:400;color:var(--muted);font-size:12px}
+.btn{border:1px solid var(--line);background:var(--field);border-radius:8px;padding:7px 12px;cursor:pointer;font-weight:500;white-space:nowrap}
+.btn:hover{background:var(--soft)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.pri:hover{filter:brightness(1.08)}
+.btn.danger{color:var(--bad)}
+.btn.sm{padding:4px 9px;font-size:12.5px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.f{display:grid;gap:4px;min-width:0}
+.f>span{font-size:12px;color:var(--muted);font-weight:500}
+.f input,.f select,.f textarea,.search{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--field);min-width:0}
+.f textarea{resize:vertical}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 12px}
+.mono{font-family:var(--mono)}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--soft)}
+tr.sel{background:var(--soft)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.chip::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-active{background:var(--okbg);color:var(--ok)}.s-expiring{background:var(--warnbg);color:var(--warn)}.s-expired,.s-revoked{background:var(--badbg);color:var(--bad)}.s-transferred{background:var(--mutedbg);color:var(--muted)}
+.list{display:grid;gap:2px}
+.li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.li:last-child{border-bottom:0}
+.li small{display:block;color:var(--muted);font-size:12px}
+.empty{color:var(--muted);font-size:13px;padding:18px 4px;text-align:center}
+.keybox{font:12px/1.5 var(--mono);background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px;word-break:break-all;user-select:all;max-height:160px;overflow:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100vw);background:var(--panel);border-left:1px solid var(--line);box-shadow:-10px 0 40px rgba(0,0,0,.18);padding:18px 20px 40px;overflow:auto;z-index:20;display:grid;gap:14px;align-content:start}
+.dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.dhead h2{margin:0;font-size:18px}
+.kv{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 12px;font-size:13px}
+.kv span{color:var(--muted)}
+.tl{display:grid;gap:8px;border-left:2px solid var(--line);padding-left:12px;font-size:12.5px}
+.tl div small{color:var(--muted);display:block;font-family:var(--mono);font-size:11px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:130px;padding-top:6px}
+.bars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.bars i{display:block;width:100%;max-width:30px;background:var(--accent);border-radius:4px 4px 0 0;min-height:2px}
+.bars span{font-size:10.5px;color:var(--muted);font-family:var(--mono)}
+.bars b{font-size:11px;font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#0f1722;color:#fff;padding:10px 14px;border-radius:9px;font-size:13px;z-index:40;max-width:min(560px,92vw);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.ok-box{background:var(--okbg);border-radius:10px;padding:12px}
+.err{color:var(--bad);font-size:12.5px}
+.hint{color:var(--muted);font-size:12.5px}
+[hidden]{display:none!important}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  nav{position:static;height:auto;flex-direction:row;overflow-x:auto;padding:10px 12px;gap:2px}
+  .brand{padding:0 8px 0 0}.brand small,nav .sp,.keypill{display:none}
+  nav button span{white-space:nowrap}
+  main{padding:16px 16px 60px}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="app">
+  <nav aria-label="Sections">
+    <div class="brand"><svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><rect width="28" height="28" rx="7" fill="#2590ce"/><rect x="7" y="5.5" width="14" height="17" rx="1.6" fill="none" stroke="#fff" stroke-width="1.4"/><circle cx="14" cy="12" r="2.6" fill="none" stroke="#fff" stroke-width="1.4"/><path d="M14 14.6v4.4M14 17h2" stroke="#fff" stroke-width="1.4"/></svg><div>SanRack<small>License Manager</small></div></div>
+    <button data-v="dash" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></button>
+    <button data-v="issue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3M15 8l2 2"/></svg><span>Issue licence</span></button>
+    <button data-v="lic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Licences</span></button>
+    <button data-v="cli"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.6c1.8.7 3 2.5 3.5 5.4"/></svg><span>Clients</span></button>
+    <button data-v="ver"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>Verify key</span></button>
+    <button data-v="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span>Settings</span></button>
+    <div class="sp"></div>
+    <div class="keypill off" id="keyPill"><b>Signing key not loaded</b>Load it in Settings to issue keys.</div>
+  </nav>
+  <main id="main"></main>
+</div>
+<div class="drawer" id="drawer" hidden role="dialog" aria-modal="false" aria-label="Licence details"></div>
+<input type="file" id="fileKey" accept=".json,application/json" hidden>
+<input type="file" id="fileBackup" accept=".json,application/json" hidden>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+'use strict';
+/* ---------- product constants ---------- */
+const PRODUCT = { name: 'SanRack Designer', kid: 'SRD-1DDC4CBC', pub: { kty: 'EC', crv: 'P-256', x: 'yOGygj_5jDyKv2VV2HK2XEGCcfxBM5BHC1OWibMQc2g', y: 'MC4m8qh74-dTXu2Gnw4yFaEh3cpXCZSijEEERP2R6yk' } };
+const EDITIONS = ['Pro', 'Standard', 'Enterprise', 'Education'];
+// Legacy keys can still be verified, but new issuance is always lifetime.
+const LEGACY_TYPES = { perpetual: 'Perpetual (one-time)', annual: 'Annual (12 months)', subscription: 'Subscription (custom end date)', trial: 'Extended trial (30 days)', nfr: 'Not for resale / partner' };
+const TYPES = { perpetual: 'Lifetime - permanent' };
+const MID_RE = /^SR-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}$/;
+const $ = s => document.querySelector(s), esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const TE = new TextEncoder(), TD = new TextDecoder();
+const b64u = { enc: u8 => btoa(String.fromCharCode(...u8)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''), dec: s => { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), c => c.charCodeAt(0)); } };
+const today = () => new Date().toISOString().slice(0, 10);
+const addDays = (d, n) => { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); };
+const addYears = (d, n) => { const x = new Date(d + 'T12:00:00'); x.setFullYear(x.getFullYear() + n); x.setDate(x.getDate() - 1); return x.toISOString().slice(0, 10); };
+const rid = () => crypto.randomUUID();
+const money = (v, c) => `${Number(v || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })} ${c || ''}`.trim();
+function toast(m, ms = 2800) { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, ms); }
+async function copyText(t, label) { try { await navigator.clipboard.writeText(t); toast(`${label} copied.`); } catch (e) { toast('Copy was blocked. Select the text and press Ctrl+C.'); } }
+
+/* SUPABASE_CONFIG */
+const S = { mode: 'loading', clients: [], licences: [] };
+const versions = { clients: {}, licences: {} };
+function session() {
+  let value; try { value = JSON.parse(localStorage.getItem('sanaya_supabase_session')); } catch (_) {}
+  if (!value?.access_token || value.expires_at * 1000 <= Date.now()) {
+    location.replace('/login'); throw new Error('Session expired. Please sign in again.');
+  }
+  return value;
+}
+async function request(path, options = {}) {
+  const auth = session();
+  if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) throw new Error('Supabase connection is not configured.');
+  const response = await fetch(SUPABASE_CONFIG.url + '/rest/v1/' + path, {
+    ...options, headers: { apikey: SUPABASE_CONFIG.anonKey, Authorization: 'Bearer ' + auth.access_token,
+      'Content-Type': 'application/json', ...options.headers }
+  });
+  const text = await response.text(); const result = text ? JSON.parse(text) : null;
+  if (!response.ok) throw new Error(result?.message || 'Supabase request failed. No changes were saved.');
+  return result;
+}
+async function loadRecords() {
+  for (const col of ['clients', 'licences']) {
+    const rows = []; let page;
+    do {
+      page = await request('licensing_' + col + '?select=id,data,updated_at&order=id&limit=500&offset=' + rows.length);
+      rows.push(...page);
+    } while (page.length === 500);
+    S[col] = rows.map(r => ({ ...r.data, _id: r.id }));
+    versions[col] = Object.fromEntries(rows.map(r => [r.id, r.updated_at]));
+  }
+}
+async function boot() {
+  render();
+  try {
+    if (!await request('rpc/is_academy_admin', { method: 'POST', body: '{}' })) throw new Error('Administrator access is required for licensing.');
+    await loadRecords(); S.mode = 'db'; render();
+  } catch (e) { S.mode = 'error'; S.error = e.message; render(); }
+}
+async function saveBatch(items) {
+  if (S.mode !== 'db') throw new Error('Connect to Supabase before making changes.');
+  const records = items.map(([collection, obj]) => {
+    const id = obj._id || crypto.randomUUID(); const data = { ...obj }; delete data._id;
+    return { collection, id, data, version: versions[collection][id] || null };
+  });
+  await request('rpc/save_licensing_records', { method: 'POST', body: JSON.stringify({ records }) });
+  // The commit already succeeded; never invite a duplicate issuance if refreshing fails.
+  records.forEach(r => { const index = S[r.collection].findIndex(v => v._id === r.id); const value = { ...r.data, _id: r.id }; if (index < 0) S[r.collection].push(value); else S[r.collection][index] = value; });
+  try { await loadRecords(); } catch (_) { S.mode = 'error'; S.error = 'Saved successfully. Reload to reconnect before making further changes.'; }
+  render(); return records.map(r => r.id);
+}
+async function save(col, obj) { return (await saveBatch([[col, obj]]))[0]; }
+async function remove(col, id) {
+  const rows = await request('licensing_' + col + '?id=eq.' + encodeURIComponent(id) + '&updated_at=eq.' + encodeURIComponent(versions[col][id]), { method: 'DELETE', headers: { Prefer: 'return=representation' } });
+  if (!rows.length) throw new Error('Record changed. Reload before deleting.');
+  S[col] = S[col].filter(x => x._id !== id); render();
+}
+
+/* ---------- signing key (stays in this browser, never in shared storage) ---------- */
+const K = { priv: null, label: '' };
+async function loadKeyJson(text, remember) {
+  const j = JSON.parse(text); if (!j.jwk || !j.jwk.d) throw new Error('This file has no private key. Use the PRIVATE signing key file.');
+  if (j.kid !== PRODUCT.kid || j.jwk.x !== PRODUCT.pub.x || j.jwk.y !== PRODUCT.pub.y) throw new Error(`This key (${j.kid || 'unknown'}) does not match the public key built into this SanRack release (${PRODUCT.kid}).`);
+  K.priv = await crypto.subtle.importKey('jwk', j.jwk, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']); K.label = j.kid;
+  localStorage.removeItem('srlm.key');
+  pill(); render();
+}
+function forgetKey() { K.priv = null; try { localStorage.removeItem('srlm.key'); } catch (e) { } pill(); render(); toast('Signing key removed from this browser.'); }
+function pill() { const p = $('#keyPill'); p.className = 'keypill ' + (K.priv ? 'on' : 'off'); p.innerHTML = K.priv ? `<b>Signing key loaded</b>${esc(K.label)} · this browser only` : '<b>Signing key not loaded</b>Load it in Settings to issue keys.'; }
+async function signPayload(p) { const b = b64u.enc(TE.encode(JSON.stringify(p))); const sig = new Uint8Array(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, K.priv, TE.encode(b))); return `SRD1.${b}.${b64u.enc(sig)}`; }
+async function verifyKey(key) {
+  key = String(key || '').replace(/\s+/g, ''); const parts = key.split('.'); if (parts.length !== 3 || parts[0] !== 'SRD1') throw new Error('Not a SanRack activation key (it should start with SRD1.).');
+  let p; try { p = JSON.parse(TD.decode(b64u.dec(parts[1]))); } catch (e) { throw new Error('The key is damaged.'); }
+  const pk = await crypto.subtle.importKey('jwk', PRODUCT.pub, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+  const ok = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, pk, b64u.dec(parts[2]), TE.encode(parts[1]));
+  return { p, ok: ok && p.kid === PRODUCT.kid };
+}
+function newLicId() { return 'SRL-' + new Date().getFullYear() + '-' + [...crypto.getRandomValues(new Uint8Array(3))].map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase(); }
+
+/* ---------- derived ---------- */
+function status(l) { if (l.status === 'revoked') return 'revoked'; if (l.status === 'transferred') return 'transferred'; if (l.expires && l.expires < today()) return 'expired'; if (l.expires && l.expires <= addDays(today(), 30)) return 'expiring'; return 'active'; }
+const STL = { active: 'Active', expiring: 'Expiring', expired: 'Expired', revoked: 'Revoked', transferred: 'Transferred' };
+const chip = s => `<span class="chip s-${s}">${STL[s]}</span>`;
+const clientOf = l => S.clients.find(c => c._id === l.clientId);
+const sortedLic = () => [...S.licences].sort((a, b) => (b.created || '').localeCompare(a.created || ''));
+
+/* ---------- views ---------- */
+let view = 'dash', selLic = null, lastIssued = null, licQ = '', licF = 'all', editClient = null, cliQ = '';
+try { view = localStorage.getItem('srlm.view') || 'dash'; } catch (e) { }
+function render() {
+  document.querySelectorAll('nav [data-v]').forEach(b => b.setAttribute('aria-current', b.dataset.v === view));
+  const m = $('#main'), fns = { dash: vDash, issue: vIssue, lic: vLic, cli: vCli, ver: vVer, set: vSet };
+  const keep = document.activeElement && document.activeElement.id; const pos = keep && document.activeElement.selectionStart;
+  if (S.mode !== 'db') { m.innerHTML = `<div class="banner" role="alert">${esc(S.error || 'Connecting to Supabase...')}</div><a href="/portal">Back to Portal</a><button class="btn" onclick="location.reload()">Retry connection</button>`; return; }
+  m.innerHTML = '<div class="banner">Connected to Supabase | Lifetime licenses | <a href="/portal">Back to Portal</a></div>' + (fns[view] || vDash)();
+  if (keep && $('#' + keep)) { const el = $('#' + keep); el.focus(); try { if (pos != null) el.setSelectionRange(pos, pos); } catch (e) { } }
+  renderDrawer();
+}
+function head(t, s, right = '') { return `<div class="top"><div><h1>${t}</h1><div class="sub">${s}</div></div><div class="row">${right}</div></div>`; }
+function vDash() {
+  const L = S.licences, st = L.map(status), cnt = k => st.filter(x => x === k).length;
+  const rev = {}; L.filter(l => l.status !== 'transferred').forEach(l => { if (+l.price) rev[l.currency || 'USD'] = (rev[l.currency || 'USD'] || 0) + +l.price; });
+  const months = []; for (let i = 11; i >= 0; i--) { const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i); months.push(d.toISOString().slice(0, 7)); }
+  const perM = months.map(mm => L.filter(l => (l.issued || '').startsWith(mm) && l.status !== 'transferred').length), mx = Math.max(1, ...perM);
+  const exp = L.filter(l => ['expiring', 'expired'].includes(status(l))).sort((a, b) => a.expires.localeCompare(b.expires)).slice(0, 6);
+  const act = L.flatMap(l => (l.history || []).map(h => Object.assign({ lic: l }, h))).sort((a, b) => b.at.localeCompare(a.at)).slice(0, 8);
+  return head('Dashboard', `${PRODUCT.name} licences at a glance · ${new Date().toLocaleDateString(undefined, { dateStyle: 'long' })}`, `<button class="btn pri" data-go="issue">Issue licence</button>`) +
+    (!L.length ? `<div class="card"><h2>Start here</h2><ol class="hint" style="margin:0;padding-left:18px;display:grid;gap:4px"><li>Open <b>Settings</b> and load your private signing key file (SanRack-PRIVATE-signing-key.json).</li><li>Ask the buyer to open SanRack Designer → <b>Trial · Activate</b> and send you the Machine ID.</li><li>Use <b>Issue licence</b> to create the key, then send it to the buyer.</li></ol></div>` : '') +
+    `<div class="kpis"><div class="kpi ok"><b>${cnt('active') + cnt('expiring')}</b><span>Active licences</span></div><div class="kpi wa"><b>${cnt('expiring')}</b><span>Legacy expiring licenses</span></div><div class="kpi ba"><b>${cnt('expired') + cnt('revoked')}</b><span>Expired or revoked</span></div><div class="kpi ac"><b>${S.clients.length}</b><span>Clients</span></div><div class="kpi ac"><b style="font-size:${Object.keys(rev).length > 1 ? 17 : 24}px">${Object.entries(rev).map(([c, v]) => money(v, c)).join('<br>') || '—'}</b><span>Licence revenue</span></div></div>
+    <div class="grid2"><div class="card"><h2>Licences issued <span>last 12 months</span></h2><div class="bars" role="img" aria-label="Licences issued per month">${months.map((mm, i) => `<div title="${mm}: ${perM[i]}"><b>${perM[i] || ''}</b><i style="height:${Math.round(perM[i] / mx * 92)}px"></i><span>${new Date(mm + '-15').toLocaleString('en', { month: 'short' })}</span></div>`).join('')}</div></div>
+    <div class="card"><h2>Legacy licenses <span>requiring conversion</span></h2><div class="list">${exp.length ? exp.map(l => `<div class="li" data-open="${l._id}" style="cursor:pointer"><div><b>${esc(l.name)}</b><small class="mono">${esc(l.licId)} · ${esc(l.machine)}</small></div><div style="text-align:right">${chip(status(l))}<small>${esc(l.expires)}</small></div></div>`).join('') : '<div class="empty">Lifetime licenses never expire and need no renewal.</div>'}</div></div></div>
+    <div class="card"><h2>Recent activity</h2><div class="list">${act.length ? act.map(a => `<div class="li" data-open="${a.lic._id}" style="cursor:pointer"><div>${esc(a.what)}<small>${esc(a.lic.name)} · <span class="mono">${esc(a.lic.licId)}</span></small></div><small class="mono">${esc(a.at.slice(0, 16).replace('T', ' '))}</small></div>`).join('') : '<div class="empty">Activity appears here as you issue, renew, transfer and revoke licences.</div>'}</div></div>`;
+}
+function vIssue() {
+  const f = issueDraft;
+  return head('Issue licence', 'Create a signed activation key for one machine.') +
+    (!K.priv ? `<div class="banner warn">Load your private signing key in <b>Settings</b> before issuing. <button class="btn sm" data-go="set">Open Settings</button></div>` : '') +
+    `<div class="card"><h2>Client</h2><div class="fg"><label class="f"><span>Existing client</span><select id="i_client"><option value="">— New client —</option>${S.clients.map(c => `<option value="${c._id}" ${f.clientId === c._id ? 'selected' : ''}>${esc(c.name)}${c.company ? ' · ' + esc(c.company) : ''}</option>`).join('')}</select></label>
+      ${f.clientId ? '' : `<label class="f"><span>Licensee name *</span><input id="i_name" value="${esc(f.name)}" autocomplete="off"></label><label class="f"><span>Company</span><input id="i_company" value="${esc(f.company)}"></label><label class="f"><span>Email</span><input id="i_email" type="email" value="${esc(f.email)}"></label><label class="f"><span>Phone</span><input id="i_phone" value="${esc(f.phone)}"></label><label class="f"><span>Country</span><input id="i_country" value="${esc(f.country)}"></label>`}</div></div>
+    <div class="card"><h2>Licence</h2><div class="fg"><label class="f"><span>Machine ID * <small class="hint">(shown in SanRack → Trial · Activate)</small></span><input id="i_machine" class="mono" placeholder="SR-1A2B-3C4D-5E6F-7A8B" value="${esc(f.machine)}" autocomplete="off" spellcheck="false"></label>
+      <label class="f"><span>Edition</span><select id="i_edition">${EDITIONS.map(e => `<option ${f.edition === e ? 'selected' : ''}>${e}</option>`).join('')}</select></label>
+      <label class="f"><span>Licence type</span><select id="i_type">${Object.entries(TYPES).map(([k, v]) => `<option value="${k}" ${f.type === k ? 'selected' : ''}>${v}</option>`).join('')}</select></label>
+      <label class="f"><span>Validity</span><input value="Lifetime - no expiration" disabled></label>
+      <label class="f"><span>Price</span><input id="i_price" type="number" min="0" step="0.01" value="${esc(f.price)}"></label>
+      <label class="f"><span>Currency</span><select id="i_currency">${['USD', 'IQD', 'EUR', 'AED'].map(c => `<option ${f.currency === c ? 'selected' : ''}>${c}</option>`).join('')}</select></label>
+      <label class="f"><span>Invoice / order ref.</span><input id="i_order" value="${esc(f.order)}"></label>
+      <label class="f"><span>Payment method</span><select id="i_pay">${['Bank transfer', 'FIB', 'ZainCash', 'Qi Card', 'Wayl', 'Card (online)', 'Cash', 'Free / NFR'].map(c => `<option ${f.pay === c ? 'selected' : ''}>${c}</option>`).join('')}</select></label></div>
+      <label class="f" style="margin-top:10px"><span>Notes</span><textarea id="i_notes" rows="2">${esc(f.notes)}</textarea></label>
+      <div class="row" style="margin-top:12px;justify-content:space-between"><div class="err" id="i_err"></div><button class="btn pri" id="i_go" ${K.priv ? '' : 'disabled'}>Sign and save licence</button></div></div>
+    ${lastIssued ? issuedCard(lastIssued) : ''}`;
+}
+let issueDraft = { clientId: '', name: '', company: '', email: '', phone: '', country: 'Iraq', machine: '', edition: 'Pro', type: 'perpetual', expires: '', price: '', currency: 'USD', order: '', pay: 'Bank transfer', notes: '' };
+function emailText(l) { return `Dear ${l.name},\n\nThank you for purchasing ${PRODUCT.name} (${l.edition}).\n\nLicence ID: ${l.licId}\nMachine ID: ${l.machine}\nValid until: ${l.expires || 'Lifetime - permanent, no expiry'}\n\nTo activate:\n1. Open SanRack Designer and click "Trial · Activate" at the top right.\n2. Paste the activation key below and click Activate.\n\n${l.key}\n\nThis key works on the machine above only. If you move to a new computer, send us the new Machine ID and we will transfer your licence.\n\nBest regards,\nSanaya Technologies`; }
+function issuedCard(l) { return `<div class="card ok-box"><h2>Licence ${esc(l.licId)} issued for ${esc(l.name)}</h2><div class="keybox" id="k_${l._id}">${esc(l.key)}</div><div class="row" style="margin-top:10px"><button class="btn pri" data-copykey="${l._id}">Copy activation key</button><button class="btn" data-copymail="${l._id}">Copy email to client</button><button class="btn" data-open="${l._id}">Open record</button></div></div>`; }
+function vLic() {
+  const q = licQ.toLowerCase(); const rows = sortedLic().filter(l => (licF === 'all' || status(l) === licF) && (!q || [l.licId, l.name, l.company, l.machine, l.order, l.email].join(' ').toLowerCase().includes(q)));
+  return head('Licences', `${S.licences.length} licence${S.licences.length === 1 ? '' : 's'} on record`, `<button class="btn" id="csv">Export CSV</button><button class="btn pri" data-go="issue">Issue licence</button>`) +
+    `<div class="card"><div class="row" style="margin-bottom:10px"><input class="search" id="licQ" placeholder="Search name, company, machine ID, licence ID, invoice…" value="${esc(licQ)}" style="flex:1;min-width:220px"><select class="search" id="licF" style="width:auto">${['all', 'active', 'expiring', 'expired', 'revoked', 'transferred'].map(s => `<option value="${s}" ${licF === s ? 'selected' : ''}>${s === 'all' ? 'All statuses' : STL[s]}</option>`).join('')}</select></div>
+    <div class="tbl"><table><thead><tr><th>Licence</th><th>Licensee</th><th>Machine ID</th><th>Edition · type</th><th>Issued</th><th>Valid until</th><th>Status</th><th class="num">Price</th></tr></thead><tbody>${rows.map(l => `<tr data-open="${l._id}" class="${selLic === l._id ? 'sel' : ''}"><td class="mono">${esc(l.licId)}</td><td><b>${esc(l.name)}</b>${l.company ? `<div class="hint">${esc(l.company)}</div>` : ''}</td><td class="mono">${esc(l.machine)}</td><td>${esc(l.edition)}<div class="hint">${esc((TYPES[l.type] || l.type).split(' (')[0])}</div></td><td class="mono">${esc(l.issued)}</td><td class="mono">${esc(l.expires || 'Lifetime')}</td><td>${chip(status(l))}</td><td class="num">${+l.price ? esc(money(l.price, l.currency)) : '—'}</td></tr>`).join('')}</tbody></table>${rows.length ? '' : `<div class="empty">${S.licences.length ? 'No licences match.' : 'No licences yet. Issue the first one.'}</div>`}</div></div>`;
+}
+function vCli() {
+  const q = cliQ.toLowerCase(), rows = S.clients.filter(c => !q || [c.name, c.company, c.email, c.phone, c.country].join(' ').toLowerCase().includes(q)).sort((a, b) => a.name.localeCompare(b.name)), e = editClient;
+  return head('Clients', `${S.clients.length} client${S.clients.length === 1 ? '' : 's'}`, `<button class="btn pri" id="c_new">Add client</button>`) +
+    (e ? `<div class="card"><h2>${e._id ? 'Edit client' : 'New client'}</h2><div class="fg">${[['name', 'Name *'], ['company', 'Company'], ['email', 'Email'], ['phone', 'Phone'], ['country', 'Country']].map(([k, t]) => `<label class="f"><span>${t}</span><input id="c_${k}" value="${esc(e[k] || '')}"></label>`).join('')}</div><label class="f" style="margin-top:10px"><span>Notes</span><textarea id="c_notes" rows="2">${esc(e.notes || '')}</textarea></label><div class="row" style="margin-top:12px;justify-content:flex-end">${e._id ? `<button class="btn danger" id="c_del">Delete client</button>` : ''}<button class="btn" id="c_cancel">Cancel</button><button class="btn pri" id="c_save">Save client</button></div></div>` : '') +
+    `<div class="card"><input class="search" id="cliQ" placeholder="Search clients…" value="${esc(cliQ)}" style="margin-bottom:10px"><div class="tbl"><table><thead><tr><th>Client</th><th>Email</th><th>Phone</th><th>Country</th><th class="num">Licences</th><th class="num">Active</th></tr></thead><tbody>${rows.map(c => { const ls = S.licences.filter(l => l.clientId === c._id); return `<tr data-cli="${c._id}"><td><b>${esc(c.name)}</b>${c.company ? `<div class="hint">${esc(c.company)}</div>` : ''}</td><td>${esc(c.email || '—')}</td><td>${esc(c.phone || '—')}</td><td>${esc(c.country || '—')}</td><td class="num">${ls.length}</td><td class="num">${ls.filter(l => ['active', 'expiring'].includes(status(l))).length}</td></tr>`; }).join('')}</tbody></table>${rows.length ? '' : '<div class="empty">No clients yet. They are added automatically when you issue a licence.</div>'}</div></div>`;
+}
+let verOut = '';
+function vVer() { return head('Verify key', 'Check any activation key: signature, machine, period, and the matching record.') + `<div class="card"><label class="f"><span>Activation key</span><textarea id="v_key" rows="4" class="mono" spellcheck="false" placeholder="SRD1.eyJ…"></textarea></label><div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn pri" id="v_go">Verify</button></div></div>${verOut}`; }
+function vSet() {
+  return head('Settings', 'Signing key, backup and restore.') +
+    `<div class="card"><h2>Product signing key ${K.priv ? '<span class="chip s-active">Loaded</span>' : '<span class="chip s-expiring">Not loaded</span>'}</h2>
+    <p class="hint" style="margin-top:0">Activation keys are signed with your private key (ES256). It is used only inside this browser and is never written to shared storage. Keep the file offline and backed up: anyone holding it can create licences, and if you lose it you cannot issue keys for this release.</p>
+    <div class="kv"><span>Key ID</span><b class="mono">${PRODUCT.kid}</b><span>Algorithm</span><b>ECDSA P-256 / SHA-256</b><span>Public key</span><b class="mono" style="word-break:break-all;font-size:12px">x=${PRODUCT.pub.x}<br>y=${PRODUCT.pub.y}</b></div>
+    <div class="row" style="margin-top:12px"><span class="hint">Private key stays in memory until this page closes.</span><span class="sp" style="flex:1"></span>${K.priv ? '<button class="btn danger" id="k_forget">Remove key from this browser</button>' : ''}<button class="btn pri" id="k_load">Load private key file…</button></div><div class="err" id="k_err"></div></div>
+    <div class="card"><h2>Backup and restore</h2><p class="hint" style="margin-top:0">A backup holds all clients and licence records (including issued keys). It does not include the private signing key.</p><div class="row"><button class="btn" id="b_exp">Download backup (JSON)</button><button class="btn" id="b_imp">Restore from backup file…</button></div></div>
+    <div class="card"><h2>How activation works</h2><ol class="hint" style="margin:0;padding-left:18px;display:grid;gap:4px"><li>The buyer opens SanRack Designer → <b>Trial · Activate</b> and sends you the Machine ID.</li><li>You issue a licence here. The key carries the licensee, machine ID, edition, type and expiry, signed with your private key.</li><li>SanRack checks the signature with the built-in public key, and that the machine ID and dates match. It works offline.</li><li>Revoking marks the record here. Offline keys cannot be switched off remotely; an online licence check in the desktop build can enforce revocations.</li></ol></div>`;
+}
+function renderDrawer() {
+  const d = $('#drawer'), l = selLic && S.licences.find(x => x._id === selLic); if (!l) { d.hidden = true; return; } d.hidden = false; const s = status(l), c = clientOf(l);
+  d.innerHTML = `<div class="dhead"><div><div class="hint mono">${esc(l.licId)}</div><h2>${esc(l.name)}</h2>${chip(s)}</div><button class="btn sm" id="d_close" aria-label="Close">✕</button></div>
+  <div class="kv"><span>Company</span><b>${esc(l.company || '—')}</b><span>Email</span><b>${esc(l.email || (c && c.email) || '—')}</b><span>Machine ID</span><b class="mono">${esc(l.machine)}</b><span>Edition</span><b>${esc(l.edition)}</b><span>Type</span><b>${esc(TYPES[l.type] || l.type)}</b><span>Issued</span><b class="mono">${esc(l.issued)}</b><span>Valid until</span><b class="mono">${esc(l.expires || 'Lifetime')}</b><span>Price</span><b>${+l.price ? esc(money(l.price, l.currency)) : '—'}</b><span>Payment</span><b>${esc(l.pay || '—')}${l.order ? ' · ' + esc(l.order) : ''}</b>${l.replaces ? `<span>Replaces</span><b class="mono">${esc(l.replaces)}</b>` : ''}${l.replacedBy ? `<span>Replaced by</span><b class="mono">${esc(l.replacedBy)}</b>` : ''}${l.notes ? `<span>Notes</span><b style="font-weight:400">${esc(l.notes)}</b>` : ''}</div>
+  <div><div class="hint" style="margin-bottom:4px">Activation key</div><div class="keybox">${esc(l.key)}</div><div class="row" style="margin-top:8px"><button class="btn sm" data-copykey="${l._id}">Copy key</button><button class="btn sm" data-copymail="${l._id}">Copy email</button></div></div>
+  ${['revoked', 'transferred'].includes(l.status) ? '' : `<div class="card" style="padding:12px"><h2 style="margin-bottom:8px">Actions</h2>
+    <div class="fg"><label class="f"><span>Transfer to new machine ID</span><input id="d_mid" class="mono" placeholder="SR-…"></label><label class="f"><span>&nbsp;</span><button class="btn" id="d_transfer" ${K.priv ? '' : 'disabled'}>Issue for new machine</button></label>
+    ${l.type !== 'perpetual' ? `<label class="f"><span>&nbsp;</span><button class="btn" id="d_renew" ${K.priv ? '' : 'disabled'}>Convert to lifetime (new key)</button></label>` : ''}
+    <label class="f"><span>Revocation reason</span><input id="d_reason" placeholder="e.g. refund, chargeback"></label><label class="f"><span>&nbsp;</span><button class="btn danger" id="d_revoke">Revoke licence</button></label></div>${K.priv ? '' : '<div class="hint">Load the signing key in Settings to transfer or renew.</div>'}</div>`}
+  <div><div class="hint" style="margin-bottom:6px">History</div><div class="tl">${(l.history || []).slice().reverse().map(h => `<div>${esc(h.what)}<small>${esc(h.at.slice(0, 16).replace('T', ' '))}</small></div>`).join('')}</div></div>
+  <div class="row"><input id="d_note" class="search" placeholder="Add a note to the history" style="flex:1"><button class="btn sm" id="d_addnote">Add</button></div>
+  <div class="row" style="justify-content:flex-end"><button class="btn sm danger" id="d_delete">Delete record</button></div>`;
+}
+const stamp = what => ({ at: new Date().toISOString(), what });
+
+/* ---------- actions ---------- */
+async function issue() {
+  const f = issueDraft, err = m => { $('#i_err').textContent = m; };
+  f.machine = (f.machine || '').trim().toUpperCase();
+  let cl = f.clientId && S.clients.find(c => c._id === f.clientId);
+  if (!cl && !f.name.trim()) return err('Enter the licensee name or choose a client.');
+  if (!MID_RE.test(f.machine)) return err('The Machine ID must look like SR-1A2B-3C4D-5E6F-7A8B.');
+  if (f.type !== 'perpetual' && !f.expires) return err('Choose the date the licence is valid until.');
+  const dup = S.licences.find(l => l.machine === f.machine && ['active', 'expiring'].includes(status(l))); if (dup && !confirmDup) { confirmDup = true; return err(`Machine ${f.machine} already has active licence ${dup.licId} (${dup.name}). Press “Sign and save” again to issue anyway.`); }
+  confirmDup = false; $('#i_go').disabled = true;
+  try {
+    const changes = [];
+    if (!cl) { cl = { _id: rid(), name: f.name.trim(), company: f.company.trim(), email: f.email.trim(), phone: f.phone.trim(), country: f.country.trim(), notes: '', created: new Date().toISOString() }; changes.push(['clients', cl]); }
+    const lic = await makeLicence({ clientId: cl._id, name: cl.name, company: cl.company || '', email: cl.email || '', machine: f.machine, edition: f.edition, type: f.type, expires: f.type === 'perpetual' ? '' : f.expires, price: f.price, currency: f.currency, order: f.order, pay: f.pay, notes: f.notes }, `Issued ${f.edition} ${TYPES[f.type].split(' (')[0].toLowerCase()} licence for ${f.machine}`);
+    await saveBatch([...changes, ['licences', lic]]);
+    lastIssued = lic; issueDraft = Object.assign({}, issueDraft, { machine: '', order: '', notes: '', price: '' }); render(); toast(`Licence ${lic.licId} issued.`);
+  } catch (e) { err(e.message || 'Could not issue the licence.'); $('#i_go').disabled = false; }
+}
+let confirmDup = false;
+async function makeLicence(o, what, extra = {}) {
+  o = { ...o, type: 'perpetual', expires: '' };
+  const licId = newLicId(), issued = today();
+  const key = await signPayload({ kid: PRODUCT.kid, id: licId, n: o.name, c: o.company || '', m: o.machine, e: o.edition, t: o.type, i: issued, x: o.expires || null });
+  const lic = Object.assign({ licId, issued, key, status: 'active', created: new Date().toISOString(), history: [stamp(what)] }, o, extra);
+  lic._id = rid(); return lic;
+}
+async function act(id, kind) {
+  const l = S.licences.find(x => x._id === id); if (!l) return; const base = Object.assign({}, l);
+  if (kind === 'note') { const t = $('#d_note').value.trim(); if (!t) return; base.history = [...(l.history || []), stamp('Note: ' + t)]; await save('licences', base); return; }
+  if (kind === 'revoke') { const b = $('#d_revoke'); if (!b.dataset.armed) { b.dataset.armed = 1; b.textContent = 'Click again to revoke'; return; } const r = $('#d_reason').value.trim(); base.status = 'revoked'; base.history = [...(l.history || []), stamp('Revoked' + (r ? ' — ' + r : ''))]; await save('licences', base); toast(`${l.licId} revoked.`); return; }
+  if (kind === 'transfer') { const m = $('#d_mid').value.trim().toUpperCase(); if (!MID_RE.test(m)) return toast('Enter a valid Machine ID (SR-XXXX-XXXX-XXXX-XXXX).'); const n = await makeLicence({ clientId: l.clientId, name: l.name, company: l.company, email: l.email, machine: m, edition: l.edition, type: l.type, expires: l.expires, price: 0, currency: l.currency, order: l.order, pay: l.pay, notes: '' }, `Transferred from ${l.machine} (${l.licId})`, { replaces: l.licId }); base.status = 'transferred'; base.replacedBy = n.licId; base.history = [...(l.history || []), stamp(`Transferred to ${m} as ${n.licId}`)]; await saveBatch([['licences', base], ['licences', n]]); selLic = n._id; render(); toast(`New key ${n.licId} issued for ${m}.`); return; }
+  if (kind === 'renew') { const x = '';  const n = await makeLicence({ clientId: l.clientId, name: l.name, company: l.company, email: l.email, machine: l.machine, edition: l.edition, type: l.type, expires: x, price: l.price, currency: l.currency, order: '', pay: l.pay, notes: '' }, `Converted to lifetime (replaces ${l.licId})`, { replaces: l.licId }); base.status = 'transferred'; base.replacedBy = n.licId; base.history = [...(l.history || []), stamp(`Renewed as ${n.licId} with no expiry`)]; await saveBatch([['licences', base], ['licences', n]]); selLic = n._id; render(); toast(`Renewal key ${n.licId} issued.`); return; }
+  if (kind === 'delete') { const b = $('#d_delete'); if (!b.dataset.armed) { b.dataset.armed = 1; b.textContent = 'Click again to delete permanently'; return; } await remove('licences', id); selLic = null; render(); toast('Record deleted.'); }
+}
+async function verifyUI() {
+  const k = $('#v_key').value; try {
+    const { p, ok } = await verifyKey(k); const rec = S.licences.find(l => l.key === k.replace(/\s+/g, '') || l.licId === p.id);
+    const expired = p.x && p.x < today();
+    verOut = `<div class="card ${ok ? 'ok-box' : ''}"><h2>${ok ? 'Valid signature' : 'Invalid signature'} ${ok ? (expired ? '<span class="chip s-expired">Expired</span>' : '<span class="chip s-active">Genuine key</span>') : '<span class="chip s-revoked">Forged or altered</span>'}</h2><div class="kv"><span>Licence ID</span><b class="mono">${esc(p.id)}</b><span>Licensee</span><b>${esc(p.n)}${p.c ? ' · ' + esc(p.c) : ''}</b><span>Machine ID</span><b class="mono">${esc(p.m)}</b><span>Edition · type</span><b>${esc(p.e)} · ${esc(TYPES[p.t] || LEGACY_TYPES[p.t] || p.t)}</b><span>Issued</span><b class="mono">${esc(p.i)}</b><span>Valid until</span><b class="mono">${esc(p.x || 'Lifetime')}</b><span>Record</span><b>${rec ? `${chip(status(rec))} <button class="btn sm" data-open="${rec._id}">Open</button>` : 'Not in this database'}</b></div></div>`;
+  } catch (e) { verOut = `<div class="card"><div class="err">${esc(e.message)}</div></div>`; }
+  render(); $('#v_key').value = k;
+}
+function backupJson() { return JSON.stringify({ product: PRODUCT.name, kid: PRODUCT.kid, exported: new Date().toISOString(), clients: S.clients, licences: S.licences }, null, 1); }
+async function restore(text) {
+  const j = JSON.parse(text);
+  if (j.kid !== PRODUCT.kid || !Array.isArray(j.licences) || !Array.isArray(j.clients)) throw new Error('Not a backup for this product.');
+  for (const l of j.licences) {
+    const { p, ok } = await verifyKey(l.key);
+    if (!ok || p.id !== l.licId || p.m !== l.machine || p.n !== l.name || p.t !== l.type || (p.x || '') !== (l.expires || '')) throw new Error('Backup contains an invalid or mismatched activation key.');
+    if (p.t !== 'perpetual' || p.x) throw new Error('This backup has dated licenses. Reissue them as lifetime licenses; changing a stored date cannot change an existing signed key.');
+  }
+  await saveBatch([...j.clients.map(c => ['clients', c]), ...j.licences.map(l => ['licences', l])]);
+  toast('Backup saved to Supabase.');
+}
+function csv() { const h = ['Licence ID', 'Licensee', 'Company', 'Email', 'Machine ID', 'Edition', 'Type', 'Issued', 'Valid until', 'Status', 'Price', 'Currency', 'Payment', 'Invoice', 'Key']; const q = v => { const text = String(v ?? ''); return `"${(/^[=+@\-\t\r]/.test(text) ? "'" + text : text).replace(/"/g, '""')}"`; }; return [h.join(','), ...sortedLic().map(l => [l.licId, l.name, l.company, l.email, l.machine, l.edition, l.type, l.issued, l.expires, STL[status(l)], l.price, l.currency, l.pay, l.order, l.key].map(q).join(','))].join('\n'); }
+async function offerFile(name, text, mime) {
+  const url = URL.createObjectURL(new Blob([text], { type: mime }));
+  const link = document.createElement('a'); link.href = url; link.download = name;
+  document.body.append(link); link.click(); link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ---------- events ---------- */
+let actionBusy = false;
+document.addEventListener('click', async e => {
+  if (actionBusy) return;
+  actionBusy = true;
+  try {
+  const t = e.target;
+  const nv = t.closest('nav [data-v]'); if (nv) { view = nv.dataset.v; try { localStorage.setItem('srlm.view', view); } catch (_) { } render(); return; }
+  const go = t.closest('[data-go]'); if (go) { view = go.dataset.go; render(); return; }
+  const op = t.closest('[data-open]'); if (op && !t.closest('#drawer .btn:not([data-open])')) { selLic = op.dataset.open; renderDrawer(); document.querySelectorAll('tr.sel').forEach(r => r.classList.remove('sel')); return; }
+  const ck = t.closest('[data-copykey]'); if (ck) { const l = S.licences.find(x => x._id === ck.dataset.copykey) || lastIssued; copyText(l.key, 'Activation key'); return; }
+  const cm = t.closest('[data-copymail]'); if (cm) { const l = S.licences.find(x => x._id === cm.dataset.copymail) || lastIssued; copyText(emailText(l), 'Email text'); return; }
+  const cr = t.closest('[data-cli]'); if (cr) { editClient = Object.assign({}, S.clients.find(c => c._id === cr.dataset.cli)); render(); return; }
+  switch (t.id) {
+    case 'i_go': await issue(); break;
+    case 'd_close': selLic = null; renderDrawer(); break;
+    case 'd_revoke': await act(selLic, 'revoke'); break; case 'd_transfer': await act(selLic, 'transfer'); break; case 'd_renew': await act(selLic, 'renew'); break; case 'd_addnote': await act(selLic, 'note'); break; case 'd_delete': await act(selLic, 'delete'); break;
+    case 'c_new': editClient = { name: '', country: 'Iraq' }; render(); break;
+    case 'c_cancel': editClient = null; render(); break;
+    case 'c_save': { const c = Object.assign({}, editClient); ['name', 'company', 'email', 'phone', 'country', 'notes'].forEach(k => c[k] = $('#c_' + k).value.trim()); if (!c.name) { toast('Enter the client name.'); break; } if (!c.created) c.created = new Date().toISOString(); await save('clients', c).then(() => { editClient = null; render(); toast('Client saved.'); }); break; }
+    case 'c_del': { if (S.licences.some(l => l.clientId === editClient._id)) { toast('This client has licences. Keep the client so the records stay complete.'); break; } if (!t.dataset.armed) { t.dataset.armed = 1; t.textContent = 'Click again to delete'; break; } await remove('clients', editClient._id).then(() => { editClient = null; render(); }); break; }
+    case 'v_go': verifyUI(); break;
+    case 'k_load': $('#fileKey').value = ''; $('#fileKey').click(); break;
+    case 'k_forget': forgetKey(); break;
+    case 'b_exp': offerFile(`SanRack-licences-backup-${today()}.json`, backupJson(), 'application/json'); break;
+    case 'b_imp': $('#fileBackup').value = ''; $('#fileBackup').click(); break;
+    case 'csv': offerFile(`SanRack-licences-${today()}.csv`, csv(), 'text/csv'); break;
+  }
+  } catch (err) { toast(err.message, 6000); } finally { actionBusy = false; }
+});
+document.addEventListener('input', e => {
+  const t = e.target, id = t.id;
+  if (id && id.startsWith('i_') && id !== 'i_client') { const k = id.slice(2); issueDraft[k] = t.value; if (k === 'machine') confirmDup = false; }
+  if (id === 'licQ') { licQ = t.value; render(); } if (id === 'cliQ') { cliQ = t.value; render(); }
+});
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.id === 'i_client') { issueDraft.clientId = t.value; render(); }
+  if (t.id === 'i_type') { issueDraft.type = t.value; issueDraft.expires = t.value === 'annual' ? addYears(today(), 1) : t.value === 'trial' ? addDays(today(), 30) : t.value === 'perpetual' ? '' : issueDraft.expires; render(); }
+  if (t.id === 'licF') { licF = t.value; render(); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && selLic) { selLic = null; renderDrawer(); } });
+$('#fileKey').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = async () => { try { await loadKeyJson(r.result, $('#k_rem') && $('#k_rem').checked); toast('Signing key loaded. You can issue licences.'); } catch (err) { const el = $('#k_err'); if (el) el.textContent = err.message; } }; r.readAsText(f); });
+$('#fileBackup').addEventListener('change', e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = async () => { try { await restore(r.result); } catch (err) { toast(err.message); } }; r.readAsText(f); });
+localStorage.removeItem('srlm.key'); pill(); boot();
+</script>
+
+</html>

@@ -26,3 +26,9 @@ yarn-debug.log*
 yarn-error.log*
 
 public/test.mp4
+
+# Generated licensing app and private signing material
+/public/apps/license-manager.html
+/licensing/*PRIVATE*
+/licensing/test-keys/
+/licensing/license-manager.DEV.html

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FaBars, FaFileArrowDown, FaFolderOpen, FaHouse, FaLock, FaXmark } from "react-icons/fa6";
+import { FaChevronDown, FaBars, FaFileArrowDown, FaFolderOpen, FaHouse, FaLock, FaXmark } from "react-icons/fa6";
 import { isSupabaseAuthenticated } from "../lib/supabaseFiles";
 
 const menuItems = [
@@ -15,6 +15,27 @@ const menuItems = [
   { labelKey: "products", path: "/products" },
   { labelKey: "contact", id: "contact" },
 ];
+
+function NavDropdown({ label, children, textClasses }) {
+  const [open, setOpen] = useState(false);
+  const root = useRef(null);
+  const trigger = useRef(null);
+  const location = useLocation();
+  useEffect(() => { setOpen(false); }, [location.pathname]);
+  useEffect(() => {
+    const outside = (event) => { if (!root.current?.contains(event.target)) setOpen(false); };
+    const escape = (event) => { if (event.key === "Escape" && open) { setOpen(false); trigger.current?.focus(); } };
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", escape);
+    return () => { document.removeEventListener("pointerdown", outside); document.removeEventListener("keydown", escape); };
+  }, [open]);
+  return <div ref={root} className="relative" onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false); }}>
+    <button ref={trigger} type="button" aria-expanded={open} onClick={() => setOpen(!open)} className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-2 text-sm font-semibold hover:text-teal-500 ${textClasses}`}>
+      {label}<FaChevronDown className={`text-xs transition-transform ${open ? "rotate-180" : ""}`} />
+    </button>
+    {open && <div className="absolute end-0 top-full mt-3 grid min-w-56 gap-1 rounded-2xl border border-slate-200 bg-white p-2 text-slate-900 shadow-xl" onClick={() => setOpen(false)}>{children}</div>}
+  </div>;
+}
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -71,6 +92,13 @@ const Navbar = () => {
     scrollToSection(item.id);
   };
 
+  const dropdownItemClass = "block w-full rounded-xl px-4 py-3 text-start text-sm font-medium hover:bg-teal-50 hover:text-teal-700";
+  const dropdownItems = (keys) => visibleMenuItems.filter(item => keys.includes(item.labelKey)).map(item => (
+    <button key={item.labelKey} type="button" onClick={() => handleNavItemClick(item)} className={dropdownItemClass}>{t(`site.nav.${item.labelKey}`)}</button>
+  ));
+
+  useEffect(() => { setIsOpen(false); }, [location.pathname]);
+
   const shellClasses = scrolled || isOpen || location.pathname !== "/"
     ? "border-slate-200/70 bg-white/88 shadow-[0_16px_48px_rgba(15,23,42,0.12)] backdrop-blur-xl"
     : "border-white/15 bg-slate-950/18 shadow-none backdrop-blur-md";
@@ -101,7 +129,7 @@ const Navbar = () => {
         <button
           type="button"
           onClick={() => scrollToSection("landing")}
-          className={`group relative hidden overflow-hidden rounded-full px-4 py-2 text-sm font-semibold transition duration-300 md:inline-flex md:items-center md:gap-2 ${textClasses}`}
+          className={`group relative hidden overflow-hidden rounded-full px-4 py-2 text-sm font-semibold transition duration-300 xl:inline-flex xl:items-center xl:gap-2 ${textClasses}`}
         >
           <span className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/20 via-teal-400/25 to-blue-500/20 opacity-70 blur-md transition duration-500 group-hover:opacity-100" />
           <span className="absolute inset-0 rounded-full border border-teal-300/25 bg-white/5 opacity-0 transition duration-300 group-hover:opacity-100" />
@@ -109,59 +137,42 @@ const Navbar = () => {
           <span className="relative">{t("site.nav.home")}</span>
         </button>
 
-        <ul className={`hidden items-center gap-6 lg:flex xl:gap-7 ${textClasses}`}>
-          {visibleMenuItems.map((item) => (
-            <li key={item.path || item.id}>
-              <button
-                type="button"
-                onClick={() => handleNavItemClick(item)}
-                className="text-sm font-medium transition duration-300 hover:text-teal-400"
-              >
-                {t(`site.nav.${item.labelKey}`)}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className={`hidden items-center gap-1 xl:flex ${textClasses}`}>
+          <NavDropdown label={isArabic ? "الشركة" : "Company"} textClasses={textClasses}>
+            {dropdownItems(["about", "partners", "team", "contact"])}
+          </NavDropdown>
+          <NavDropdown label={t("site.nav.solutions")} textClasses={textClasses}>
+            {dropdownItems(["solutions", "services"])}
+          </NavDropdown>
+          {dropdownItems(["academy"])}
+        </div>
 
-        <div className="hidden shrink-0 items-center gap-3 lg:flex">
-          <button
-            type="button"
-            onClick={() => {
-              setIsOpen(false);
-              navigate(filesAuthenticated ? "/portal" : "/login");
-            }}
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition duration-300 hover:border-teal-400 hover:text-teal-700"
-          >
-            {filesAuthenticated ? <FaFolderOpen /> : <FaLock />}
-            {t("site.nav.portal")}
-          </button>
-          <a
-            href="/Sanaya%20Company%20Profile%20-%202026.pdf"
-            download
-            className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition duration-300 hover:border-teal-400 hover:text-teal-700"
-          >
-            <FaFileArrowDown />
-            {t("site.nav.profile")}
-          </a>
-          {filesAuthenticated && (
-            <button
-              type="button"
-              onClick={() => navigate("/service-packages")}
-              className="inline-flex items-center whitespace-nowrap rounded-full bg-gradient-to-r from-blue-600 to-teal-500 px-5 py-2.5 text-sm font-semibold text-white shadow-[0_14px_35px_rgba(14,165,233,0.28)] transition duration-300 hover:scale-[1.02]"
-            >
-              {t("site.nav.supportCta")}
-            </button>
-          )}
+        <div className="hidden shrink-0 items-center gap-2 xl:flex">
+          <NavDropdown label={isArabic ? "الموارد" : "Resources"} textClasses={textClasses}>
+            <a href="/Sanaya%20Company%20Profile%20-%202026.pdf" download className={dropdownItemClass}>
+              <FaFileArrowDown className="me-2 inline" />{t("site.nav.profile")}
+            </a>
+          </NavDropdown>
+          {filesAuthenticated ? (
+            <NavDropdown label={t("site.nav.portal")} textClasses={textClasses}>
+              <button type="button" onClick={() => navigate("/portal")} className={dropdownItemClass}><FaFolderOpen className="me-2 inline" />{t("site.nav.portal")}</button>
+              {dropdownItems(["products", "packages"])}
+              <button type="button" onClick={() => navigate("/portal/apps/licensing")} className={dropdownItemClass}>{isArabic ? "تراخيص SanRack" : "SanRack Licensing"}</button>
+              <button type="button" onClick={() => navigate("/service-packages")} className={dropdownItemClass}>{t("site.nav.supportCta")}</button>
+            </NavDropdown>
+          ) : <button type="button" onClick={() => navigate("/login")} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900"><FaLock />{t("site.nav.portal")}</button>}
         </div>
 
         <button
           type="button"
           onClick={() => setIsOpen((value) => !value)}
-          className={`inline-flex h-11 w-11 items-center justify-center rounded-full border lg:hidden ${
+          className={`inline-flex h-11 w-11 items-center justify-center rounded-full border xl:hidden ${
             scrolled || isOpen || location.pathname !== "/"
               ? "border-slate-200 bg-white text-slate-900"
               : "border-white/20 bg-white/10 text-white"
           }`}
+          aria-expanded={isOpen}
+          aria-controls="mobile-navigation"
           aria-label={t("site.nav.menuLabel")}
         >
           {isOpen ? <FaXmark size={18} /> : <FaBars size={18} />}
@@ -169,7 +180,7 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div className="mx-auto mt-3 w-full max-w-7xl overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.16)] lg:hidden">
+        <div id="mobile-navigation" className="mx-auto mt-3 max-h-[calc(100dvh-120px)] overflow-y-auto w-full max-w-7xl rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.16)] xl:hidden">
           <div className="flex flex-col gap-3">
             <button
               type="button"
