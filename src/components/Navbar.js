@@ -129,7 +129,7 @@ const Navbar = () => {
         <button
           type="button"
           onClick={() => scrollToSection("landing")}
-          className={`group relative hidden overflow-hidden rounded-full px-4 py-2 text-sm font-semibold transition duration-300 xl:inline-flex xl:items-center xl:gap-2 ${textClasses}`}
+          className={`group relative hidden overflow-hidden rounded-full px-4 py-2 text-sm font-semibold transition duration-300 ${filesAuthenticated ? "xl:inline-flex xl:items-center xl:gap-2" : "md:inline-flex md:items-center md:gap-2"} ${textClasses}`}
         >
           <span className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/20 via-teal-400/25 to-blue-500/20 opacity-70 blur-md transition duration-500 group-hover:opacity-100" />
           <span className="absolute inset-0 rounded-full border border-teal-300/25 bg-white/5 opacity-0 transition duration-300 group-hover:opacity-100" />
@@ -137,36 +137,78 @@ const Navbar = () => {
           <span className="relative">{t("site.nav.home")}</span>
         </button>
 
-        <div className={`hidden items-center gap-1 xl:flex ${textClasses}`}>
-          <NavDropdown label={isArabic ? "الشركة" : "Company"} textClasses={textClasses}>
-            {dropdownItems(["about", "partners", "team", "contact"])}
-          </NavDropdown>
-          <NavDropdown label={t("site.nav.solutions")} textClasses={textClasses}>
-            {dropdownItems(["solutions", "services"])}
-          </NavDropdown>
-          {dropdownItems(["academy"])}
-        </div>
+        {filesAuthenticated ? (
+          <>
+            <div className={`hidden items-center gap-1 xl:flex ${textClasses}`}>
+              <NavDropdown label={isArabic ? "الشركة" : "Company"} textClasses={textClasses}>
+                {dropdownItems(["about", "partners", "team", "contact"])}
+              </NavDropdown>
+              <NavDropdown label={t("site.nav.solutions")} textClasses={textClasses}>
+                {dropdownItems(["solutions", "services"])}
+              </NavDropdown>
+              {dropdownItems(["academy"])}
+            </div>
 
-        <div className="hidden shrink-0 items-center gap-2 xl:flex">
-          <NavDropdown label={isArabic ? "الموارد" : "Resources"} textClasses={textClasses}>
-            <a href="/Sanaya%20Company%20Profile%20-%202026.pdf" download className={dropdownItemClass}>
-              <FaFileArrowDown className="me-2 inline" />{t("site.nav.profile")}
-            </a>
-          </NavDropdown>
-          {filesAuthenticated ? (
-            <NavDropdown label={t("site.nav.portal")} textClasses={textClasses}>
-              <button type="button" onClick={() => navigate("/portal")} className={dropdownItemClass}><FaFolderOpen className="me-2 inline" />{t("site.nav.portal")}</button>
-              {dropdownItems(["products", "packages"])}
-              <button type="button" onClick={() => navigate("/portal/apps/licensing")} className={dropdownItemClass}>{isArabic ? "تراخيص SanRack" : "SanRack Licensing"}</button>
-              <button type="button" onClick={() => navigate("/service-packages")} className={dropdownItemClass}>{t("site.nav.supportCta")}</button>
-            </NavDropdown>
-          ) : <button type="button" onClick={() => navigate("/login")} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900"><FaLock />{t("site.nav.portal")}</button>}
-        </div>
+            <div className="hidden shrink-0 items-center gap-2 xl:flex">
+              <NavDropdown label={isArabic ? "الموارد" : "Resources"} textClasses={textClasses}>
+                <a href="/Sanaya%20Company%20Profile%20-%202026.pdf" download className={dropdownItemClass}>
+                  <FaFileArrowDown className="me-2 inline" />{t("site.nav.profile")}
+                </a>
+              </NavDropdown>
+                <NavDropdown label={t("site.nav.portal")} textClasses={textClasses}>
+                  <button type="button" onClick={() => navigate("/portal")} className={dropdownItemClass}><FaFolderOpen className="me-2 inline" />{t("site.nav.portal")}</button>
+                  {dropdownItems(["products", "packages"])}
+                  <button type="button" onClick={() => navigate("/portal/apps/licensing")} className={dropdownItemClass}>{isArabic ? "تراخيص SanRack" : "SanRack Licensing"}</button>
+                  <button type="button" onClick={() => navigate("/service-packages")} className={dropdownItemClass}>{t("site.nav.supportCta")}</button>
+                </NavDropdown>
+            </div>
+
+          </>
+        ) : (
+          <>
+            <ul className={`hidden items-center gap-6 lg:flex xl:gap-7 ${textClasses}`}>
+              {visibleMenuItems.map((item) => (
+                <li key={item.path || item.id}>
+                  <button
+                    type="button"
+                    onClick={() => handleNavItemClick(item)}
+                    className="text-sm font-medium transition duration-300 hover:text-teal-400"
+                  >
+                    {t(`site.nav.${item.labelKey}`)}
+                  </button>
+                </li>
+              ))}
+            </ul>
+
+            <div className="hidden shrink-0 items-center gap-3 lg:flex">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOpen(false);
+                  navigate("/login");
+                }}
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition duration-300 hover:border-teal-400 hover:text-teal-700"
+              >
+                <FaLock />
+                {t("site.nav.portal")}
+              </button>
+              <a
+                href="/Sanaya%20Company%20Profile%20-%202026.pdf"
+                download
+                className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-slate-300/80 bg-white px-4 py-2 text-sm font-semibold text-slate-900 transition duration-300 hover:border-teal-400 hover:text-teal-700"
+              >
+                <FaFileArrowDown />
+                {t("site.nav.profile")}
+              </a>
+            </div>
+
+          </>
+        )}
 
         <button
           type="button"
           onClick={() => setIsOpen((value) => !value)}
-          className={`inline-flex h-11 w-11 items-center justify-center rounded-full border xl:hidden ${
+          className={`inline-flex h-11 w-11 items-center justify-center rounded-full border ${filesAuthenticated ? "xl:hidden" : "lg:hidden"} ${
             scrolled || isOpen || location.pathname !== "/"
               ? "border-slate-200 bg-white text-slate-900"
               : "border-white/20 bg-white/10 text-white"
@@ -180,7 +222,7 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div id="mobile-navigation" className="mx-auto mt-3 max-h-[calc(100dvh-120px)] overflow-y-auto w-full max-w-7xl rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.16)] xl:hidden">
+        <div id="mobile-navigation" className={`mx-auto mt-3 max-h-[calc(100dvh-120px)] overflow-y-auto w-full max-w-7xl rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.16)] ${filesAuthenticated ? "xl:hidden" : "lg:hidden"}`}>
           <div className="flex flex-col gap-3">
             <button
               type="button"
