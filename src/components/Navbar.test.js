@@ -29,7 +29,8 @@ test('guests retain the original direct navigation and profile download without 
   expect(screen.queryByRole('button', { name: 'Products' })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Company' })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Resources' })).not.toBeInTheDocument();
-  ['About', 'Partners', 'Solutions', 'Services', 'Team', 'Academy', 'Contact'].forEach(name => {
+  expect(screen.queryByRole('button', { name: 'Academy' })).not.toBeInTheDocument();
+  ['About', 'Partners', 'Solutions', 'Services', 'Team', 'Contact'].forEach(name => {
     expect(screen.getByRole('button', { name })).toBeInTheDocument();
   });
   expect(screen.getByRole('button', { name: 'Portal' })).not.toHaveAttribute('aria-expanded');

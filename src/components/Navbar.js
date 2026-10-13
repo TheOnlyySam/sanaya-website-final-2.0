@@ -46,7 +46,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const visibleMenuItems = menuItems.filter(
-    (item) => !["packages", "products"].includes(item.labelKey) || filesAuthenticated
+    (item) => !["academy", "packages", "products"].includes(item.labelKey) || filesAuthenticated
   );
 
   useEffect(() => {
