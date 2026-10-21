@@ -41,7 +41,7 @@ const professionalServices = [
     icon: FaOilWell,
   },
   {
-    image: "/assets/hikfire/hero.jpg",
+    image: "/assets/hikfire/solution-5.jpg",
     link: "/services/hikfire",
     accent: "from-[#7c2d12] to-[#dc2626]",
     icon: FaFireFlameCurved,
