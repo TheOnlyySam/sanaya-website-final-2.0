@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FaArrowRight, FaDatabase, FaFireFlameCurved, FaLock, FaMicrochip, FaRocket } from "react-icons/fa6";
+import { FaArrowRight, FaDatabase, FaFireFlameCurved, FaLock, FaMicrochip, FaRocket, FaOilWell } from "react-icons/fa6";
 
 const professionalServices = [
   {
@@ -33,6 +33,18 @@ const professionalServices = [
     link: "/services/networking-security-solutions",
     accent: "from-[#0f172a] to-[#0891b2]",
     icon: FaLock,
+  },
+  {
+    image: "/assets/oil-gas/card.jpg",
+    link: "/services/oil-and-gas-solutions",
+    accent: "from-[#0f172a] to-[#0e7490]",
+    icon: FaOilWell,
+  },
+  {
+    image: "/assets/hikfire/hero.jpg",
+    link: "/services/hikfire",
+    accent: "from-[#7c2d12] to-[#dc2626]",
+    icon: FaFireFlameCurved,
   },
 ];
 

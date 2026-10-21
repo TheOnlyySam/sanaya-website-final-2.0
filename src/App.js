@@ -13,6 +13,8 @@ import MissionVision from "./components/MissionVision";
 import Partners from "./components/Partners";
 import ServiceDetail from "./components/ServiceDetail";
 import DataCenter from "./components/DataCenter";
+import OilGasSolutions from "./components/OilGasSolutions";
+import HikFire from "./components/HikFire";
 import FireAlarmService from "./components/FireAlarmService";
 import SoftwareEngineering from "./components/SoftwareEngineering";
 import Contact from "./components/Contact";
@@ -107,6 +109,8 @@ function App() {
         />
         <Route path="/services/:serviceId" element={<ServiceDetail />} />
         <Route path="/services/data-centers" element={<DataCenter />} />
+        <Route path="/services/oil-and-gas-solutions" element={<OilGasSolutions />} />
+        <Route path="/services/hikfire" element={<HikFire />} />
         <Route path="/services/fire-alarm-systems" element={<FireAlarmService />} />
         <Route path="/services/software-engineering" element={<SoftwareEngineering />} />
         <Route path="/our-team" element={<OurTeam />} />

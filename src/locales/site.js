@@ -83,7 +83,9 @@ export const siteResources = {
         { "title": "Data Centers", "description": "Sanaya designs and deploys resilient data center environments with power continuity, advanced cooling, physical security, and performance-first architecture." },
         { "title": "Fire Alarm Systems", "description": "Addressable, wireless, and integrated monitoring systems engineered for fast response, compliance, and dependable protection across facilities." },
         { "title": "Software Engineering", "description": "We build web and mobile products, internal platforms, and operational tools that bring reliability, speed, and clarity to business workflows." },
-        { "title": "Networking & Security", "description": "From switching and wireless to perimeter defense and endpoint policy, we build secure connectivity for distributed organizations and critical sites." }
+        { "title": "Networking & Security", "description": "From switching and wireless to perimeter defense and endpoint policy, we build secure connectivity for distributed organizations and critical sites." },
+        { "title": "Oil & Gas Security", "description": "Integrated Hikvision security and HSE systems for fields, pipelines, refineries, and remote operations." },
+        { "title": "HikFire Safety", "description": "Connected fire detection, alarm, video verification, and emergency management for buildings and industrial sites." }
       ]
     },
     consulting: {
