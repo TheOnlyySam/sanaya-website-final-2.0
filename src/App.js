@@ -6,6 +6,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import "./App.css";
 import Navbar from "./components/Navbar";
+import Support from "./components/Support";
 import Landing from "./components/Landing";
 import AboutUs from "./components/About";
 import Services from "./components/Services";
@@ -114,6 +115,7 @@ function App() {
         <Route path="/services/fire-alarm-systems" element={<FireAlarmService />} />
         <Route path="/services/software-engineering" element={<SoftwareEngineering />} />
         <Route path="/our-team" element={<OurTeam />} />
+        <Route path="/support" element={<Support />} />
         <Route path="/academy" element={<Academy />} />
         <Route path="/service-packages" element={<PortalOnlyRoute><ServicePackages /></PortalOnlyRoute>} />
         <Route path="/service-request" element={<PortalOnlyRoute><ServiceRequest /></PortalOnlyRoute>} />

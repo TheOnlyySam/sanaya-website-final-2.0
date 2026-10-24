@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/support", "destination": "/index.html" },
     { "source": "/services/:serviceId", "destination": "/index.html" },
     { "source": "/our-team", "destination": "/index.html" },
     { "source": "/academy", "destination": "/index.html" },

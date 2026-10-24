@@ -14,6 +14,7 @@ const menuItems = [
   { labelKey: "packages", path: "/service-packages" },
   { labelKey: "products", path: "/products" },
   { labelKey: "contact", id: "contact" },
+  { labelKey: "support", path: "/support" },
 ];
 
 function NavDropdown({ label, children, textClasses }) {
@@ -147,6 +148,7 @@ const Navbar = () => {
                 {dropdownItems(["solutions", "services"])}
               </NavDropdown>
               {dropdownItems(["academy"])}
+              {dropdownItems(["support"])}
             </div>
 
             <div className="hidden shrink-0 items-center gap-2 xl:flex">
@@ -166,7 +168,7 @@ const Navbar = () => {
           </>
         ) : (
           <>
-            <ul className={`hidden items-center gap-6 lg:flex xl:gap-7 ${textClasses}`}>
+            <ul className={`hidden items-center gap-4 xl:flex xl:gap-5 ${textClasses}`}>
               {visibleMenuItems.map((item) => (
                 <li key={item.path || item.id}>
                   <button
@@ -180,7 +182,7 @@ const Navbar = () => {
               ))}
             </ul>
 
-            <div className="hidden shrink-0 items-center gap-3 lg:flex">
+            <div className="hidden shrink-0 items-center gap-3 xl:flex">
               <button
                 type="button"
                 onClick={() => {
@@ -208,7 +210,7 @@ const Navbar = () => {
         <button
           type="button"
           onClick={() => setIsOpen((value) => !value)}
-          className={`inline-flex h-11 w-11 items-center justify-center rounded-full border ${filesAuthenticated ? "xl:hidden" : "lg:hidden"} ${
+          className={`inline-flex h-11 w-11 items-center justify-center rounded-full border xl:hidden ${
             scrolled || isOpen || location.pathname !== "/"
               ? "border-slate-200 bg-white text-slate-900"
               : "border-white/20 bg-white/10 text-white"
@@ -222,7 +224,7 @@ const Navbar = () => {
       </div>
 
       {isOpen && (
-        <div id="mobile-navigation" className={`mx-auto mt-3 max-h-[calc(100dvh-120px)] overflow-y-auto w-full max-w-7xl rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.16)] ${filesAuthenticated ? "xl:hidden" : "lg:hidden"}`}>
+        <div id="mobile-navigation" className="mx-auto mt-3 max-h-[calc(100dvh-120px)] overflow-y-auto w-full max-w-7xl rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.16)] xl:hidden">
           <div className="flex flex-col gap-3">
             <button
               type="button"

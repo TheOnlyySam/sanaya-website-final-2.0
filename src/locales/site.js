@@ -23,6 +23,7 @@ export const siteResources = {
       profile: "Profile 2026",
       downloadProfile: "Download Profile 2026",
       supportCta: "Odoo Support",
+      support: "Support",
       homeLabel: "Go to homepage",
       menuLabel: "Toggle menu",
     },
@@ -339,6 +340,7 @@ export const siteResources = {
       profile: "الملف التعريفي 2026",
       downloadProfile: "تنزيل الملف التعريفي 2026",
       supportCta: "دعم Odoo",
+      support: "الدعم",
       homeLabel: "الانتقال إلى الصفحة الرئيسية",
       menuLabel: "فتح أو إغلاق القائمة"
     },
