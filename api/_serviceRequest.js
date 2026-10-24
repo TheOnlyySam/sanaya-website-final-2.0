@@ -68,7 +68,7 @@ function isMeaningfulName(value) {
   return value.length >= 2 && letters.length >= 2 && /^[\p{L}\p{M}\s.'-]+$/u.test(value);
 }
 
-function parseAttachment(attachment, maxUploadBytes, allowedMimeTypes) {
+export function parseAttachment(attachment, maxUploadBytes, allowedMimeTypes) {
   if (!attachment) return { value: null, error: null };
 
   const name = normalizeText(attachment.name, 180).replace(/[^\p{L}\p{N}._ -]/gu, "_");
