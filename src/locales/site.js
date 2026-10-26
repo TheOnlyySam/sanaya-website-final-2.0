@@ -9,6 +9,7 @@ export const siteResources = {
       viewCatalog: "View catalog",
     },
     nav: {
+      odooPlans: "Odoo plans",
       home: "Home",
       about: "About",
       partners: "Partners",
@@ -326,6 +327,7 @@ export const siteResources = {
       viewCatalog: "عرض الكتالوج"
     },
     nav: {
+      odooPlans: "باقات إعداد Odoo",
       home: "الرئيسية",
       about: "عن الشركة",
       partners: "الشركاء",

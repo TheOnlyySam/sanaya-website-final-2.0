@@ -9,6 +9,7 @@ const menuItems = [
   { labelKey: "partners", id: "partners" },
   { labelKey: "solutions", id: "services" },
   { labelKey: "services", id: "ConsultingServices" },
+  { labelKey: "odooPlans", path: "/odoo-success-plans" },
   { labelKey: "team", path: "/our-team" },
   { labelKey: "academy", path: "/academy" },
   { labelKey: "packages", path: "/service-packages" },
@@ -47,7 +48,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const visibleMenuItems = menuItems.filter(
-    (item) => !["academy", "packages", "products"].includes(item.labelKey) || filesAuthenticated
+    (item) => !["academy", "packages", "products", "odooPlans"].includes(item.labelKey) || filesAuthenticated
   );
 
   useEffect(() => {
@@ -159,7 +160,7 @@ const Navbar = () => {
               </NavDropdown>
                 <NavDropdown label={t("site.nav.portal")} textClasses={textClasses}>
                   <button type="button" onClick={() => navigate("/portal")} className={dropdownItemClass}><FaFolderOpen className="me-2 inline" />{t("site.nav.portal")}</button>
-                  {dropdownItems(["products", "packages"])}
+                  {dropdownItems(["products", "packages", "odooPlans"])}
                   <button type="button" onClick={() => navigate("/portal/apps/licensing")} className={dropdownItemClass}>{isArabic ? "تراخيص SanRack" : "SanRack Licensing"}</button>
                   <button type="button" onClick={() => navigate("/service-packages")} className={dropdownItemClass}>{t("site.nav.supportCta")}</button>
                 </NavDropdown>

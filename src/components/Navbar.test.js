@@ -14,6 +14,7 @@ test('authenticated links are grouped and dropdown closes with Escape and outsid
   const portal = screen.getByRole('button', { name: 'Portal' });
   fireEvent.click(portal);
   expect(screen.getByRole('button', { name: 'Products' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Odoo plans' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'SanRack Licensing' })).toBeInTheDocument();
   fireEvent.keyDown(document, { key: 'Escape' });
   expect(portal).toHaveAttribute('aria-expanded', 'false');
@@ -30,6 +31,7 @@ test('guests retain the original direct navigation and profile download without 
   expect(screen.queryByRole('button', { name: 'Company' })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Resources' })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Academy' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Odoo plans' })).not.toBeInTheDocument();
   ['About', 'Partners', 'Solutions', 'Services', 'Team', 'Contact'].forEach(name => {
     expect(screen.getByRole('button', { name })).toBeInTheDocument();
   });

@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { isSupabaseAuthenticated } from "../lib/supabaseFiles";
 import {
   FaArrowRight,
   FaBriefcase,
@@ -345,6 +346,9 @@ const ServiceDetail = () => {
         </section>
       )}
 
+      {serviceId === "odoo-erp-system" && isSupabaseAuthenticated() && <section className="px-4 py-8 text-center">
+        <Link to="/odoo-success-plans" className="inline-flex rounded-full bg-teal-700 px-6 py-4 font-bold text-white hover:bg-teal-800">{t("site.nav.odooPlans")}</Link>
+      </section>}
       <section className="px-4 pb-24 pt-10 sm:px-6 lg:px-8">
         <div className={`mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-6 rounded-[2.6rem] bg-gradient-to-r ${accent.cta} px-8 py-10 text-white shadow-[0_20px_60px_rgba(14,165,233,0.28)] lg:flex-row lg:items-center`}>
           <div className="max-w-2xl">

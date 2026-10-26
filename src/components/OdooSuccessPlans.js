@@ -2,128 +2,41 @@ import React, { useEffect } from "react";
 import { Check, ChevronDown, Mail, MessageCircle, ShieldCheck, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-const copy = {
-  en: {
-    eyebrow: "Odoo success plans",
-    title: "Success plans for your Odoo system",
-    intro: "An annual support plan from SanayaTechs gives your team expert guidance, faster issue resolution, and practical improvements throughout the year.",
-    benefits: ["Dedicated Odoo consultant", "Remote support", "Priority based on plan"],
-    annual: "Annual plan",
-    save: "Save 15%",
-    iqD: "IQD",
-    supportHours: "support hours per year",
-    select: "Choose plan",
-    popular: "Most popular",
-    included: "What is included",
-    plans: [
-      { name: "Starter", price: "340,000", offer: "289,000", hours: 4, features: ["Remote support", "Odoo guidance", "Training and follow-up"] },
-      { name: "Basic", price: "1,725,000", offer: "1,466,000", hours: 25, features: ["Dedicated consultant", "Remote support", "Training and follow-up", "Database review"] },
-      { name: "Standard", price: "3,375,000", offer: "2,869,000", hours: 50, recommended: true, features: ["Dedicated consultant", "Remote support", "Training and follow-up", "Database review", "Priority support", "Data assistance"] },
-      { name: "Custom", price: "6,000,000", offer: "5,100,000", hours: 100, features: ["Dedicated Odoo consultant", "Remote and phone support", "Training and follow-up", "Priority support", "Small customizations", "Reports and workflow review"] },
-      { name: "Pro", price: "12,000,000", offer: "10,200,000", hours: 200, features: ["Dedicated Odoo consultant", "Remote and phone support", "Training and follow-up", "Priority support", "Advanced customizations", "Reports and workflow review", "Regular planning sessions"] },
-    ],
-    comparisonTitle: "Compare plans",
-    comparisonIntro: "Choose the coverage that matches your team and your Odoo workload.",
-    compareRows: [
-      ["Annual support hours", "4 hours", "25 hours", "50 hours", "100 hours", "200 hours"],
-      ["Dedicated consultant", false, true, true, true, true],
-      ["Remote and phone support", true, true, true, true, true],
-      ["Training and follow-up", true, true, true, true, true],
-      ["Data review and guidance", false, true, true, true, true],
-      ["Small approved customizations", false, false, true, true, true],
-      ["Reports and workflow review", false, false, false, true, true],
-    ],
-    faqTitle: "Frequently asked questions",
-    faqIntro: "Clear answers before you choose your annual plan.",
-    faqs: [
-      ["What is included in a success plan?", "Each plan includes a defined annual bank of expert support hours. Depending on the plan, this can cover guidance, configuration, training, review, and approved improvements."],
-      ["How are support hours used?", "Hours are recorded against completed remote sessions, consultations, configuration work, training, and other approved tasks."],
-      ["Can I upgrade during the year?", "Yes. Our team can review your usage and move you to a plan with more coverage when needed."],
-      ["Do unused hours roll over?", "Plans are annual. Any rollover or extension is agreed in writing based on the selected plan and renewal terms."],
-      ["Does the plan include Odoo licenses?", "No. Odoo licenses, hosting, and third-party subscriptions are quoted separately unless specifically included in your proposal."],
-    ],
-    contactTitle: "Let’s choose the right plan together",
-    contactText: "Tell us about your Odoo environment and we’ll recommend the coverage that fits your team.",
-    whatsapp: "WhatsApp",
-    email: "Email us",
-  },
-  ar: {
-    eyebrow: "باقات نجاح Odoo",
-    title: "باقات النجاح لنظام Odoo",
-    intro: "باقة دعم سنوية من SanayaTechs تمنح فريقك إرشاداً متخصصاً، وحلولاً أسرع للمشكلات، وتحسينات عملية على مدار العام.",
-    benefits: ["مستشار Odoo مخصص", "دعم فني عن بُعد", "أولوية حسب الباقة"],
-    annual: "باقة سنوية",
-    save: "وفر 15%",
-    iqD: "د.ع",
-    supportHours: "ساعة دعم سنوياً",
-    select: "اختر الباقة",
-    popular: "الأكثر طلباً",
-    included: "تشمل الباقة",
-    plans: [
-      { name: "Starter", price: "340,000", offer: "289,000", hours: 4, features: ["دعم فني عن بُعد", "إرشاد لاستخدام Odoo", "تدريب ومتابعة"] },
-      { name: "Basic", price: "1,725,000", offer: "1,466,000", hours: 25, features: ["مستشار مخصص", "دعم فني عن بُعد", "تدريب ومتابعة", "مراجعة قاعدة البيانات"] },
-      { name: "Standard", price: "3,375,000", offer: "2,869,000", hours: 50, recommended: true, features: ["مستشار مخصص", "دعم فني عن بُعد", "تدريب ومتابعة", "مراجعة قاعدة البيانات", "دعم ذو أولوية", "مساعدة في البيانات"] },
-      { name: "Custom", price: "6,000,000", offer: "5,100,000", hours: 100, features: ["مستشار Odoo مخصص", "دعم هاتفي وعن بُعد", "تدريب ومتابعة", "دعم ذو أولوية", "تخصيصات صغيرة", "مراجعة التقارير وسير العمل"] },
-      { name: "Pro", price: "12,000,000", offer: "10,200,000", hours: 200, features: ["مستشار Odoo مخصص", "دعم هاتفي وعن بُعد", "تدريب ومتابعة", "دعم ذو أولوية", "تخصيصات متقدمة", "مراجعة التقارير وسير العمل", "جلسات تخطيط دورية"] },
-    ],
-    comparisonTitle: "مقارنة الباقات",
-    comparisonIntro: "اختر مستوى التغطية المناسب لفريقك وحجم العمل على Odoo.",
-    compareRows: [
-      ["ساعات الدعم السنوية", "4 ساعات", "25 ساعة", "50 ساعة", "100 ساعة", "200 ساعة"],
-      ["مستشار مخصص", false, true, true, true, true],
-      ["دعم عن بُعد وهاتفي", true, true, true, true, true],
-      ["التدريب والمتابعة", true, true, true, true, true],
-      ["مراجعة البيانات والإرشاد", false, true, true, true, true],
-      ["تخصيصات صغيرة معتمدة", false, false, true, true, true],
-      ["مراجعة التقارير وسير العمل", false, false, false, true, true],
-    ],
-    faqTitle: "أسئلة شائعة",
-    faqIntro: "إجابات واضحة قبل اختيار باقتك السنوية.",
-    faqs: [
-      ["ماذا تتضمن باقة النجاح؟", "تتضمن كل باقة رصيداً سنوياً محدداً من ساعات الدعم المتخصص. وبحسب الباقة، يمكن استخدامه للإرشاد والإعداد والتدريب والمراجعة والتحسينات المعتمدة."],
-      ["كيف تُحتسب ساعات الدعم؟", "تُسجل الساعات مقابل جلسات الدعم والاستشارات والإعداد والتدريب والأعمال الأخرى التي تتم الموافقة عليها."],
-      ["هل يمكنني ترقية الباقة خلال السنة؟", "نعم. يمكن لفريقنا مراجعة استخدامك ونقلك إلى باقة بتغطية أكبر عند الحاجة."],
-      ["هل تُرحّل الساعات غير المستخدمة؟", "الباقات سنوية، ويخضع ترحيل الساعات أو تمديدها للشروط المتفق عليها خطياً عند الاشتراك أو التجديد."],
-      ["هل تشمل الباقة تراخيص Odoo؟", "لا. يتم تسعير تراخيص Odoo والاستضافة واشتراكات الجهات الخارجية بشكل منفصل ما لم تُذكر ضمن العرض المقدم لك."],
-    ],
-    contactTitle: "لنختَر الباقة المناسبة معاً",
-    contactText: "أخبرنا عن بيئة Odoo لديك وسنقترح مستوى التغطية الأنسب لفريقك.",
-    whatsapp: "واتساب",
-    email: "البريد الإلكتروني",
-  },
-};
+import { odooPlanPrices, odooPlanHours, odooPlanDetails, odooPlansCopy as copy } from "../data/odooPlans";
 
 const planMessage = (name, language) => encodeURIComponent(
   language === "ar" ? `مرحباً، أود الاستفسار عن باقة Odoo ${name}.` : `Hello, I would like to ask about the Odoo ${name} plan.`
 );
 
-const BooleanCell = ({ value }) => value ? (
-  <Check size={18} className="mx-auto text-teal-600" aria-label="Included" />
-) : <span className="text-slate-300">—</span>;
+const BooleanCell = ({ value, t }) => <span>
+ {value ? <Check size={18} className="mx-auto text-teal-600" aria-hidden="true" /> : <span aria-hidden="true">—</span>}
+ <span className="sr-only">{value ? t.includedLabel : t.excludedLabel}</span>
+ </span>;
 
 const OdooSuccessPlans = () => {
   const { i18n } = useTranslation();
   const language = i18n.resolvedLanguage === "ar" ? "ar" : "en";
   const t = copy[language];
+ const plans = t.plans.map((plan, index) => ({ ...plan, id: `odoo-plan-${index + 1}`, price: odooPlanPrices[index], hours: odooPlanHours[index], ...odooPlanDetails[language][index] }));
+ const price = (plan) => plan.custom ? t.contactSales : <><bdi dir="ltr">{plan.price.toLocaleString("en-US")}</bdi> <span className="text-xs">{t.iqD}</span></>;
+ const hours = (plan) => plan.custom ? t.customHours : `${plan.hours} ${t.hoursLabel}`;
 
   useEffect(() => {
     const previousTitle = document.title;
     const description = document.querySelector('meta[name="description"]');
     const previousDescription = description?.getAttribute("content") || "";
 
-    document.title = language === "ar" ? "باقات نجاح Odoo | SanayaTechs" : "Odoo Success Plans | SanayaTechs";
-    description?.setAttribute("content", language === "ar"
-      ? "باقات دعم سنوية لنظام Odoo من SanayaTechs تشمل الاستشارات والتدريب والمتابعة والتخصيص."
-      : "Annual Odoo support plans from SanayaTechs, including consulting, training, follow-up, and customization.");
+    document.title = `${t.eyebrow} | SanayaTechs`;
+    description?.setAttribute("content", t.intro);
 
     return () => {
       document.title = previousTitle;
       description?.setAttribute("content", previousDescription);
     };
-  }, [language]);
+  }, [t]);
 
   return (
-    <main dir={language === "ar" ? "rtl" : "ltr"} className="min-h-screen bg-white pt-28 text-slate-950">
+    <main lang={language} dir={language === "ar" ? "rtl" : "ltr"} className="min-h-screen bg-white pt-28 text-slate-950">
       <section className="relative overflow-hidden border-b border-slate-200 bg-[linear-gradient(135deg,#f0fdfa_0%,#f8fbff_52%,#eff6ff_100%)] px-4 pb-16 pt-12 sm:px-6 lg:px-8 lg:pb-20 lg:pt-16">
         <div className="absolute -right-24 top-4 h-72 w-72 rounded-full bg-teal-300/20 blur-3xl" />
         <div className="absolute -left-24 bottom-0 h-64 w-64 rounded-full bg-blue-300/20 blur-3xl" />
@@ -146,55 +59,77 @@ const OdooSuccessPlans = () => {
 
       <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <div className="mx-auto grid w-full max-w-7xl gap-5 md:grid-cols-2 xl:grid-cols-5">
-          {t.plans.map((plan) => (
-            <article key={plan.name} className={`relative flex flex-col rounded-3xl border bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.08)] ${plan.recommended ? "border-teal-500 ring-2 ring-teal-100 xl:-translate-y-3" : "border-slate-200"}`}>
-              {plan.recommended && <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-teal-700 px-3 py-1 text-xs font-bold text-white">{t.popular}</span>}
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-700">{t.annual}</p>
+          {plans.map((plan) => (
+            <article key={plan.name} className="relative flex flex-col rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.08)]">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-teal-700">{t.priceLabel}</p>
               <h2 className="mt-3 font-display text-2xl font-bold">{plan.name}</h2>
-              <p className="mt-5 text-sm text-slate-400 line-through">{plan.price} {t.iqD}</p>
-              <div className="mt-1 flex flex-wrap items-end gap-2">
-                <span className="font-display text-2xl font-bold tracking-tight text-slate-950">{plan.offer}</span>
-                <span className="pb-1 text-xs font-bold text-slate-500">{t.iqD}</span>
-              </div>
-              <span className="mt-3 w-fit rounded-full bg-teal-50 px-3 py-1 text-xs font-bold text-teal-700">{t.save}</span>
-              <p className="mt-5 border-y border-slate-100 py-4 text-sm font-bold text-slate-700"><span className="text-lg text-blue-700">{plan.hours}</span> {t.supportHours}</p>
+              <p className="mt-4 min-h-20 text-sm leading-7 text-slate-600">{plan.description}</p>
+              <div className="mt-5 text-2xl font-bold leading-relaxed text-slate-950">{price(plan)}</div>
+              <p className="mt-5 border-y border-teal-100 bg-teal-50 px-2 py-4 text-base font-bold text-teal-800">{hours(plan)}</p>
               <h3 className="mt-5 text-sm font-bold">{t.included}</h3>
               <ul className="mt-3 flex-1 space-y-3">
                 {plan.features.map((feature) => <li key={feature} className="flex items-start gap-2 text-sm leading-6 text-slate-600"><Check size={16} className="mt-1 shrink-0 text-teal-600" /><span>{feature}</span></li>)}
               </ul>
-              <a href={`https://wa.me/9647777995015?text=${planMessage(plan.name, language)}`} target="_blank" rel="noreferrer" className={`mt-6 inline-flex min-h-11 items-center justify-center rounded-full px-4 text-sm font-bold transition hover:-translate-y-0.5 ${plan.recommended ? "bg-gradient-to-r from-blue-600 to-teal-500 text-white shadow-lg shadow-teal-500/20" : "bg-slate-950 text-white hover:bg-teal-700"}`}>{t.select}</a>
+              <a href={`#${plan.id}`} className="mt-5 text-sm font-semibold text-teal-800 underline underline-offset-4">{t.detailsLink}</a>
+              <a href={`https://wa.me/9647777995015?text=${planMessage(plan.name, language)}`} target="_blank" rel="noreferrer" className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-slate-950 px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-teal-700">{plan.custom ? t.contactSales : t.select}</a>
             </article>
           ))}
         </div>
       </section>
 
+      <p className="mx-auto mb-12 max-w-5xl rounded-2xl border border-teal-100 bg-teal-50 p-5 text-sm leading-7 text-slate-700">{t.scopeNote}</p>
       <section className="border-y border-slate-200 bg-slate-50 px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
             <h2 className="font-display text-3xl font-bold sm:text-4xl">{t.comparisonTitle}</h2>
             <p className="mt-3 text-slate-600">{t.comparisonIntro}</p>
+            <p className="mt-3 text-sm text-slate-500">{t.compareHint}</p>
           </div>
-          <div className="mt-10 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-            <table className="w-full min-w-[800px] border-collapse text-sm">
+          <div tabIndex={0} role="region" aria-label={t.comparisonTitle} className="mt-10 overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
+            <table className="w-full min-w-[1100px] border-collapse text-sm">
               <thead>
                 <tr className="bg-slate-950 text-white">
                   <th className="p-5 text-start">{t.comparisonTitle}</th>
-                  {t.plans.map((plan) => <th key={plan.name} className={`p-5 text-center ${plan.recommended ? "bg-teal-700" : ""}`}>{plan.name}</th>)}
+                  {plans.map((plan) => <th scope="col" key={plan.name} className="p-5 text-center">{plan.name}</th>)}
                 </tr>
               </thead>
               <tbody>
-                {t.compareRows.map(([label, ...values], rowIndex) => (
+                <tr className="bg-teal-50">
+                  <th scope="row" className="min-w-[280px] p-4 text-start text-slate-800">{t.hoursRow}<span className="mt-2 block text-xs font-normal leading-6 text-slate-600">{t.hoursExplanation}</span></th>
+                  {plans.map((plan) => <td key={plan.id} className="p-4 text-center font-bold text-teal-800">{hours(plan)}</td>)}
+                </tr>
+                {t.compareRows.map(([label, explanation, ...values], rowIndex) => (
                   <tr key={label} className={rowIndex % 2 ? "bg-slate-50/70" : "bg-white"}>
-                    <th className="border-t border-slate-100 p-4 text-start font-semibold text-slate-700">{label}</th>
-                    {values.map((value, index) => <td key={`${label}-${t.plans[index].name}`} className="border-t border-slate-100 p-4 text-center text-slate-600">{typeof value === "boolean" ? <BooleanCell value={value} /> : value}</td>)}
+                    <th scope="row" className="w-[28%] min-w-[280px] border-t border-slate-100 p-4 text-start font-semibold text-slate-700">{label}<span className="mt-2 block text-xs font-normal leading-6 text-slate-500">{explanation}</span></th>
+                    {values.map((value, index) => <td key={`${label}-${t.plans[index].name}`} className="border-t border-slate-100 p-4 text-center text-slate-600">{typeof value === "boolean" ? <BooleanCell value={value} t={t} /> : value}</td>)}
                   </tr>
                 ))}
                 <tr className="bg-white">
-                  <th className="border-t border-slate-200 p-4 text-start font-bold">{t.annual}</th>
-                  {t.plans.map((plan) => <td key={plan.name} className="border-t border-slate-200 p-4 text-center font-bold text-teal-700">{plan.offer} <span className="text-xs">{t.iqD}</span></td>)}
+                  <th scope="row" className="border-t border-slate-200 p-4 text-start font-bold">{t.priceLabel}</th>
+                  {plans.map((plan) => <td key={plan.name} className="border-t border-slate-200 p-4 text-center font-bold text-teal-700">{price(plan)}</td>)}
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <h2 className="text-center font-display text-3xl font-bold sm:text-4xl">{t.detailsTitle}</h2>
+          <p className="mx-auto mt-4 max-w-3xl text-center leading-7 text-slate-600">{t.detailsIntro}</p>
+          <div className="mt-10 space-y-6">
+            {plans.map((plan) => <section id={plan.id} key={plan.id} aria-labelledby={`${plan.id}-title`} className="scroll-mt-32 rounded-3xl border border-slate-200 p-6 sm:p-8">
+              <div className="flex flex-wrap items-start justify-between gap-4 border-b border-slate-100 pb-5">
+                <div><h3 id={`${plan.id}-title`} className="text-2xl font-bold">{plan.name}</h3><p className="mt-2 font-semibold text-teal-800">{hours(plan)}</p></div>
+                <p className="text-xl font-bold">{price(plan)}</p>
+              </div>
+              <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_1.5fr]">
+                <div><h4 className="font-bold">{t.fitLabel}</h4><p className="mt-3 text-sm leading-7 text-slate-600">{plan.fit}</p></div>
+                <div><h4 className="font-bold">{t.deliverablesLabel}</h4><ul className="mt-3 space-y-3">{plan.deliverables.map((item) => <li key={item} className="flex gap-3 text-sm leading-7 text-slate-600"><Check size={17} className="mt-1 shrink-0 text-teal-600" aria-hidden="true" /><span>{item}</span></li>)}</ul></div>
+              </div>
+              <div className="mt-6 rounded-xl bg-slate-50 p-4 text-sm leading-7"><h4 className="font-bold">{t.limitsLabel}</h4><p className="mt-1 text-slate-600">{plan.limits}</p></div>
+            </section>)}
           </div>
         </div>
       </section>
@@ -226,7 +161,7 @@ const OdooSuccessPlans = () => {
       </section>
 
       <footer className="border-t border-slate-200 bg-white px-4 py-7 text-sm text-slate-500 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><p>© {new Date().getFullYear()} SanayaTechs</p><p>Odoo implementation, training and support</p></div>
+        <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"><p>© {new Date().getFullYear()} SanayaTechs</p><p>{t.footer}</p></div>
       </footer>
     </main>
   );

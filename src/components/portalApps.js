@@ -1,5 +1,13 @@
 export const portalApps = [
   {
+    slug: "odoo-success-plans",
+    name: "Odoo Plans",
+    eyebrow: "Implementation",
+    description: "Compare five Odoo implementation packages, consultant hours, deliverables, and pricing in English and Arabic.",
+    route: "/odoo-success-plans",
+    icon: "requests",
+  },
+  {
     slug: "licensing",
     name: "SanRack Licensing",
     eyebrow: "Lifetime Licenses",
