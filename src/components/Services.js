@@ -52,6 +52,7 @@ const Services = () => {
   const { t, i18n } = useTranslation();
   const isArabic = i18n.resolvedLanguage === "ar";
   const itemCopy = t("site.solutions.items", { returnObjects: true });
+  const fallbackCopy = t("site.solutions.items", { returnObjects: true, lng: "en" });
   return (
     <section className="px-4 py-24 sm:px-6 lg:px-8" id="services">
       <div className="mx-auto w-full max-w-7xl">
@@ -69,7 +70,9 @@ const Services = () => {
 
         <div className="mt-12 grid gap-6 lg:grid-cols-2">
           {professionalServices.map(({ icon: Icon, image, link, accent }, index) => {
-            const content = Array.isArray(itemCopy) ? itemCopy[index] : {};
+            const content = (Array.isArray(itemCopy) ? itemCopy[index] : null)
+              || (Array.isArray(fallbackCopy) ? fallbackCopy[index] : null)
+              || { title: t("site.solutions.solution"), description: "" };
             return (
             <div
               key={link}

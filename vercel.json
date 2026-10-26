@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/odoo-success-plans", "destination": "/index.html" },
     { "source": "/support", "destination": "/index.html" },
     { "source": "/services/:serviceId", "destination": "/index.html" },
     { "source": "/our-team", "destination": "/index.html" },
