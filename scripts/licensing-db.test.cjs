@@ -25,6 +25,13 @@ test('migration enforces admin access, permanent licenses, atomic saves and conf
     await assert.rejects(save([{...client,version:'2000-01-01T00:00:00Z'}]), /Record changed/);
     const version = (await db.query("select updated_at::text as version from licensing_clients where id='c'")).rows[0].version;
     await save([{...client, version, data:{name:'Updated'}}]);
+    await db.exec('reset role');
+    await db.exec(fs.readFileSync('supabase/migrations/20261121_support_sanpower_licensing.sql', 'utf8'));
+    await db.exec("set role authenticated; set test.admin='true'");
+    const power = {...licence, id:'power', data:{...licence.data,licId:'SPL-TEST',machine:'SP-1234-5678-ABCD-EF01',key:'SPD1.payload.signature'}};
+    await save([power]);
+    assert.equal((await db.query('select * from licensing_licences')).rows.length, 2);
+    await assert.rejects(save([{...power,id:'wrong',data:{...power.data,licId:'WRONG',key:licence.data.key}}]), /licensing_product_and_key/);
     await db.exec("set test.admin='false'");
     assert.equal((await db.query('select * from licensing_clients')).rows.length, 0);
     assert.equal((await db.query('select * from licensing_licences')).rows.length, 0);

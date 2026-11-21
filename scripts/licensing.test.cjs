@@ -4,11 +4,11 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const { webcrypto } = require('node:crypto');
 
-async function manager(fetch = async () => { throw Error('Network unavailable'); }) {
+async function manager(fetch = async () => { throw Error('Network unavailable'); }, product = {}) {
   const keys = await webcrypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, ['sign', 'verify']);
   const pub = await webcrypto.subtle.exportKey('jwk', keys.publicKey);
   let script = fs.readFileSync('licensing/license-manager.html', 'utf8').match(/<script>([\s\S]*?)<\/script>/)[1];
-  script = script.replace(/const PRODUCT = .*?;/, `const PRODUCT = ${JSON.stringify({ name: 'Test', kid: 'TEST', pub })};`)
+  script = script.replace(/const PRODUCT = .*?;/, `const PRODUCT = ${JSON.stringify({ name: 'Test', kid: 'TEST', pub, ...product })};`)
     .replace('/* SUPABASE_CONFIG */', 'const SUPABASE_CONFIG = {url:"https://example.supabase.co",anonKey:"public"};')
     .replace("localStorage.removeItem('srlm.key'); pill(); boot();", '');
   const element = { addEventListener() {}, value: '', dataset: {} };
@@ -25,12 +25,14 @@ async function manager(fetch = async () => { throw Error('Network unavailable');
 
 test('issued activation keys are permanent, machine-bound and cryptographically valid', async () => {
   const m = await manager();
-  const licence = await m.run(`makeLicence({name:'Buyer', machine:'SR-1234-5678-ABCD-EF01', edition:'Pro', type:'annual', expires:'2027-01-01'}, 'Issued')`);
+  const licence = await m.run(`makeLicence({name:'Buyer', machine:'SR-1234-5678-ABCD-EF01', edition:'Pro', type:'annual', expires:'2027-01-01', baseVersion:'1.6.3', updatesUntil:'2027-11-21'}, 'Issued')`);
   m.ctx.licence = licence;
   const result = await m.run('verifyKey(licence.key)');
   assert.equal(result.ok, true);
   assert.equal(result.p.t, 'perpetual');
   assert.equal(result.p.x, null);
+  assert.equal(result.p.baseVersion, '1.6.3');
+  assert.equal(result.p.updatesUntil, '2027-11-21');
   assert.equal(result.p.m, 'SR-1234-5678-ABCD-EF01');
   assert.equal(licence.expires, '');
   const parts = licence.key.split('.');
@@ -67,4 +69,16 @@ test('successful commits are not reported as failed when the subsequent refresh 
   assert.equal(m.run('S.clients[0].name'), 'Buyer');
   assert.equal(m.run('S.mode'), 'error');
   await assert.rejects(m.run(`save('clients',{name:'Another'})`), /Connect to Supabase/);
+});
+
+test('SanPower issues a machine-bound SPD1 key and rejects SanRack format', async () => {
+  const m = await manager(undefined, {machinePrefix:'SP', keyPrefix:'SPD1', version:'3.0.1'});
+  m.ctx.licence = await m.run("makeLicence({name:'Buyer', machine:'SP-1234-5678-ABCD-EF01', baseVersion:'3.0.1', updatesUntil:'2027-01-01'}, 'Issued')");
+  assert.match(m.ctx.licence.key, /^SPD1\./);
+  const {p, ok} = await m.run('verifyKey(licence.key)');
+  assert.equal(ok, true);
+  assert.equal(p.m, 'SP-1234-5678-ABCD-EF01');
+  assert.equal(p.baseVersion, '3.0.1');
+  assert.equal(p.updatesUntil, '2027-01-01');
+  await assert.rejects(m.run("verifyKey(licence.key.replace('SPD1.', 'SRD1.'))"), /starting with SPD1/);
 });
