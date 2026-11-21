@@ -37,6 +37,7 @@ import ServiceRequestsAdmin from "./components/ServiceRequestsAdmin";
 import GlobalLanguageToggle from "./components/GlobalLanguageToggle";
 import ProductCatalog from "./components/ProductCatalog";
 import ProductDetail from "./components/ProductDetail";
+import DesignerSoftware from "./components/DesignerSoftware";
 import PortalOnlyRoute from "./components/PortalOnlyRoute";
 
 function App() {
@@ -111,6 +112,8 @@ function App() {
         <Route path="/academy" element={<Academy />} />
         <Route path="/service-packages" element={<PortalOnlyRoute><ServicePackages /></PortalOnlyRoute>} />
         <Route path="/service-request" element={<PortalOnlyRoute><ServiceRequest /></PortalOnlyRoute>} />
+        <Route path="/software/sanrack-designer" element={<PortalOnlyRoute><DesignerSoftware product="sanrack" /></PortalOnlyRoute>} />
+        <Route path="/software/sanpower-designer" element={<PortalOnlyRoute><DesignerSoftware product="sanpower" /></PortalOnlyRoute>} />
         <Route path="/products" element={<PortalOnlyRoute><ProductCatalog /></PortalOnlyRoute>} />
         <Route path="/products/:productSlug" element={<PortalOnlyRoute><ProductDetail /></PortalOnlyRoute>} />
         <Route path="/login" element={<FilesLogin />} />
