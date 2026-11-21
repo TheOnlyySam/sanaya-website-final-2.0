@@ -31,3 +31,9 @@ activation protocol works offline, so old activation keys cannot be remotely
 disabled without changing the desktop application's verification protocol.
 
 Validation: `node --test scripts/licensing.test.cjs` and `npm test -- --watchAll=false --runInBand`.
+
+## SanRack and SanPower portal licensing
+
+Apply `supabase/migrations/20261121_support_sanpower_licensing.sql` to the site's Supabase database before enabling SanPower issuance. It preserves existing records and admin policies and allows SanPower machine IDs and activation codes in the shared licence table. The portal has a separate page for each product and shares customer records between them.
+
+Load the matching private activation key in the selected product's Settings. The portal does not store private keys in Supabase. SanRack issues with SRD-9C8D91BF and can verify earlier SRD-1DDC4CBC keys. SanPower issues with SPD-04FFCB33 and needs its original activation private key. Customers' paid update coverage goes in **Paid updates through**. Use **Issue maintenance renewal** to extend coverage and send the resulting replacement code. The lifetime activation itself has no expiry.
