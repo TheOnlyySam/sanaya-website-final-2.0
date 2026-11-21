@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FaChevronDown, FaBars, FaFileArrowDown, FaFolderOpen, FaHouse, FaLock, FaXmark } from "react-icons/fa6";
+import { designerSoftwareLinks } from "./DesignerSoftware";
 import { isSupabaseAuthenticated } from "../lib/supabaseFiles";
 
 const menuItems = [
@@ -99,6 +100,11 @@ const Navbar = () => {
     <button key={item.labelKey} type="button" onClick={() => handleNavItemClick(item)} className={dropdownItemClass}>{t(`site.nav.${item.labelKey}`)}</button>
   ));
 
+  const softwareLabel = isArabic ? "البرامج" : "Softwares";
+  const softwareItems = designerSoftwareLinks.map(({ path, name }) => (
+    <button key={path} type="button" onClick={() => handleNavItemClick({ path })} className={dropdownItemClass}>{name}</button>
+  ));
+
   useEffect(() => { setIsOpen(false); }, [location.pathname]);
 
   const shellClasses = scrolled || isOpen || location.pathname !== "/"
@@ -158,6 +164,7 @@ const Navbar = () => {
                   <FaFileArrowDown className="me-2 inline" />{t("site.nav.profile")}
                 </a>
               </NavDropdown>
+              <NavDropdown label={softwareLabel} textClasses={textClasses}>{softwareItems}</NavDropdown>
                 <NavDropdown label={t("site.nav.portal")} textClasses={textClasses}>
                   <button type="button" onClick={() => navigate("/portal")} className={dropdownItemClass}><FaFolderOpen className="me-2 inline" />{t("site.nav.portal")}</button>
                   {dropdownItems(["products", "packages", "odooPlans"])}
@@ -246,6 +253,12 @@ const Navbar = () => {
                 {t(`site.nav.${item.labelKey}`)}
               </button>
             ))}
+            {filesAuthenticated && (
+              <details className="rounded-2xl border border-slate-200 px-4 py-3 text-slate-900">
+                <summary className="cursor-pointer font-semibold">{softwareLabel}</summary>
+                <div className="mt-2 grid gap-1">{softwareItems}</div>
+              </details>
+            )}
             <button
               type="button"
               onClick={() => {
