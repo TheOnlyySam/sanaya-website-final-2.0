@@ -162,6 +162,7 @@ const Navbar = () => {
                   <button type="button" onClick={() => navigate("/portal")} className={dropdownItemClass}><FaFolderOpen className="me-2 inline" />{t("site.nav.portal")}</button>
                   {dropdownItems(["products", "packages", "odooPlans"])}
                   <button type="button" onClick={() => navigate("/portal/apps/licensing")} className={dropdownItemClass}>{isArabic ? "تراخيص SanRack" : "SanRack Licensing"}</button>
+                  <button type="button" onClick={() => navigate("/portal/apps/sanpower-licensing")} className={dropdownItemClass}>{isArabic ? "تراخيص SanPower" : "SanPower Licensing"}</button>
                   <button type="button" onClick={() => navigate("/service-packages")} className={dropdownItemClass}>{t("site.nav.supportCta")}</button>
                 </NavDropdown>
             </div>
