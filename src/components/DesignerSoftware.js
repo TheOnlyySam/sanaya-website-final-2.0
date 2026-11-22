@@ -37,8 +37,8 @@ const products = {
   },
   sanpower: {
     name: "SanPower Designer",
-    version: "3.0.2",
-    installer: "https://github.com/TheOnlyySam/sanpower-releases/releases/download/v3.0.2/SAN-Power-Designer-Setup-3.0.2.exe",
+    version: "3.0.3",
+    installer: "https://github.com/TheOnlyySam/sanpower-releases/releases/download/v3.0.3/SAN-Power-Designer-Setup-3.0.3.exe",
     en: {
       headline: "Take low-voltage designs from loads to panel drawings.",
       description: "Build a power distribution model for a data centre or building, evaluate cables and protection, and prepare coordinated electrical schedules and reports.",
