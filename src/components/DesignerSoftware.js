@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FaArrowDown, FaFilePdf } from "react-icons/fa6";
+import { FaArrowDown, FaArrowUpRightFromSquare, FaFilePdf } from "react-icons/fa6";
+import { softwareDetails } from "./softwareDetails";
 
 export const designerSoftwareLinks = [
   { path: "/software/sanrack-designer", name: "SanRack Designer" },
@@ -36,8 +37,8 @@ const products = {
   },
   sanpower: {
     name: "SanPower Designer",
-    version: "3.0.1",
-    installer: "https://github.com/TheOnlyySam/sanpower-releases/releases/download/v3.0.1/SAN-Power-Designer-Setup-3.0.1.exe",
+    version: "3.0.2",
+    installer: "https://github.com/TheOnlyySam/sanpower-releases/releases/download/v3.0.2/SAN-Power-Designer-Setup-3.0.2.exe",
     en: {
       headline: "Take low-voltage designs from loads to panel drawings.",
       description: "Build a power distribution model for a data centre or building, evaluate cables and protection, and prepare coordinated electrical schedules and reports.",
@@ -80,7 +81,13 @@ export default function DesignerSoftware({ product }) {
   const info = products[product];
   const copy = info[lang];
   const ui = labels[lang];
-  const shots = ["workspace", "studio", "output"];
+  const details = softwareDetails[product];
+  const ar = lang === "ar";
+  const [active, select] = React.useState(details.gallery[0][0]);
+  const selected = details.gallery.find(([id]) => id === active) || details.gallery[0];
+  const [shot, enName, enDescription, arName, arDescription] = selected;
+  const caption = ar ? arName : enName;
+  const description = ar ? arDescription : enDescription;
   return (
     <main dir={lang === "ar" ? "rtl" : "ltr"} className="bg-slate-50 pb-20 pt-28 text-slate-950">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -99,6 +106,15 @@ export default function DesignerSoftware({ product }) {
           <img className="w-full rounded-xl border border-white/20" src={`/${product}-workspace.png`} alt={copy.shots[0]} />
         </section>
 
+        <dl className="mt-6 grid grid-cols-2 overflow-hidden rounded-2xl border border-slate-200 bg-white md:grid-cols-4">
+          {details.metrics.map(([value, en, arabic]) => (
+            <div key={value} className="border-b border-e border-slate-200 px-5 py-5">
+              <dt className="text-sm text-slate-600">{ar ? arabic : en}</dt>
+              <dd className="mt-1 text-2xl font-bold text-teal-800">{ar && value === "Offline" ? "دون اتصال" : value}</dd>
+            </div>
+          ))}
+        </dl>
+
         <section className="mt-12" aria-labelledby="designer-features">
           <h2 className="font-display text-3xl font-bold" id="designer-features">{ui.features}</h2>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -111,18 +127,39 @@ export default function DesignerSoftware({ product }) {
           </div>
         </section>
 
-        <section className="mt-12" aria-labelledby="designer-gallery">
-          <h2 className="font-display text-3xl font-bold" id="designer-gallery">{ui.gallery}</h2>
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            {shots.slice(1).map((shot, index) => (
-              <figure key={shot} className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                <a href={`/${product}-${shot}.png`} target="_blank" rel="noreferrer">
-                  <img className="aspect-video w-full bg-slate-100 object-contain" loading="lazy" src={`/${product}-${shot}.png`} alt={copy.shots[index + 1]} />
-                </a>
-                <figcaption className="px-5 py-4 font-semibold">{copy.shots[index + 1]}</figcaption>
-              </figure>
-            ))}
+        <section className="mt-14 overflow-hidden rounded-[2rem] border border-slate-200 bg-white" aria-labelledby="designer-gallery">
+          <div className="bg-slate-950 px-6 py-7 text-white sm:px-9">
+            <h2 className="font-display text-3xl font-bold" id="designer-gallery">{ui.gallery}</h2>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {details.gallery.map(([id, en, , arabic]) => (
+                <button type="button" key={id} aria-pressed={shot === id} onClick={() => select(id)}
+                  className={`rounded-full px-4 py-2 text-sm font-semibold ${shot === id ? "bg-teal-300 text-slate-950" : "bg-white/10 text-white hover:bg-white/20"}`}>
+                  {ar ? arabic : en}
+                </button>
+              ))}
+            </div>
           </div>
+          <figure>
+            <img className="aspect-video w-full bg-slate-100 object-contain" loading="lazy" src={`/${product}-${shot}.png`} alt={caption} />
+            <figcaption className="flex flex-wrap items-center justify-between gap-4 p-6 sm:px-9">
+              <div><h3 className="text-xl font-bold">{caption}</h3><p className="mt-2 max-w-3xl text-slate-700">{description}</p></div>
+              <a href={`/${product}-${shot}.png`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 font-semibold text-teal-700 hover:underline">
+                {ar ? "عرض بالحجم الكامل" : "View full size"} <FaArrowUpRightFromSquare aria-hidden="true" />
+              </a>
+            </figcaption>
+          </figure>
+        </section>
+
+        <section className="mt-14" aria-labelledby="designer-workflow">
+          <h2 className="font-display text-3xl font-bold" id="designer-workflow">{ar ? "من بدء المشروع إلى التسليم" : "From project setup to handover"}</h2>
+          <ol className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {details.workflow.map(([en, body, arabic, arabicBody], index) => (
+              <li key={en} className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-100 font-bold text-teal-900">{index + 1}</span>
+                <div><h3 className="font-bold">{ar ? arabic : en}</h3><p className="mt-2 text-slate-700">{ar ? arabicBody : body}</p></div>
+              </li>
+            ))}
+          </ol>
         </section>
 
         <section className="mt-12 rounded-2xl border border-teal-100 bg-teal-50 p-6 sm:p-8" aria-labelledby="designer-datasheets">
