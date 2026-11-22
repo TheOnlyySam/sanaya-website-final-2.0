@@ -1,0 +1,13 @@
+{
+  "kid": "SPD-04FFCB33",
+  "alg": "ES256",
+  "product": "SAN Power Designer",
+  "key_format": "SPD1.<base64url payload>.<base64url signature>",
+  "machine_id_format": "SP-XXXX-XXXX-XXXX-XXXX",
+  "jwk": {
+    "kty": "EC",
+    "crv": "P-256",
+    "x": "oCemGAzCcCbMTiafaQ6u0QJzV7MtBc_MEvLSPgc-W0Q",
+    "y": "3uBhsNwEhTlwKcwecFrVBVKk6h5J3SqLXmUNUKYd2Y4"
+  }
+}
