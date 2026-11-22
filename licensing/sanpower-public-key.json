@@ -1,13 +1,11 @@
 {
- "kid": "SPD-04FFCB33",
- "alg": "ES256",
- "product": "SAN Power Designer",
- "key_format": "SPD1.<base64url payload>.<base64url signature>",
- "machine_id_format": "SP-XXXX-XXXX-XXXX-XXXX",
- "jwk": {
-  "kty": "EC",
-  "crv": "P-256",
-  "x": "oCemGAzCcCbMTiafaQ6u0QJzV7MtBc_MEvLSPgc-W0Q",
-  "y": "3uBhsNwEhTlwKcwecFrVBVKk6h5J3SqLXmUNUKYd2Y4"
- }
+  "kid": "SPD-5829C708",
+  "alg": "ES256",
+  "product": "SAN Power Designer",
+  "jwk": {
+    "kty": "EC",
+    "x": "4iIEystE_YCxGPyWc97VPl5bks6lLDvaEZr8peS_b5M",
+    "y": "q6FWy5tjpdS4OWZ3jRSDAviK0PPyiawC4-zv41sbgjY",
+    "crv": "P-256"
+  }
 }
