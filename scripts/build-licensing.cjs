@@ -12,7 +12,7 @@ const config = {
 const html = fs.readFileSync(path.join(__dirname, '../licensing/license-manager.html'), 'utf8');
 const products = [
   { output: 'license-manager.html', key: 'public-key.json', name: 'SanRack Designer', version: '1.6.3', machinePrefix: 'SR', keyPrefix: 'SRD1', legacy: require('../licensing/sanrack-legacy-public-key.json') },
-  { output: 'sanpower-license-manager.html', key: 'sanpower-public-key.json', name: 'SAN Power Designer', version: '3.0.1', machinePrefix: 'SP', keyPrefix: 'SPD1' },
+  { output: 'sanpower-license-manager.html', key: 'sanpower-public-key.json', name: 'SAN Power Designer', version: '3.0.2', machinePrefix: 'SP', keyPrefix: 'SPD1' },
 ];
 for (const { output, key, ...product } of products) {
   const { kid, jwk } = require(path.join(__dirname, '../licensing', key));
